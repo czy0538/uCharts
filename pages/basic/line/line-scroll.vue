@@ -147,7 +147,9 @@
 					let newdata=JSON.parse(_self.textarea);
 					canvaLineA.updateData({
 						series: newdata.series,
-						categories: newdata.categories
+						categories: newdata.categories,
+						scrollPosition:'right',
+						animation:false
 					});
 				}else{
 					uni.showToast({

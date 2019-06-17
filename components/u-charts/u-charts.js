@@ -1,17 +1,14 @@
 /*
- * uCharts v1.7.0.7
- * uni-app平台高性能跨全端图表
- * 支持H5、APP、小程序（微信/支付宝/百度/头条）
- * Designed by QIUN秋云
+ * uCharts v1.7.0.8
+ * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
+ * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 
  * uCharts官方网站
  * https://www.uCharts.cn
  * 
  * 开源地址:
- * https://github.com/16cheng/uCharts(停更)
- * 开源地址即将变更为：
- * https://gitee.com/qiuyunkeji/uCharts(尚未上传)
- * 开源协议变更为Apache-2.0
+ * https://gitee.com/uCharts/uCharts
  * 
  * uni-app插件市场地址：
  * http://ext.dcloud.net.cn/plugin?id=271
@@ -3377,13 +3374,47 @@ var Charts = function Charts(opts) {
 };
 
 Charts.prototype.updateData = function () {
-    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    let data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.opts.series = data.series || this.opts.series;
     this.opts.categories = data.categories || this.opts.categories;
-
+	let scrollPosition = data.scrollPosition || 'current';
+	switch (scrollPosition) {
+	    case 'current':
+			this.opts._scrollDistance_= this.scrollOption.currentOffset;
+			break;
+		case 'left':
+			this.opts._scrollDistance_= 0;
+			this.scrollOption = {
+			    currentOffset: 0,
+			    startTouchX: 0,
+			    distance: 0
+			};
+			break;
+		case 'right':
+			let _calYAxisData = calYAxisData(this.opts.series, this.opts, this.config),
+				yAxisWidth = _calYAxisData.yAxisWidth;
+			this.config.yAxisWidth = yAxisWidth;
+			let offsetLeft=0;
+			let _getXAxisPoints0 = getXAxisPoints(this.opts.categories, this.opts, this.config),
+				xAxisPoints = _getXAxisPoints0.xAxisPoints,
+				startX = _getXAxisPoints0.startX,
+				endX = _getXAxisPoints0.endX,
+				eachSpacing = _getXAxisPoints0.eachSpacing;
+			let totalWidth=eachSpacing*(xAxisPoints.length-1);
+			let screenWidth=endX-startX;
+			offsetLeft=screenWidth-totalWidth;
+			this.scrollOption = {
+				currentOffset: offsetLeft,
+				startTouchX: offsetLeft,
+				distance: 0
+			};
+			this.opts._scrollDistance_= offsetLeft;
+			break;
+	}
+	let animation= data.animation==undefined? this.opts.animation:data.animation;
+	this.opts.animation = animation;
     this.opts.title = assign({}, this.opts.title, data.title || {});
     this.opts.subtitle = assign({}, this.opts.subtitle, data.subtitle || {});
-
     drawCharts.call(this, this.opts.type, this.opts, this.config, this.context);
 };
 
