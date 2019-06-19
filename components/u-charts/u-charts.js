@@ -3621,4 +3621,5 @@ Charts.prototype.scrollEnd = function (e) {
     }
 };
 
-module.exports = Charts;
+//module.exports = Charts;
+export default Charts;
