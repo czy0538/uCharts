@@ -1,15 +1,7 @@
 <template>
 	<view class="qiun-columns">
-		<!--#ifdef H5 -->
-		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">页面地址</view>
-		</view>
-		<view class="qiun-bg-white qiun-padding">
-		    <text>pages/basic/candle/candle</text>
-		</view>
-		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt qiun-rows" >
-			<view class="qiun-title-dot-light">基本K线图</view>
+			<view class="qiun-title-dot-light">K线图与柱状图联动</view>
 			<view style="flex: 1;qiun-rows;text-align: right;">
 				<button type="default" size="mini" @tap="tapButton('in')">放大</button>
 				<button type="default" size="mini" style="margin-left: 20upx;" @tap="tapButton('out')">缩小</button>
@@ -23,19 +15,19 @@
 			<canvas canvas-id="canvasCandle" id="canvasCandle" class="charts" disable-scroll=true @touchstart="touchCandle" @touchmove="moveCandle" @touchend="touchEndCandle"></canvas>
 			<!--#endif-->
 		</view>
+		<view class="qiun-charts2" >
+			<!--#ifdef MP-ALIPAY -->
+			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts2" :style="{'width':cWidth*pixelRatio+'px','height':cHeight*pixelRatio+'px', 'transform': 'scale('+(1/pixelRatio)+')','margin-left':-cWidth*(pixelRatio-1)/2+'px','margin-top':-cHeight*(pixelRatio-1)/2+'px'}" ></canvas>
+			<!--#endif-->
+			<!--#ifndef MP-ALIPAY -->
+			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts2"></canvas>
+			<!--#endif-->
+		</view>
 		<view class="qiun-padding qiun-bg-white ">
 			<slider :value="itemCount" min="5" :max="sliderMax" block-color="#f8f8f8" block-size="18" @changing="sliderMove" @change="sliderMove"/>
 		</view>
-		<!--#ifdef H5 -->
-		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">标准数据格式</view>
-		</view>
-		<view class="qiun-bg-white qiun-padding">
-		    <textarea class="qiun-textarea" maxlength="-1" v-model="textarea"/>
-		</view>
-		<view class="qiun-text-tips">Tips：修改后点击更新图表</view>
-		<button class="qiun-button" @tap="changeData()">更新图表</button>
-		<!--#endif-->
+		
+		
 	</view>
 </template>
 
@@ -44,16 +36,17 @@
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
 	var canvaCandle=null;
-   
+	var canvaColumn=null;
+	
 	export default {
 		data() {
 			return {
 				cWidth:'',
 				cHeight:'',
+				cHeight2:'',
 				pixelRatio:1,
 				itemCount:20,//x轴单屏数据密度
-				sliderMax:50,
-				textarea:''
+				sliderMax:50
 			}
 		},
 		onLoad() {
@@ -71,6 +64,7 @@
 			//#endif
 			this.cWidth=uni.upx2px(750);
 			this.cHeight=uni.upx2px(500);
+			this.cHeight2=uni.upx2px(200);
 			this.getServerData();
 		},
 		methods: {
@@ -82,11 +76,14 @@
 					success: function(res) {
 						console.log(res.data.data)
 						let Candle={categories:[],series:[]};
+						let Column={categories:[],series:[]};
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
 						Candle.categories=res.data.data.Candle.categories;
 						Candle.series=res.data.data.Candle.series;
-						_self.textarea = JSON.stringify(res.data.data.Candle);
+						Column.categories=res.data.data.CandleColumn.categories;
+						Column.series=res.data.data.CandleColumn.series;
 						_self.showCandle("canvasCandle",Candle);
+						_self.showColumn("canvasColumn",Column);
 					},
 					fail: () => {
 						_self.tips="网络错误，小程序端请检查合法域名";
@@ -165,7 +162,8 @@
 				canvaCandle.scrollStart(e);
 			},
 			moveCandle(e) {
-				canvaCandle.scroll(e);
+				let distance = canvaCandle.scroll(e);
+				canvaColumn.translate(distance);
 			},
 			touchEndCandle(e) {
 				canvaCandle.scrollEnd(e);
@@ -199,20 +197,46 @@
 				canvaCandle.zoom({
 					itemCount: val
 				});
+				canvaColumn.zoom({
+					itemCount: val
+				});
 			},
-			changeData(){
-				if(isJSON(_self.textarea)){
-					let newdata=JSON.parse(_self.textarea);
-					canvaCandle.updateData({
-						series: newdata.series,
-						categories: newdata.categories
-					});
-				}else{
-					uni.showToast({
-						title:'数据格式错误',
-						image:'../../../static/images/alert-warning.png'
-					})
-				}
+			showColumn(canvasId,chartData){
+				canvaColumn=new uCharts({
+					$this:_self,
+					canvasId: canvasId,
+					type: 'column',
+					legend:false,
+					fontSize:11,
+					background:'#FFFFFF',
+					pixelRatio:_self.pixelRatio,
+					animation: true,
+					enableScroll:true,
+					dataLabel:false,
+					categories: chartData.categories,
+					series: chartData.series,
+					xAxis: {
+						disable:true,
+						disableGrid:true,
+						labelCount:4,
+						itemCount:_self.itemCount,
+						scrollAlign:'right',
+					},
+					yAxis: {
+						disableGrid:true,
+						splitNumber: 2,
+						min:0
+					},
+					width: _self.cWidth*_self.pixelRatio,
+					height: _self.cHeight2*_self.pixelRatio,
+					extra: {
+						column: {
+							type:'group',
+						
+						}
+					  }
+				});
+				
 			}
 		}
 	}
@@ -231,5 +255,15 @@
 		height: 500upx;
 		background-color: #FFFFFF;
 	}
-	.qiun-textarea{height: 300upx;}
+	.qiun-charts2 {
+		width: 750upx;
+		height: 200upx;
+		background-color: #FFFFFF;
+	}
+	
+	.charts2 {
+		width: 750upx;
+		height: 200upx;
+		background-color: #FFFFFF;
+	}
 </style>

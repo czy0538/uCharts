@@ -166,6 +166,12 @@
 				"navigationBarTitleText": "单页多图表好性能",
 				"navigationBarTextStyle":"black"
 			}
+		},{
+			"path": "pages/app/demo/candle",
+			"style": {
+				"navigationBarTitleText": "K线图与柱状图联动",
+				"navigationBarTextStyle":"black"
+			}
 		},
 		{
 			"path": "pages/user/about",

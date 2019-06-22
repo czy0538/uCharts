@@ -13,6 +13,12 @@
 		data() {
 			return {
 				info: [{
+				    title: 'K线图与柱状图联动',
+					images:'candle.png',
+					url:'demo/candle',
+					demo:'../../static/images/demo/demo3.png',
+					tips:'更新中'
+				},{
 				    title: '单页多图表好性能',
 					images:'mix2.png',
 					url:'demo/index',
@@ -24,7 +30,7 @@
 					url:'demo/pie-legend',
 					demo:'../../static/images/demo/demo1.png',
 					tips:'点击查看示例'
-				}
+				},
 				/*
 				,{
 				    title: '柱状图自定义颜色',

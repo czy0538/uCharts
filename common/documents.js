@@ -49,8 +49,9 @@ export default [
 	"opts.subtitle.color | String |  | 副标题颜色（可选） "
 	],[//0.3
 	"opts.xAxis | Object |  | X轴配置 ",
-	"opts.xAxis.rotateLabel | Boolean | 默认为 false | X轴刻度（数值）标签是否旋转 ",
+	"opts.xAxis.rotateLabel | Boolean | 默认为 false | X轴刻度（数值）标签是否旋转（仅在文案超过单屏宽度时有效） ",
 	"opts.xAxis.itemCount | Number | 默认为 5 | X轴可见区域`数据数量`（即X轴数据密度），配合拖拽滚动使用（即仅在启用enableScroll时有效） ",
+	"opts.xAxis.labelCount | Number | | X轴可见区域`标签数量`（即X轴数刻度标签单屏幕限制显示的数量）",
 	"opts.xAxis.scrollShow | Boolean | 默认为 false | 是否显示滚动条，配合拖拽滚动使用（即仅在启用enableScroll时有效） ",
 	"opts.xAxis.scrollAlign | String | 默认为 left | 滚动条初始位置，left为数据整体左对齐，right为右对齐 ",
 	"opts.xAxis.scrollBackgroundColor | String | 默认为 #EFEBEF | X轴滚动条背景颜色，配合拖拽滚动使用（即仅在启用enableScroll时有效） ",
@@ -175,11 +176,19 @@ export default [
 	"opts.extra.tooltip.activeBgColor |String |默认为#000000 | 仅柱状图类适用，当前点击柱状图的背景颜色 ",
 	"opts.extra.tooltip.activeBgOpacity |Number |默认0.08 | 仅柱状图类适用，当前点击柱状图的背景颜色透明度 "
 	],[//1.11
-	"opts.extra.legendTextColor |String | 默认为 #cccccc | 图例文案颜色 例如#7cb5ec`后期将变更为opts.legend.textColor迁移到基础配置里`"
+	"opts.extra.legendTextColor |String | 默认为 #cccccc | 图例文案颜色 例如#7cb5ec`后期将变更为opts.legend.textColor迁移到基础配置里`",
+	"opts.extra.touchMoveLimit |Number | 默认为20 | 图表拖拽时，每秒重新渲染的帧数`用于图表拖拽卡顿`"
 	]
 ],[//2
 	[//2.0
-		"updateData(data) |  |  | 更新图表数据，data: object，data.categories(可选，具体见参数说明)，data.series(可选，具体见参数说明)，data.title(可选，具体见参数说明)，data.subtitle(可选，具体见参数说明)"
+		" updateData(data) | Function |  | 例如LineA.updateData({data}) ",
+		"data | Object|  | 更新的数据 ",
+		"data.categories| Array | 当前实例categories  | 同opts.categories ",
+		"data.series| Array | 当前实例series | 同opts.series",
+		"data.title| Array | 当前实例title | 同opts.title",
+		"data.subtitle| Array | 当前实例subtitle | 同opts.subtitle",
+		"data.scrollPosition| String | current | 开启图表拖拽后，更新图表后图表时，滚动条的偏移距离，可选值`left`更新后强制左对齐；`right`更新后强制右对齐；`current`更新后保持当前偏移距离",
+		" data.animation | Boolean | 当前实例animation  | 是否动画展示 "
 	],[//2.1
 		"stopAnimation()  |  |  | 停止当前正在进行的动画效果，直接展示渲染的最终结果"
 	],[//2.2

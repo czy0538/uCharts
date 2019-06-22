@@ -148,6 +148,26 @@ function findRange(num, type, limit) {
     return num / multiple;
 }
 
+function calCandleMA(dayArr, nameArr, colorArr, kdata) {
+	let seriesTemp=[];
+	for (let k = 0; k < dayArr.length ; k++) {
+		let seriesItem = { data:[], name : nameArr[k], color: colorArr[k] };
+		for (let i = 0, len = kdata.length; i < len; i++) {
+			if (i < dayArr[k]) {
+				seriesItem.data.push(null);
+				continue;
+			}
+			let sum = 0;
+			for (let j = 0; j < dayArr[k]; j++) {
+				sum += kdata[i - j][1];
+			}
+			seriesItem.data.push(+(sum / dayArr[k]).toFixed(3));
+		}
+		seriesTemp.push(seriesItem);
+	}
+    return seriesTemp;
+}
+
 function calValidDistance(distance, chartData, config, opts) {
 
     var dataChartAreaWidth = opts.width - config.padding - chartData.xAxisPoints[0];
@@ -1753,8 +1773,8 @@ function drawColumnDataPoints(series, opts, config, context) {
     };
 }
 
-function drawCandleDataPoints(series, opts, config, context) {
-    var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+function drawCandleDataPoints(series, seriesMA, opts, config, context) {
+    var process = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
 	var candleOption = opts.extra.candle || {color:{},average:{}};
 	candleOption.color.upLine=candleOption.color.upLine? candleOption.color.upLine: '#f04864';
 	candleOption.color.upFill=candleOption.color.upFill? candleOption.color.upFill: '#f04864';
@@ -1781,7 +1801,37 @@ function drawCandleDataPoints(series, opts, config, context) {
     if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
         context.translate(opts._scrollDistance_, 0);
     }
-
+	//画均线
+	if(candleOption.average.show){
+		seriesMA.forEach(function (eachSeries, seriesIndex) {
+		    var data = eachSeries.data;
+		    var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
+		    //calPoints.push(points);
+		    var splitPointList = splitPoints(points);
+		
+		    splitPointList.forEach(function (points, index) {
+		        context.beginPath();
+		        context.setStrokeStyle(eachSeries.color);
+		        context.setLineWidth(1);
+		        if (points.length === 1) {
+		            context.moveTo(points[0].x, points[0].y);
+		            context.arc(points[0].x, points[0].y, 1, 0, 2 * Math.PI);
+		        } else {
+		            context.moveTo(points[0].x, points[0].y);
+					points.forEach(function (item, index) {
+						if (index > 0) {
+							var ctrlPoint = createCurveControlPoints(points, index - 1);
+							context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y);
+						}
+					});
+		            context.moveTo(points[0].x, points[0].y);
+		        }
+		        context.closePath();
+		        context.stroke();
+		    });
+		});
+	}
+	//画K线
     series.forEach(function (eachSeries, seriesIndex) {
         var data = eachSeries.data;
         var points = getCandleDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -1828,13 +1878,11 @@ function drawCandleDataPoints(series, opts, config, context) {
 			context.stroke();
         });
     });
-
+	
+	
     context.restore();
 	
-	//画均线
-	if(candleOption.average.show){
-		
-	}
+	
 
     return {
         xAxisPoints: xAxisPoints,
@@ -2328,15 +2376,46 @@ function drawXAxis(categories, opts, config, context) {
 	//不绘制X轴
 	if (opts.xAxis.disabled !== true) {
 		// 对X轴列表做抽稀处理
-		var validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth;
-		var maxXAxisListLength = Math.min(categories.length, Math.ceil(validWidth / config.fontSize / 1.5));
-		var ratio = Math.ceil(categories.length / maxXAxisListLength);
+		let validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth;
+		//默认全部显示X轴标签
+		let maxXAxisListLength = categories.length;
+		//如果不旋转X轴文案
+		if (config._xAxisTextAngle_ === 0) {
+			//如果设置了X轴单屏数量
+			if(opts.xAxis.labelCount){
+				//如果设置X轴密度
+				if(opts.xAxis.itemCount){
+					maxXAxisListLength = Math.ceil(categories.length/opts.xAxis.itemCount*opts.xAxis.labelCount);
+				}else{
+					maxXAxisListLength = opts.xAxis.labelCount;
+				}
+				maxXAxisListLength-=1;
+			}
+		}else{
+			//旋转标签文案
+			maxXAxisListLength = Math.min(categories.length, Math.ceil(validWidth / config.fontSize / 1.5));
+		}
+		
+		let ratio = Math.ceil(categories.length / maxXAxisListLength);
+		
+		let newCategories =[];
+		let cgLength=categories.length;
+		for(let i=0;i<cgLength;i++){
+			if(i % ratio !== 0){
+				newCategories.push("");
+			}else{
+				newCategories.push(categories[i]);
+			}
+		}
+		newCategories[cgLength-1]=categories[cgLength-1];
+		/*
 		categories = categories.map(function (item, index) {
 			return index % ratio !== 0 ? '' : item;
-		});
-
+		});*/
+		
+		
 		if (config._xAxisTextAngle_ === 0) {
-			categories.forEach(function (item, index) {
+			newCategories.forEach(function (item, index) {
 				var offset = eachSpacing / 2 - measureText(item) / 2;
 				context.beginPath();
 				context.setFontSize(config.fontSize);
@@ -2347,7 +2426,7 @@ function drawXAxis(categories, opts, config, context) {
 			});
 			
 		} else {
-			categories.forEach(function (item, index) {
+			newCategories.forEach(function (item, index) {
 				context.save();
 				context.beginPath();
 				context.setFontSize(config.fontSize);
@@ -3002,6 +3081,15 @@ function drawCharts(type, opts, config, context) {
     var categories = opts.categories;
     series = fillSeriesColor(series, config);
 	series = fillSeriesType(series, opts);
+	let seriesMA = null;
+	
+	
+	if(type == 'candle'){
+		let average = assign({},opts.extra.candle.average);
+		if(average.show){
+			seriesMA = calCandleMA(average.day, average.name, average.color, series[0].data);
+		}
+	}
 	
     var _calLegendData = calLegendData(series, opts, config),
         legendHeight = _calLegendData.legendHeight;
@@ -3225,7 +3313,7 @@ function drawCharts(type, opts, config, context) {
 					}
 					drawYAxisGrid(categories,opts, config, context);
 					drawXAxis(categories, opts, config, context);
-					var _drawCandleDataPoints = drawCandleDataPoints(series, opts, config, context, process),
+					var _drawCandleDataPoints = drawCandleDataPoints(series, seriesMA, opts, config, context, process),
 					    xAxisPoints = _drawCandleDataPoints.xAxisPoints,
 					    calPoints = _drawCandleDataPoints.calPoints,
 					    eachSpacing = _drawCandleDataPoints.eachSpacing;
@@ -3233,7 +3321,11 @@ function drawCharts(type, opts, config, context) {
 					_this.chartData.xAxisPoints = xAxisPoints;
 					_this.chartData.calPoints = calPoints;
 					_this.chartData.eachSpacing = eachSpacing;
-					drawLegend(opts.series, opts, config, context);
+					if(seriesMA){
+						drawLegend(seriesMA, opts, config, context);
+					}else{
+						drawLegend(opts.series, opts, config, context);
+					}
 					drawYAxis(series, opts, config, context);
 					drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
 					drawCanvas(opts, context);
@@ -3345,7 +3437,8 @@ var Charts = function Charts(opts) {
     this.scrollOption = {
         currentOffset: 0,
         startTouchX: 0,
-        distance: 0
+        distance: 0,
+		lastMoveTime:0
     };
 	
 	//计算右对齐偏移距离
@@ -3365,7 +3458,8 @@ var Charts = function Charts(opts) {
 		this.scrollOption = {
 		    currentOffset: offsetLeft,
 		    startTouchX: offsetLeft,
-		    distance: 0
+		    distance: 0,
+			lastMoveTime:0
 		};
 		opts._scrollDistance_= offsetLeft;
 	}
@@ -3387,7 +3481,8 @@ Charts.prototype.updateData = function () {
 			this.scrollOption = {
 			    currentOffset: 0,
 			    startTouchX: 0,
-			    distance: 0
+			    distance: 0,
+				lastMoveTime:0
 			};
 			break;
 		case 'right':
@@ -3406,7 +3501,8 @@ Charts.prototype.updateData = function () {
 			this.scrollOption = {
 				currentOffset: offsetLeft,
 				startTouchX: offsetLeft,
-				distance: 0
+				distance: 0,
+				lastMoveTime:0
 			};
 			this.opts._scrollDistance_= offsetLeft;
 			break;
@@ -3424,8 +3520,38 @@ Charts.prototype.zoom = function () {
 		console.log('请启用滚动条后使用！')
 		return;
 	}
+	//当前屏幕中间点
+	let centerPoint = Math.round(Math.abs(this.scrollOption.currentOffset)/this.chartData.eachSpacing)+Math.round(this.opts.xAxis.itemCount/2);
 	this.opts.animation=false;
-    this.opts.xAxis.itemCount = val.itemCount;
+	this.opts.xAxis.itemCount = val.itemCount;
+	//重新计算x轴偏移距离
+	let _calYAxisData = calYAxisData(this.opts.series, this.opts, this.config),
+		yAxisWidth = _calYAxisData.yAxisWidth;
+	this.config.yAxisWidth = yAxisWidth;
+	let offsetLeft=0;
+	let _getXAxisPoints0 = getXAxisPoints(this.opts.categories, this.opts, this.config),
+		xAxisPoints = _getXAxisPoints0.xAxisPoints,
+		startX = _getXAxisPoints0.startX,
+		endX = _getXAxisPoints0.endX,
+		eachSpacing = _getXAxisPoints0.eachSpacing;
+	let centerLeft=eachSpacing*centerPoint;
+	let screenWidth=endX-startX;
+	let MaxLeft=screenWidth-eachSpacing*(xAxisPoints.length-1);
+	offsetLeft=screenWidth/2-centerLeft;
+	if (offsetLeft>0){
+		offsetLeft=0;
+	}
+	if (offsetLeft<MaxLeft){
+		offsetLeft=MaxLeft;
+	}
+	this.scrollOption = {
+		currentOffset: offsetLeft,
+		startTouchX: offsetLeft,
+		distance: 0,
+		lastMoveTime:0
+	};
+	this.opts._scrollDistance_= offsetLeft;
+	
     drawCharts.call(this, this.opts.type, this.opts, this.config, this.context);
 };
 
@@ -3563,6 +3689,20 @@ Charts.prototype.showToolTip = function (e) {
 	}
 };
 
+Charts.prototype.translate = function (distance) {
+	this.scrollOption = {
+		currentOffset: distance,
+		startTouchX: distance,
+		distance: 0,
+		lastMoveTime:0
+	};
+	let opts = assign({}, this.opts, {
+	    _scrollDistance_: distance,
+	    animation: false
+	});
+	drawCharts.call(this, this.opts.type, opts, this.config, this.context);
+};
+
 Charts.prototype.scrollStart = function (e) {
 	var touches= e.mp.changedTouches[0];
 	var _touches$= getTouches(touches, this.opts, e);
@@ -3576,17 +3716,15 @@ Charts.prototype.scrollStart = function (e) {
 };
 
 Charts.prototype.scroll = function (e) {
-    // TODO throtting...
-	var {
-	  disableTouch, throttleTouch, lastMoveTime,
-	} = this;
-	if (disableTouch || !e.mp.changedTouches[0]) return;
-	
-	if (throttleTouch) {
-	  var currMoveTime = Date.now();
-	  if (currMoveTime - lastMoveTime < 240) return;
-	  this.lastMoveTime = currMoveTime;
+	if(this.scrollOption.lastMoveTime === 0){
+		this.scrollOption.lastMoveTime = Date.now();
 	}
+    let Limit = this.opts.extra.touchMoveLimit || 20;
+	let currMoveTime = Date.now();
+	let duration = currMoveTime - this.scrollOption.lastMoveTime ;
+	if(duration < Math.floor(1000/Limit)) return;
+	
+	this.scrollOption.lastMoveTime = currMoveTime;
 	
 	var touches= e.mp.changedTouches[0];
 	var _touches$= getTouches(touches, this.opts, e);
@@ -3607,6 +3745,7 @@ Charts.prototype.scroll = function (e) {
             animation: false
         });
         drawCharts.call(this, opts.type, opts, this.config, this.context);
+		return currentOffset + _distance;
     }
 };
 
@@ -3621,5 +3760,4 @@ Charts.prototype.scrollEnd = function (e) {
     }
 };
 
-//module.exports = Charts;
 export default Charts;
