@@ -70,7 +70,7 @@
 		methods: {
 			getServerData(){
 				uni.request({
-					url: 'https://www.easy-mock.com/mock/5cc586b64fc5576cba3d647b/uni-wx-charts/chartsdata2',
+					url: 'https://www.ucharts.cn/data.json',
 					data:{
 					},
 					success: function(res) {
@@ -163,7 +163,9 @@
 			},
 			moveCandle(e) {
 				let distance = canvaCandle.scroll(e);
-				canvaColumn.translate(distance);
+				if(distance!==undefined){
+					canvaColumn.translate(distance);
+				}
 			},
 			touchEndCandle(e) {
 				canvaCandle.scrollEnd(e);
@@ -216,7 +218,7 @@
 					categories: chartData.categories,
 					series: chartData.series,
 					xAxis: {
-						disable:true,
+						disabled:true,
 						disableGrid:true,
 						labelCount:4,
 						itemCount:_self.itemCount,
@@ -232,7 +234,6 @@
 					extra: {
 						column: {
 							type:'group',
-						
 						}
 					  }
 				});

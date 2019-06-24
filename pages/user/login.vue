@@ -13,7 +13,7 @@
 			<text style="color: red;">{{message}}</text>
 		</view>
 		<view class="inputArea">
-			<button class="login-button" @click="goLogin">登 录</button>
+			<view class="login-button" @click="goLogin">登 录</view>
 		</view>
 		<!--
 		<view class="inputArea">
@@ -61,7 +61,7 @@
 					mask: false
 				});
 				uni.request({
-					url: 'https://www.easy-mock.com/mock/5cc586b64fc5576cba3d647b/uni-wx-charts/chartsdata2',
+					url: 'https://www.ucharts.cn/data.json',
 					method: 'get',
 					data: {
 						name: this.loginUsername,
@@ -121,5 +121,8 @@
 		background: #2fc25b;
 		color: #FFFFFF;
 		border-radius: 44upx;
+		font-size: 36upx;
+		text-align: center;
+		padding: 20upx;
 	}
 </style>

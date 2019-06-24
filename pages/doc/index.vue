@@ -65,6 +65,9 @@ export default {
 							title: '饼图圆环图'
 						},
 						{
+							title: '玫瑰图'
+						},
+						{
 							title: '折线图'
 						},
 						{

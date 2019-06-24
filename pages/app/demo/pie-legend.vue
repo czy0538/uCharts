@@ -65,7 +65,7 @@
 		methods: {
 			getServerData(){
 				uni.request({
-					url: 'https://www.easy-mock.com/mock/5cc586b64fc5576cba3d647b/uni-wx-charts/chartsdata2',
+					url: 'https://www.ucharts.cn/data.json',
 					data:{
 					},
 					success: function(res) {

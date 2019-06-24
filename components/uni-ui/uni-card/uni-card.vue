@@ -8,7 +8,7 @@
 			<view class="uni-card__header-extra-text" v-if="extra">{{extra}}</view>
 		</view>
 		<view class="uni-card__content uni-card__content--pd">
-			<image :src="images" mode="aspectFit" class="demoimages" v-if="images"></image>
+			<image :src="images" mode="scaleToFill" class="demoimages" v-if="images"></image>
 			<text v-if="texts">{{texts}}</text>
 		</view>
 		<view class="uni-card__footer" v-if="note">{{note}}</view>

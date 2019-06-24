@@ -12,6 +12,8 @@
 # [uCharts官方网站](https://www.ucharts.cn)
 # <https://www.ucharts.cn>
 
+# [码云gitee开源地址](https://gitee.com/uCharts/uCharts)
+# `小伙伴们，需要star哦~~~`
 
 # [在线文档](http://doc.ucharts.cn)
 
@@ -52,9 +54,12 @@
 - 雷达图 `radar`
 - 圆弧进度图 `arcbar`
 - 仪表盘 `gauge`
-- K线图  `candle`(完善中)
-- 条状图 `bar`(开发中)
+- K线图  `candle`
 - 混合图 `mix`（支持point、line直线曲线、column、area直线曲线）
+- 条状图 `bar`(开发中)
+- 玫瑰图 `rose`(开发中)
+- 漏斗图 `funnel`(开发中)
+
 
 
 ## 插件特点
@@ -113,15 +118,16 @@
 各位遇到问题请先参考以下问题，如果仍不能解决，请留言。
 
 ### 通用问题
-- 如果用在您的项目上图表不显示，请先运行demo页面，如果demo页面也无法显示，请查看全局样式是否定义了`canvas的样式`，如有请取消。
-- 如发现实例化图表后，`客户端卡死`的状况，请在实例化图表前（即调用`showColumn(canvasId,chartData)`前）检查传入图表数组（`chartData.categories`和`chartData.series`）是否为空，如果为空则不要实例化图表。后续将在源码中解决此问题。
+ - 如果用在您的项目上图表不显示，请先运行demo页面，如果demo页面也无法显示，请查看全局样式是否定义了`canvas的样式`，如有请取消。
 - 图表`背景颜色`问题，很多朋友设置图表背景颜色时候，只修改了view和canvas的css,忘记了修改实例化参数中的`background:'#FFFFFF'`，导致图表画板右侧有一道白条（这个是图表配置中的右边距），所以特修改了demo中的`柱状图`的背景颜色供大家参考。
+- 如果遇到`图表与预期尺寸不符合`，请检查canvas标签上的`css`与`cWidth、cHeihgt`设置的值是否相符，css请用`upx`为单位，cWidth、cHeihgt的单位为`px`，请参考demo用uni.upx2px()方法转换。
+- 如遇到开启拖拽，而实际`无法拖拽`的情况，请先检查canvas标签是否绑定的`touch事件`。
 
-### 支付宝、百度、头条问题
+### 支付宝问题
 - 在高分屏模式下，如果发现图表已显示，但位置不正确，请检查上级`view`容器的`样式`，为了解决高分屏canvas模糊问题，使用了css的`transform`，所以请修改上级样式使canvas容器缩放至相应位置。
 - 如果将canvas放在多级<view>组件下，遇到ToolTip不显示或点击区域不正确，请在`touch`事件中增加以下代码解决。
 ```javascript
-//#ifdef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO
+//#ifdef MP-ALIPAY
 e.mp.currentTarget.offsetTop+=uni.upx2px(510);
 //#endif
 ```
@@ -131,6 +137,6 @@ e.mp.currentTarget.offsetTop+=uni.upx2px(510);
 - 很多小伙伴们自行把本插件做成组件来调用，做成组件需要注意，如果涉及到v-if切换显示图表组件，第二次可能会变空白，这里有两个建议：
 1、建议用v-show替代v-if切换显示图表组件。
 2、建议参考demo，不要将canvas做到组件里使用，即直接写在主页面中。
-### 初步解决`组件内使用问题`，感谢`342805357@qq.com`提出组件问题解决方案，增加`opts.$this`参数，组件使用时实例化前请传递this。后续会增加组件使用示例，请关注。
+3、初步解决`组件内使用问题`，感谢`342805357@qq.com`提出组件问题解决方案，增加`opts.$this`参数，组件使用时实例化前请传递this。后续会增加组件使用示例，请关注。
 
 # `支付宝小程序IDE中不显示，但运行到真机是可以显示的，请真机测试。`

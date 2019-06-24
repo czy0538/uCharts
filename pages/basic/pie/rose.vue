@@ -9,7 +9,7 @@
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">玫瑰图（开发中）</view>
+			<view class="qiun-title-dot-light">玫瑰图</view>
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
@@ -67,7 +67,7 @@
 		methods: {
 			getServerData(){
 				uni.request({
-					url: 'https://www.easy-mock.com/mock/5cc586b64fc5576cba3d647b/uni-wx-charts/chartsdata2',
+					url: 'https://www.ucharts.cn/data.json',
 					data:{
 					},
 					success: function(res) {
@@ -99,7 +99,11 @@
 					dataLabel: true,
 					extra: {
 						pie: {
-						  lableWidth:15
+							type:'area',
+							minRadius:50,
+							activeOpacity:0.5,
+							offsetAngle:0,
+							lableWidth:15
 						}
 					},
 				});

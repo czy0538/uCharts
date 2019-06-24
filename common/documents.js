@@ -122,6 +122,13 @@ export default [
 	"opts.extra.pie.offsetAngle| Number| 默认为0| 起始角度偏移度数，顺时针方向，起点为3点钟位置（比如要设置起点为12点钟位置，即逆时针偏移90度，传入-90即可）",
 	"opts.extra.pie.lableWidth| Number | required  |数据标签到饼图外圆连线的长度，必填参数，否则报错，单位为px",
 	"opts.extra.pie.ringWidth| Number | |ringChart圆环宽度，单位为px"
+	],[//1.4.1
+	"opts.extra.rose| Object| | 玫瑰图相关配置",
+	"opts.extra.rose.type | String | 默认area |玫瑰图模式，可选值`area`面积模式，`radius`半径模式",
+	"opts.extra.rose.minRadius | Number | 默认为图形半径的50% | 最小半径值 ",
+	"opts.extra.rose.activeOpacity | Number | required |启用Tooltip点击时，突出部分的透明度，默认0.5 ",
+	"opts.extra.rose.offsetAngle| Number| 默认为0| 起始角度偏移度数，顺时针方向，起点为3点钟位置（比如要设置起点为12点钟位置，即逆时针偏移90度，传入-90即可）",
+	"opts.extra.rose.lableWidth| Number | required  |数据标签到饼图外圆连线的长度，必填参数，否则报错，单位为px"
 	],[//1.5
 	"opts.extra.line| Object | | 折线图配置 ",
 	"opts.extra.line.type | String| 默认straight | 可选值：curve曲线，straight直线 ",

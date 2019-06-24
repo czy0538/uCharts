@@ -776,7 +776,32 @@ function getPieDataPoints(series) {
     series.forEach(function (item) {
         item.data = item.data === null ? 0 : item.data;
 		if(count === 0){
-			item._proportion_ = 1 / series.length;
+			item._proportion_ = 1 / series.length * process;
+		}else{
+			item._proportion_ = item.data / count * process;
+		}
+    });
+    series.forEach(function (item) {
+        item._start_ = _start_;
+        _start_ += 2 * item._proportion_ * Math.PI;
+    });
+
+    return series;
+}
+
+function getRoseDataPoints(series,type) {
+    var process = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
+    var count = 0;
+    var _start_ = 0;
+    series.forEach(function (item) {
+        item.data = item.data === null ? 0 : item.data;
+        count += item.data;
+    });
+    series.forEach(function (item) {
+        item.data = item.data === null ? 0 : item.data;
+		if(count === 0 || type=='area'){
+			item._proportion_ = 1 / series.length * process;
 		}else{
 			item._proportion_ = item.data / count * process;
 		}
@@ -2592,6 +2617,7 @@ function drawLegend(series, opts, config, context) {
 					context.stroke();
 					break;
                 case 'ring':
+				case 'rose':
                     context.beginPath();
                     context.setLineWidth(1*opts.pixelRatio);
                     context.setStrokeStyle(item.color);
@@ -2708,6 +2734,80 @@ function drawPieDataPoints(series, opts, config, context) {
 
     if (process === 1 && opts.type === 'ring') {
         drawRingTitle(opts, config, context);
+    }
+
+    return {
+        center: centerPosition,
+        radius: radius,
+        series: series
+    };
+}
+
+function drawRoseDataPoints(series, opts, config, context) {
+    var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+
+    var roseOption = opts.extra.rose || {};
+	roseOption.type = roseOption.type || 'area';
+    series = getRoseDataPoints(series, roseOption.type, process);
+    var centerPosition = {
+        x: opts.width / 2,
+        y: (opts.height - config.legendHeight) / 2
+    };
+    var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding);
+    if (opts.dataLabel) {
+        radius -= 10;
+    } else {
+        radius -= 2 * config.padding;
+    }
+	
+	var activeRadius=radius+config.pieChartLinePadding/2;
+	
+	
+    series = series.map(function (eachSeries) {
+        eachSeries._start_ += (roseOption.offsetAngle || 0) * Math.PI / 180;
+        return eachSeries;
+    });
+	console.log(series)
+	
+    series.forEach(function (eachSeries,seriesIndex) {
+		if(opts.tooltip){
+			if(opts.tooltip.index==seriesIndex){
+				context.beginPath();
+				context.setFillStyle(hexToRgb(eachSeries.color, roseOption.activeOpacity || 0.5));
+				context.moveTo(centerPosition.x, centerPosition.y);
+				context.arc(centerPosition.x, centerPosition.y, activeRadius, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ * Math.PI);
+				context.closePath();
+				context.fill();
+			}
+		}
+        context.beginPath();
+        context.setLineWidth(2*opts.pixelRatio);
+		context.lineJoin="round";
+        context.setStrokeStyle('#ffffff');
+        context.setFillStyle(eachSeries.color);
+        context.moveTo(centerPosition.x, centerPosition.y);
+        context.arc(centerPosition.x, centerPosition.y, radius, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ * Math.PI);
+        context.closePath();
+        context.fill();
+        if (opts.disablePieStroke !== true) {
+            context.stroke();
+        }
+    });
+
+
+    if (opts.dataLabel !== false && process === 1) {
+        // fix https://github.com/xiaolin3303/wx-charts/issues/132
+        var valid = false;
+        for (var i = 0, len = series.length; i < len; i++) {
+            if (series[i].data > 0) {
+                valid = true;
+                break;
+            }
+        }
+
+        if (valid) {
+            //drawPieText(series, opts, config, context, radius, centerPosition);
+        }
     }
 
     return {
@@ -3088,6 +3188,7 @@ function drawCharts(type, opts, config, context) {
 		let average = assign({},opts.extra.candle.average);
 		if(average.show){
 			seriesMA = calCandleMA(average.day, average.name, average.color, series[0].data);
+			opts.seriesMA = seriesMA;
 		}
 	}
 	
@@ -3254,6 +3355,24 @@ function drawCharts(type, opts, config, context) {
                 }
             });
             break;
+		case 'rose':
+		    this.animationInstance = new Animation({
+		        timing: 'easeInOut',
+		        duration: duration,
+		        onProcess: function onProcess(process) {
+					if(opts.rotate){
+						contextRotate(context,opts);
+					}
+					_this.chartData.roseData = drawRoseDataPoints(series, opts, config, context, process);
+		            drawLegend(opts.series, opts, config, context);
+					drawToolTipBridge(opts, config, context, process);
+		            drawCanvas(opts, context);
+		        },
+		        onAnimationFinish: function onAnimationFinish() {
+		            _this.event.trigger('renderComplete');
+		        }
+		    });
+		    break;
         case 'radar':
             this.animationInstance = new Animation({
                 timing: 'easeInOut',
@@ -3567,7 +3686,7 @@ Charts.prototype.getCurrentDataIndex = function (e) {
     var touches= e.mp.changedTouches[0];
     if (touches) {
         var _touches$= getTouches(touches, this.opts, e);
-        if (this.opts.type === 'pie' || this.opts.type === 'ring') {
+        if (this.opts.type === 'pie' || this.opts.type === 'ring'|| this.opts.type === 'rose') {
             return findPieChartCurrentIndex({ x: _touches$.x, y: _touches$.y }, this.chartData.pieData);
         } else if (this.opts.type === 'radar') {
             return findRadarChartCurrentIndex({ x: _touches$.x, y: _touches$.y }, this.chartData.radarData, this.opts.categories.length);
