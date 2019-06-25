@@ -348,27 +348,27 @@ function measureText(text) {
     text = String(text);
     var text = text.split('');
     var width = 0;
-    text.forEach(function (item) {
-        if (/[a-zA-Z]/.test(item)) {
+	for(var i=0;i<text.length;i++) {
+		if (/[a-zA-Z]/.test[i]) {
             width += 7;
-        } else if (/[0-9]/.test(item)) {
+		} else if (/[0-9]/.test[i]) {
             width += 5.5;
-        } else if (/\./.test(item)) {
+        } else if (/\./.test[i]) {
             width += 2.7;
-        } else if (/-/.test(item)) {
+        } else if (/-/.test[i]) {
             width += 3.25;
-        } else if (/[\u4e00-\u9fa5]/.test(item)) {
+        } else if (/[\u4e00-\u9fa5]/.test[i]) {
             width += 10;
-        } else if (/\(|\)/.test(item)) {
+        } else if (/\(|\)/.test[i]) {
             width += 3.73;
-        } else if (/\s/.test(item)) {
+        } else if (/\s/.test[i]) {
             width += 2.5;
-        } else if (/%/.test(item)) {
+        } else if (/%/.test[i]) {
             width += 8;
         } else {
             width += 10;
         }
-    });
+	}
     return width * fontSize / 10 ;
 }
 
@@ -417,8 +417,9 @@ function getTouches(touches, opts, e){
 
 function getSeriesDataItem(series, index) {
     var data = [];
-    series.forEach(function (item) {
-        if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
+	for(var i = 0; i < series.length; i++) {
+		var item = series[i];
+		if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
             var seriesItem = {};
             seriesItem.color = item.color;
 			seriesItem.type = item.type;
@@ -429,8 +430,7 @@ function getSeriesDataItem(series, index) {
             seriesItem.data = item.format ? item.format(item.data[index]) : item.data[index];
             data.push(seriesItem);
         }
-    });
-
+	}
     return data;
 }
 
@@ -472,10 +472,11 @@ function getToolTipData(seriesData, calPoints, index, categories) {
 			validCalPoints.push(calPoints[i][index]);
 		}
 	}
-    validCalPoints.forEach(function (item) {
-        offset.x = Math.round(item.x);
+	for(var i = 0; i < validCalPoints.length; i++) {
+		var item = validCalPoints[i];
+		offset.x = Math.round(item.x);
         offset.y += item.y;
-    });
+	}
 
     offset.y /= validCalPoints.length;
     return { textList: textList, offset: offset };
@@ -500,15 +501,17 @@ function getMixToolTipData(seriesData, calPoints, index, categories) {
         x: 0,
         y: 0
     };
-    calPoints.forEach(function (points) {
-        if (typeof points[index] !== 'undefined' && points[index] !== null) {
+	for(var i = 0; i < calPoints.length; i++) {
+		var points = calPoints[i];
+		if (typeof points[index] !== 'undefined' && points[index] !== null) {
             validCalPoints.push(points[index]);
         }
-    });
-    validCalPoints.forEach(function (item) {
-        offset.x = Math.round(item.x);
+	}
+	for(var i = 0; i < validCalPoints.length; i++) {
+		var item = validCalPoints[i];
+		offset.x = Math.round(item.x);
         offset.y += item.y;
-    });
+	}
 
     offset.y /= validCalPoints.length;
     return { textList: textList, offset: offset };
@@ -568,11 +571,12 @@ function getCandleToolTipData(series,seriesData, calPoints, index, categories,ex
         x: 0,
         y: 0
     };
-    calPoints.forEach(function (points) {
-        if (typeof points[index] !== 'undefined' && points[index] !== null) {
+	for (var i = 0; i < calPoints.length; i++) {
+		var points = calPoints[i];
+		if (typeof points[index] !== 'undefined' && points[index] !== null) {
             validCalPoints.push(points[index]);
         }
-    });
+	}
 	offset.x=Math.round(validCalPoints[0][0].x);
     return { textList: textList, offset: offset };
 }
@@ -581,11 +585,11 @@ function findCurrentIndex(currentPoints, xAxisPoints, opts, config) {
     var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
     var currentIndex = -1;
     if (isInExactChartArea(currentPoints, opts, config)) {
-        xAxisPoints.forEach(function (item, index) {
-            if (currentPoints.x + offset > item) {
-                currentIndex = index;
+		for (var i = 0; i < xAxisPoints.length; i++) {
+			if (currentPoints.x + offset > xAxisPoints[i]) {
+                currentIndex = i;
             }
-        });
+		}
     }
 
     return currentIndex;
@@ -621,16 +625,17 @@ function findRadarChartCurrentIndex(currentPoints, radarData, count) {
             return item;
         });
 
-        angleList.forEach(function (item, index) {
-            var rangeStart = fixAngle(item - eachAngleArea / 2);
+		for(var i = 0; i < angleList.length; i++) {
+			var item = angleList[i];
+			var rangeStart = fixAngle(item - eachAngleArea / 2);
             var rangeEnd = fixAngle(item + eachAngleArea / 2);
             if (rangeEnd < rangeStart) {
                 rangeEnd += 2 * Math.PI;
             }
             if (angle >= rangeStart && angle <= rangeEnd || angle + 2 * Math.PI >= rangeStart && angle + 2 * Math.PI <= rangeEnd) {
-                currentIndex = index;
+                currentIndex = i;
             }
-        });
+		}
     }
 
     return currentIndex;
@@ -660,8 +665,9 @@ function isInExactPieChartArea(currentPoints, center, radius) {
 function splitPoints(points) {
     var newPoints = [];
     var items = [];
-    points.forEach(function (item, index) {
-        if (item !== null) {
+	for(var i = 0; i < points.length; i++) {
+		var item = points[i];
+		if (item !== null) {
             items.push(item);
         } else {
             if (items.length) {
@@ -669,7 +675,7 @@ function splitPoints(points) {
             }
             items = [];
         }
-    });
+	}
     if (items.length) {
         newPoints.push(items);
     }
