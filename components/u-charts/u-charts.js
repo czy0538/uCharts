@@ -570,11 +570,12 @@ function getCandleToolTipData(series,seriesData, calPoints, index, categories,ex
         x: 0,
         y: 0
     };
-    calPoints.forEach(function (points) {
-        if (typeof points[index] !== 'undefined' && points[index] !== null) {
+	for (var i = 0; i < calPoints.length; i++) {
+		var points = calPoints[i];
+		if (typeof points[index] !== 'undefined' && points[index] !== null) {
             validCalPoints.push(points[index]);
         }
-    });
+	}
 	offset.x=Math.round(validCalPoints[0][0].x);
     return { textList: textList, offset: offset };
 }
@@ -583,11 +584,11 @@ function findCurrentIndex(currentPoints, xAxisPoints, opts, config) {
     var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
     var currentIndex = -1;
     if (isInExactChartArea(currentPoints, opts, config)) {
-        xAxisPoints.forEach(function (item, index) {
-            if (currentPoints.x + offset > item) {
-                currentIndex = index;
+		for (var i = 0; i < xAxisPoints.length; i++) {
+			if (currentPoints.x + offset > xAxisPoints[i]) {
+                currentIndex = i;
             }
-        });
+		}
     }
 
     return currentIndex;
@@ -623,16 +624,17 @@ function findRadarChartCurrentIndex(currentPoints, radarData, count) {
             return item;
         });
 
-        angleList.forEach(function (item, index) {
-            var rangeStart = fixAngle(item - eachAngleArea / 2);
+		for(var i = 0; i < angleList.length; i++) {
+			var item = angleList[i];
+			var rangeStart = fixAngle(item - eachAngleArea / 2);
             var rangeEnd = fixAngle(item + eachAngleArea / 2);
             if (rangeEnd < rangeStart) {
                 rangeEnd += 2 * Math.PI;
             }
             if (angle >= rangeStart && angle <= rangeEnd || angle + 2 * Math.PI >= rangeStart && angle + 2 * Math.PI <= rangeEnd) {
-                currentIndex = index;
+                currentIndex = i;
             }
-        });
+		}
     }
 
     return currentIndex;
@@ -662,8 +664,9 @@ function isInExactPieChartArea(currentPoints, center, radius) {
 function splitPoints(points) {
     var newPoints = [];
     var items = [];
-    points.forEach(function (item, index) {
-        if (item !== null) {
+	for(var i = 0; i < points.length; i++) {
+		var item = points[i];
+		if (item !== null) {
             items.push(item);
         } else {
             if (items.length) {
@@ -671,7 +674,7 @@ function splitPoints(points) {
             }
             items = [];
         }
-    });
+	}
     if (items.length) {
         newPoints.push(items);
     }
