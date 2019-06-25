@@ -347,27 +347,27 @@ function measureText(text) {
     text = String(text);
     var text = text.split('');
     var width = 0;
-    text.forEach(function (item) {
-        if (/[a-zA-Z]/.test(item)) {
+	for(var i=0;i<text.length;i++) {
+		if (/[a-zA-Z]/.test[i]) {
             width += 7;
-        } else if (/[0-9]/.test(item)) {
+		} else if (/[0-9]/.test[i]) {
             width += 5.5;
-        } else if (/\./.test(item)) {
+        } else if (/\./.test[i]) {
             width += 2.7;
-        } else if (/-/.test(item)) {
+        } else if (/-/.test[i]) {
             width += 3.25;
-        } else if (/[\u4e00-\u9fa5]/.test(item)) {
+        } else if (/[\u4e00-\u9fa5]/.test[i]) {
             width += 10;
-        } else if (/\(|\)/.test(item)) {
+        } else if (/\(|\)/.test[i]) {
             width += 3.73;
-        } else if (/\s/.test(item)) {
+        } else if (/\s/.test[i]) {
             width += 2.5;
-        } else if (/%/.test(item)) {
+        } else if (/%/.test[i]) {
             width += 8;
         } else {
             width += 10;
         }
-    });
+	}
     return width * fontSize / 10 ;
 }
 
