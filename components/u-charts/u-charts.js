@@ -500,15 +500,17 @@ function getMixToolTipData(seriesData, calPoints, index, categories) {
         x: 0,
         y: 0
     };
-    calPoints.forEach(function (points) {
-        if (typeof points[index] !== 'undefined' && points[index] !== null) {
+	for(var i = 0; i < calPoints.length; i++) {
+		var points = calPoints[i];
+		if (typeof points[index] !== 'undefined' && points[index] !== null) {
             validCalPoints.push(points[index]);
         }
-    });
-    validCalPoints.forEach(function (item) {
-        offset.x = Math.round(item.x);
+	}
+	for(var i = 0; i < validCalPoints.length; i++) {
+		var item = validCalPoints[i];
+		offset.x = Math.round(item.x);
         offset.y += item.y;
-    });
+	}
 
     offset.y /= validCalPoints.length;
     return { textList: textList, offset: offset };
