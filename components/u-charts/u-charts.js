@@ -359,7 +359,8 @@ function measureText(text) {
 	text = String(text);
 	var text = text.split('');
 	var width = 0;
-	text.forEach(function(item) {
+	for (let i = 0; i < text.length; i++) {
+		let item = text[i];
 		if (/[a-zA-Z]/.test(item)) {
 			width += 7;
 		} else if (/[0-9]/.test(item)) {
@@ -379,7 +380,7 @@ function measureText(text) {
 		} else {
 			width += 10;
 		}
-	});
+	}
 	return width * fontSize / 10;
 }
 
@@ -433,9 +434,10 @@ function getTouches(touches, opts, e) {
 
 function getSeriesDataItem(series, index) {
 	var data = [];
-	series.forEach(function(item) {
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
-			var seriesItem = {};
+			let seriesItem = {};
 			seriesItem.color = item.color;
 			seriesItem.type = item.type;
 			seriesItem.style = item.style;
@@ -445,8 +447,7 @@ function getSeriesDataItem(series, index) {
 			seriesItem.data = item.format ? item.format(item.data[index]) : item.data[index];
 			data.push(seriesItem);
 		}
-	});
-
+	}
 	return data;
 }
 
@@ -483,17 +484,17 @@ function getToolTipData(seriesData, calPoints, index, categories) {
 		x: 0,
 		y: 0
 	};
-	for (var i = 0; i < calPoints.length; i++) {
-		var points = calPoints[i];
+	for (let i = 0; i < calPoints.length; i++) {
+		let points = calPoints[i];
 		if (typeof points[index] !== 'undefined' && points[index] !== null) {
 			validCalPoints.push(points[index]);
 		}
 	}
-	validCalPoints.forEach(function(item) {
+	for (let i = 0; i < validCalPoints.length; i++) {
+		let item = validCalPoints[i];
 		offset.x = Math.round(item.x);
 		offset.y += item.y;
-	});
-
+	}
 	offset.y /= validCalPoints.length;
 	return {
 		textList: textList,
@@ -520,16 +521,17 @@ function getMixToolTipData(seriesData, calPoints, index, categories) {
 		x: 0,
 		y: 0
 	};
-	calPoints.forEach(function(points) {
+	for (let i = 0; i < calPoints.length; i++) {
+		let points = calPoints[i];
 		if (typeof points[index] !== 'undefined' && points[index] !== null) {
 			validCalPoints.push(points[index]);
 		}
-	});
-	validCalPoints.forEach(function(item) {
+	}
+	for (let i = 0; i < validCalPoints.length; i++) {
+		let item = validCalPoints[i];
 		offset.x = Math.round(item.x);
 		offset.y += item.y;
-	});
-
+	}
 	offset.y /= validCalPoints.length;
 	return {
 		textList: textList,
@@ -591,11 +593,12 @@ function getCandleToolTipData(series, seriesData, calPoints, index, categories, 
 		x: 0,
 		y: 0
 	};
-	calPoints.forEach(function(points) {
+	for (let i = 0; i < calPoints.length; i++) {
+		let points = calPoints[i];
 		if (typeof points[index] !== 'undefined' && points[index] !== null) {
 			validCalPoints.push(points[index]);
 		}
-	});
+	}
 	offset.x = Math.round(validCalPoints[0][0].x);
 	return {
 		textList: textList,
@@ -720,8 +723,9 @@ function calLegendData(series, opts, config) {
 	var legendList = [];
 	var widthCount = 0;
 	var currentRow = [];
-	series.forEach(function(item) {
-		var itemWidth = 3 * padding + shapeWidth + measureText(item.name || 'undefined');
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
+		let itemWidth = 3 * padding + shapeWidth + measureText(item.name || 'undefined');
 		if (widthCount + itemWidth > opts.width) {
 			legendList.push(currentRow);
 			widthCount = itemWidth;
@@ -730,7 +734,7 @@ function calLegendData(series, opts, config) {
 			widthCount += itemWidth;
 			currentRow.push(item);
 		}
-	});
+	}
 	if (currentRow.length) {
 		legendList.push(currentRow);
 	}
@@ -775,12 +779,13 @@ function getRadarDataPoints(angleList, center, radius, series, opts) {
 	var maxData = Math.max(radarOption.max, Math.max.apply(null, dataCombine(series)));
 
 	var data = [];
-	series.forEach(function(each) {
-		var listItem = {};
+	for (let i = 0; i < series.length; i++) {
+		let each = series[i];
+		let listItem = {};
 		listItem.color = each.color;
 		listItem.data = [];
 		each.data.forEach(function(item, index) {
-			var tmp = {};
+			let tmp = {};
 			tmp.angle = angleList[index];
 
 			tmp.proportion = item / maxData;
@@ -790,7 +795,7 @@ function getRadarDataPoints(angleList, center, radius, series, opts) {
 		});
 
 		data.push(listItem);
-	});
+	}
 
 	return data;
 }
@@ -800,22 +805,25 @@ function getPieDataPoints(series) {
 
 	var count = 0;
 	var _start_ = 0;
-	series.forEach(function(item) {
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		count += item.data;
-	});
-	series.forEach(function(item) {
+	}
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		if (count === 0) {
 			item._proportion_ = 1 / series.length * process;
 		} else {
 			item._proportion_ = item.data / count * process;
 		}
-	});
-	series.forEach(function(item) {
+	}
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item._start_ = _start_;
 		_start_ += 2 * item._proportion_ * Math.PI;
-	});
+	}
 
 	return series;
 }
@@ -825,22 +833,25 @@ function getRoseDataPoints(series, type) {
 
 	var count = 0;
 	var _start_ = 0;
-	series.forEach(function(item) {
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		count += item.data;
-	});
-	series.forEach(function(item) {
+	}
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		if (count === 0 || type == 'area') {
 			item._proportion_ = 1 / series.length * process;
 		} else {
 			item._proportion_ = item.data / count * process;
 		}
-	});
-	series.forEach(function(item) {
+	}
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item._start_ = _start_;
 		_start_ += 2 * item._proportion_ * Math.PI;
-	});
+	}
 
 	return series;
 }
@@ -850,7 +861,8 @@ function getArcbarDataPoints(series, arcbarOption) {
 	if (process == 1) {
 		process = 0.999999;
 	}
-	series.forEach(function(item) {
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		let totalAngle;
 		if (arcbarOption.type == 'default') {
@@ -862,7 +874,7 @@ function getArcbarDataPoints(series, arcbarOption) {
 		if (item._proportion_ >= 2) {
 			item._proportion_ = item._proportion_ % 2;
 		}
-	});
+	}
 	return series;
 }
 
@@ -882,8 +894,9 @@ function getGaugeAxisPoints(categories, startAngle, endAngle) {
 }
 
 function getGaugeDataPoints(series, categories, gaugeOption) {
-	var process = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
-	series.forEach(function(item) {
+	let process = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		if (gaugeOption.pointer.color == 'auto') {
 			for (let i = 0; i < categories.length; i++) {
@@ -909,18 +922,19 @@ function getGaugeDataPoints(series, categories, gaugeOption) {
 		if (item._proportion_ >= 2) {
 			item._proportion_ = item._proportion_ % 2;
 		}
-	});
+	}
 	return series;
 }
 
 
 function getPieTextMaxLength(series) {
 	series = getPieDataPoints(series);
-	var maxLength = 0;
-	series.forEach(function(item) {
-		var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
+	let maxLength = 0;
+	for (let i = 0; i < series.length; i++) {
+		let item = series[i];
+		let text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
 		maxLength = Math.max(maxLength, measureText(text));
-	});
+	}
 
 	return maxLength;
 }
@@ -1405,21 +1419,22 @@ function drawPieText(series, opts, config, context, radius, center) {
 			color: color
 		};
 	});
-	seriesConvert.forEach(function(item) {
+	for (let i = 0; i < seriesConvert.length; i++) {
+		let item = seriesConvert[i];
 		// line end
-		var orginX1 = Math.cos(item.arc) * lineRadius;
-		var orginY1 = Math.sin(item.arc) * lineRadius;
+		let orginX1 = Math.cos(item.arc) * lineRadius;
+		let orginY1 = Math.sin(item.arc) * lineRadius;
 
 		// line start
-		var orginX2 = Math.cos(item.arc) * radius;
-		var orginY2 = Math.sin(item.arc) * radius;
+		let orginX2 = Math.cos(item.arc) * radius;
+		let orginY2 = Math.sin(item.arc) * radius;
 
 		// text start
-		var orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
-		var orginY3 = orginY1;
+		let orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
+		let orginY3 = orginY1;
 
-		var textWidth = measureText(item.text);
-		var startY = orginY3;
+		let textWidth = measureText(item.text);
+		let startY = orginY3;
 
 		if (lastTextObject && util.isSameXCoordinateArea(lastTextObject.start, {
 				x: orginX3
@@ -1441,7 +1456,7 @@ function drawPieText(series, opts, config, context, radius, center) {
 			orginX3 -= textWidth;
 		}
 
-		var textObject = {
+		let textObject = {
 			lineStart: {
 				x: orginX2,
 				y: orginY2
@@ -1462,20 +1477,21 @@ function drawPieText(series, opts, config, context, radius, center) {
 
 		lastTextObject = avoidCollision(textObject, lastTextObject);
 		textObjectCollection.push(lastTextObject);
-	});
+	}
 
-	textObjectCollection.forEach(function(item) {
-		var lineStartPoistion = convertCoordinateOrigin(item.lineStart.x, item.lineStart.y, center);
-		var lineEndPoistion = convertCoordinateOrigin(item.lineEnd.x, item.lineEnd.y, center);
-		var textPosition = convertCoordinateOrigin(item.start.x, item.start.y, center);
+	for (let i = 0; i < textObjectCollection.length; i++) {
+		let item = textObjectCollection[i];
+		let lineStartPoistion = convertCoordinateOrigin(item.lineStart.x, item.lineStart.y, center);
+		let lineEndPoistion = convertCoordinateOrigin(item.lineEnd.x, item.lineEnd.y, center);
+		let textPosition = convertCoordinateOrigin(item.start.x, item.start.y, center);
 		context.setLineWidth(1 * opts.pixelRatio);
 		context.setFontSize(config.fontSize);
 		context.beginPath();
 		context.setStrokeStyle(item.color);
 		context.setFillStyle(item.color);
 		context.moveTo(lineStartPoistion.x, lineStartPoistion.y);
-		var curveStartX = item.start.x < 0 ? textPosition.x + item.width : textPosition.x;
-		var textStartX = item.start.x < 0 ? textPosition.x - 5 : textPosition.x + 5;
+		let curveStartX = item.start.x < 0 ? textPosition.x + item.width : textPosition.x;
+		let textStartX = item.start.x < 0 ? textPosition.x - 5 : textPosition.x + 5;
 		context.quadraticCurveTo(lineEndPoistion.x, lineEndPoistion.y, curveStartX, textPosition.y);
 		context.moveTo(lineStartPoistion.x, lineStartPoistion.y);
 		context.stroke();
@@ -1492,7 +1508,7 @@ function drawPieText(series, opts, config, context, radius, center) {
 		context.closePath();
 		context.stroke();
 		context.closePath();
-	});
+	}
 }
 
 function drawToolTipSplitLine(offsetX, opts, config, context) {
@@ -2023,27 +2039,28 @@ function drawAreaDataPoints(series, opts, config, context) {
 
 
 	series.forEach(function(eachSeries, seriesIndex) {
-		var data = eachSeries.data;
-		var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
+		let data = eachSeries.data;
+		let points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
 		calPoints.push(points);
 
-		var splitPointList = splitPoints(points);
+		let splitPointList = splitPoints(points);
 
-		splitPointList.forEach(function(points) {
-			// 绘制区域数据
+		for (let i = 0; i < splitPointList.length; i++) {
+			let points = splitPointList[i];
+			// 绘制区域数
 			context.beginPath();
 			context.setStrokeStyle(hexToRgb(eachSeries.color, areaOption.opacity));
 			context.setFillStyle(hexToRgb(eachSeries.color, areaOption.opacity));
 			context.setLineWidth(areaOption.width * opts.pixelRatio);
 			if (points.length > 1) {
-				var firstPoint = points[0];
-				var lastPoint = points[points.length - 1];
+				let firstPoint = points[0];
+				let lastPoint = points[points.length - 1];
 
 				context.moveTo(firstPoint.x, firstPoint.y);
 				if (areaOption.type === 'curve') {
 					points.forEach(function(item, index) {
 						if (index > 0) {
-							var ctrlPoint = createCurveControlPoints(points, index - 1);
+							let ctrlPoint = createCurveControlPoints(points, index - 1);
 							context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item
 								.y);
 						}
@@ -2060,7 +2077,7 @@ function drawAreaDataPoints(series, opts, config, context) {
 				context.lineTo(firstPoint.x, endY);
 				context.lineTo(firstPoint.x, firstPoint.y);
 			} else {
-				var item = points[0];
+				let item = points[0];
 				context.moveTo(item.x - eachSpacing / 2, item.y);
 				context.lineTo(item.x + eachSpacing / 2, item.y);
 				context.lineTo(item.x + eachSpacing / 2, endY);
@@ -2084,7 +2101,7 @@ function drawAreaDataPoints(series, opts, config, context) {
 					if (areaOption.type === 'curve') {
 						points.forEach(function(item, index) {
 							if (index > 0) {
-								var ctrlPoint = createCurveControlPoints(points, index - 1);
+								let ctrlPoint = createCurveControlPoints(points, index - 1);
 								context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x,
 									item.y);
 							}
@@ -2101,7 +2118,7 @@ function drawAreaDataPoints(series, opts, config, context) {
 				context.closePath();
 				context.stroke();
 			}
-		});
+		}
 
 		//画点
 		if (opts.dataPointShape !== false) {
@@ -2270,8 +2287,9 @@ function drawMixDataPoints(series, opts, config, context) {
 		//绘制区域图数据
 
 		if (eachSeries.type == 'area') {
-			var splitPointList = splitPoints(points);
-			splitPointList.forEach(function(points) {
+			let splitPointList = splitPoints(points);
+			for (let i = 0; i < splitPointList.length; i++) {
+				let points = splitPointList[i];
 				// 绘制区域数据
 				context.beginPath();
 				context.setStrokeStyle(eachSeries.color);
@@ -2280,7 +2298,7 @@ function drawMixDataPoints(series, opts, config, context) {
 				context.setLineWidth(2 * opts.pixelRatio);
 				if (points.length > 1) {
 					var firstPoint = points[0];
-					var lastPoint = points[points.length - 1];
+					let lastPoint = points[points.length - 1];
 					context.moveTo(firstPoint.x, firstPoint.y);
 					if (eachSeries.style === 'curve') {
 						points.forEach(function(item, index) {
@@ -2301,7 +2319,7 @@ function drawMixDataPoints(series, opts, config, context) {
 					context.lineTo(firstPoint.x, endY);
 					context.lineTo(firstPoint.x, firstPoint.y);
 				} else {
-					var item = points[0];
+					let item = points[0];
 					context.moveTo(item.x - eachSpacing / 2, item.y);
 					context.lineTo(item.x + eachSpacing / 2, item.y);
 					context.lineTo(item.x + eachSpacing / 2, endY);
@@ -2311,7 +2329,7 @@ function drawMixDataPoints(series, opts, config, context) {
 				context.closePath();
 				context.fill();
 				context.setGlobalAlpha(1);
-			});
+			}
 		}
 
 
@@ -2671,16 +2689,18 @@ function drawLegend(series, opts, config, context) {
 	var shapeWidth = 15 * opts.pixelRatio;
 	legendList.forEach(function(itemList, listIndex) {
 		var width = 0;
-		itemList.forEach(function(item) {
+		for (let i = 0; i < itemList.length; i++) {
+			let item = itemList[i];
 			item.name = item.name || 'undefined';
 			width += 3 * padding + measureText(item.name) + shapeWidth;
-		});
+		}
 		var startX = (opts.width - width) / 2 + padding;
 		var startY = opts.height - config.padding - config.legendHeight + listIndex * (config.fontSize + marginTop) +
 			padding + marginTop;
 
 		context.setFontSize(config.fontSize);
-		itemList.forEach(function(item) {
+		for (let i = 0; i < itemList.length; i++) {
+			let item = itemList[i];
 			switch (opts.type) {
 				case 'line':
 					context.beginPath();
@@ -2740,7 +2760,7 @@ function drawLegend(series, opts, config, context) {
 			context.closePath();
 			context.stroke();
 			startX += measureText(item.name) + 2 * padding;
-		});
+		}
 	});
 }
 
@@ -2762,7 +2782,6 @@ function drawPieDataPoints(series, opts, config, context) {
 	}
 
 	var activeRadius = radius + config.pieChartLinePadding / 2;
-
 
 	series = series.map(function(eachSeries) {
 		eachSeries._start_ += (pieOption.offsetAngle || 0) * Math.PI / 180;
@@ -2947,8 +2966,8 @@ function drawArcbarDataPoints(series, opts, config, context) {
 
 	context.stroke(); //对当前路径进行描边
 
-
-	series.forEach(function(eachSeries) {
+	for (let i = 0; i < series.length; i++) {
+		let eachSeries = series[i];
 		context.setLineWidth(arcbarOption.width);
 		context.setStrokeStyle(eachSeries.color);
 		context.setLineCap('round');
@@ -2956,8 +2975,7 @@ function drawArcbarDataPoints(series, opts, config, context) {
 		context.arc(centerPosition.x, centerPosition.y, radius, arcbarOption.startAngle * Math.PI, eachSeries._proportion_ *
 			Math.PI, false);
 		context.stroke();
-
-	});
+	}
 	drawRingTitle(opts, config, context);
 	return {
 		center: centerPosition,
@@ -2996,13 +3014,14 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 	//画背景
 	context.setLineWidth(gaugeOption.width);
 	context.setLineCap('butt');
-	categories.forEach(function(eachCategories) {
+	for (let i = 0; i < categories.length; i++) {
+		let eachCategories = categories[i];
 		context.beginPath();
 		context.setStrokeStyle(eachCategories.color);
 		context.arc(centerPosition.x, centerPosition.y, radius, eachCategories._startAngle_ * Math.PI, eachCategories._endAngle_ *
 			Math.PI, false);
 		context.stroke();
-	});
+	}
 	context.save();
 
 	//画刻度线
@@ -3058,7 +3077,8 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 	}
 	series = getGaugeDataPoints(series, categories, gaugeOption, process);
 
-	series.forEach(function(eachSeries) {
+	for (let i = 0; i < series.length; i++) {
+		let eachSeries = series[i];
 		context.save();
 		context.translate(centerPosition.x, centerPosition.y);
 		context.rotate((eachSeries._proportion_ - 1) * Math.PI);
@@ -3076,7 +3096,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 		context.arc(0, 0, gaugeOption.pointer.width / 6, 0, 2 * Math.PI, false);
 		context.fill();
 		context.restore();
-	});
+	}
 
 	if (opts.dataLabel !== false) {
 		drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, context);
@@ -3116,11 +3136,12 @@ function drawRadarDataPoints(series, opts, config, context) {
 	context.beginPath();
 	context.setLineWidth(1 * opts.pixelRatio);
 	context.setStrokeStyle(radarOption.gridColor || "#cccccc");
-	coordinateAngle.forEach(function(angle) {
-		var pos = convertCoordinateOrigin(radius * Math.cos(angle), radius * Math.sin(angle), centerPosition);
+	for (let i = 0; i < coordinateAngle.length; i++) {
+		let angle = coordinateAngle[i];
+		let pos = convertCoordinateOrigin(radius * Math.cos(angle), radius * Math.sin(angle), centerPosition);
 		context.moveTo(centerPosition.x, centerPosition.y);
 		context.lineTo(pos.x, pos.y);
-	});
+	}
 	context.stroke();
 	context.closePath();
 
@@ -3131,16 +3152,17 @@ function drawRadarDataPoints(series, opts, config, context) {
 		context.beginPath();
 		context.setLineWidth(1 * opts.pixelRatio);
 		context.setStrokeStyle(radarOption.gridColor || "#cccccc");
-		coordinateAngle.forEach(function(angle, index) {
+		for (let i = 0; i < coordinateAngle.length; i++) {
+			let angle = coordinateAngle[i];
 			var pos = convertCoordinateOrigin(radius / config.radarGridCount * i * Math.cos(angle), radius / config.radarGridCount *
 				i * Math.sin(angle), centerPosition);
-			if (index === 0) {
+			if (i === 0) {
 				startPos = pos;
 				context.moveTo(pos.x, pos.y);
 			} else {
 				context.lineTo(pos.x, pos.y);
 			}
-		});
+		}
 		context.lineTo(startPos.x, startPos.y);
 		context.stroke();
 		context.closePath();
