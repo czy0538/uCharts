@@ -3498,7 +3498,7 @@ var Charts = function Charts(opts) {
 	opts.xAxis.type=opts.xAxis.type? opts.xAxis.type : 'calibration';
 	opts.xAxis.gridType=opts.xAxis.gridType? opts.xAxis.gridType : 'solid';
 	opts.xAxis.dashLength=opts.xAxis.dashLength? opts.xAxis.dashLength : 4*opts.pixelRatio;
-	opts.xAxis.itemCount = opts.xAxis.itemCount ? opts.xAxis.itemCount : 5;
+	// opts.xAxis.itemCount = opts.xAxis.itemCount ? opts.xAxis.itemCount : 5;
 	opts.xAxis.scrollAlign = opts.xAxis.scrollAlign ? opts.xAxis.scrollAlign : 'left';
     opts.extra = opts.extra || {};
 	
