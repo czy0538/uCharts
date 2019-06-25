@@ -466,11 +466,11 @@ function getToolTipData(seriesData, calPoints, index, categories) {
         x: 0,
         y: 0
     };
-    calPoints.forEach(function (points) {
-        if (typeof points[index] !== 'undefined' && points[index] !== null) {
-            validCalPoints.push(points[index]);
-        }
-    });
+	for (var i = 0; i < calPoints.length; i++) {
+		if (typeof calPoints[i][index] !== 'undefined' && calPoints[i][index] !== null) {
+			validCalPoints.push(calPoints[i][index]);
+		}
+	}
     validCalPoints.forEach(function (item) {
         offset.x = Math.round(item.x);
         offset.y += item.y;
