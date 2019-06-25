@@ -416,8 +416,9 @@ function getTouches(touches, opts, e){
 
 function getSeriesDataItem(series, index) {
     var data = [];
-    series.forEach(function (item) {
-        if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
+	for(var i = 0; i < series.length; i++) {
+		var item = series[i];
+		if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
             var seriesItem = {};
             seriesItem.color = item.color;
 			seriesItem.type = item.type;
@@ -428,8 +429,7 @@ function getSeriesDataItem(series, index) {
             seriesItem.data = item.format ? item.format(item.data[index]) : item.data[index];
             data.push(seriesItem);
         }
-    });
-
+	}
     return data;
 }
 
