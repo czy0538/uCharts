@@ -3669,7 +3669,7 @@ var Charts = function Charts(opts) {
 	this.opts = opts;
 	this.config = config$$1;
 	opts.$this = opts.$this ? opts.$this : this;
-	this.context = uni.createCanvasContext(opts.canvasId, opts.$this);
+	this.context = document.getElementById(opts.canvasId).getContext("2d");
 	// store calcuated chart data
 	// such as chart point coordinate
 	this.chartData = {};
