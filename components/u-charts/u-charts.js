@@ -1321,14 +1321,14 @@ function drawRingTitle(opts, config, context) {
 function drawPointText(points, series, config, context) {
 	// 绘制数据文案
 	var data = series.data;
-
+	var textColor = series.textColor == undefined ? '#666666' : series.textColor;
 
 	points.forEach(function(item, index) {
 		if (item !== null) {
 			//var formatVal = series.format ? series.format(data[index]) : data[index];
 			context.beginPath();
 			context.setFontSize(config.fontSize);
-			context.setFillStyle('#666666');
+			context.setFillStyle(textColor);
 			var value = data[index]
 			if (typeof data[index] === 'object' && data[index] !== null) {
 				value = data[index].value

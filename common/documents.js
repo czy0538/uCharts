@@ -28,6 +28,7 @@ export default [
 	"opts.series.data.value | Number |  | 仅针对柱状图有效，主要作用为柱状图自定义颜色 ",
 	"opts.series.data.color | String |  | 仅针对柱状图有效，主要作用为柱状图自定义颜色 ",
 	"opts.series.color | String |  | 例如#7cb5ec 不传入则使用系统默认配色方案 ",
+	"opts.series.textColor | String |  | 控制dataLabel颜色，例如#666666 不传入则使用系统默认配色方案 ",
 	"opts.series.name | String |  | 数据名称 ",
 	"opts.series.type | String |  | `混合图表`图形展示方式，有效值为point、line、column详细使用方法见demo ",
 	"opts.series.disableLegend  | String | 默认false | `混合图表`中禁止显示ToolTip图例，默认false即默认显示该类别图例",
