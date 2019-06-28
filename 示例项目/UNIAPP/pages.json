@@ -161,6 +161,12 @@
 				"navigationBarTextStyle":"black"
 			}
 		},{
+			"path": "pages/app/demo/component",
+			"style": {
+				"navigationBarTitleText": "组件内使用示例",
+				"navigationBarTextStyle":"black"
+			}
+		},{
 			"path": "pages/app/demo/index",
 			"style": {
 				"navigationBarTitleText": "单页多图表好性能",

@@ -13,6 +13,12 @@
 		data() {
 			return {
 				info: [{
+				    title: '组件内使用示例',
+					images:'candle.png',
+					url:'demo/component',
+					demo:'../../static/images/demo/demo2.png',
+					tips:'点击查看示例'
+				},{
 				    title: 'K线图与柱状图联动',
 					images:'candle.png',
 					url:'demo/candle',

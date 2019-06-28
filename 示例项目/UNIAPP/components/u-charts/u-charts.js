@@ -3806,7 +3806,7 @@ Charts.prototype.addEventListener = function(type, listener) {
 };
 
 Charts.prototype.getCurrentDataIndex = function(e) {
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	if (touches) {
 		var _touches$ = getTouches(touches, this.opts, e);
 		if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
@@ -3831,7 +3831,7 @@ Charts.prototype.getCurrentDataIndex = function(e) {
 
 Charts.prototype.showToolTip = function(e) {
 	var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 
 	if (this.opts.type === 'line' || this.opts.type === 'area' || this.opts.type === 'column') {
@@ -3960,7 +3960,7 @@ Charts.prototype.translate = function(distance) {
 };
 
 Charts.prototype.scrollStart = function(e) {
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		if (touches.x) {
@@ -3982,7 +3982,7 @@ Charts.prototype.scroll = function(e) {
 
 	this.scrollOption.lastMoveTime = currMoveTime;
 
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		var _distance;
