@@ -37,16 +37,9 @@
 				default: 1,
 			},
 		},
-		// #ifdef H5
 		mounted() {
 			this.init();
 		},
-		// #endif
-		// #ifndef H5
-		onLoad() {
-			this.init();
-		},
-		// #endif
 		methods: {
 			init() {
 				switch (this.chartType) {
