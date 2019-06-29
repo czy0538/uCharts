@@ -38,31 +38,24 @@
 				default: '#fffbe8'
 			},
 			speed: { //默认1s滚动100px
-				type: [String, Number],
 				default: 100
 			},
 			color: {
-				type: String,
 				default: '#de8c17'
 			},
 			single: { //是否单行
-				type: [String, Boolean],
 				default: false
 			},
 			scrollable: { //是否滚动，添加后控制单行效果取消
-				type: [String, Boolean],
 				default: false
 			},
 			showIcon: { //是否显示左侧icon
-				type: [String, Boolean],
 				default: false
 			},
 			showGetMore: { //是否显示右侧查看更多
-				type: [String, Boolean],
 				default: false
 			},
 			showClose: { //是否显示左侧关闭按钮
-				type: [String, Boolean],
 				default: false
 			}
 		},
@@ -102,16 +95,9 @@
 				return classList
 			}
 		},
-		// #ifdef H5
-		mounted() { //在h5的时候走mounted，app和小程序走onReady
+		mounted() { 
 			this.setAnimation()
 		},
-		// #endif
-		// #ifndef H5
-		onReady() {
-			this.setAnimation()
-		},
-		// #endif
 		methods: {
 			clickMore() {
 				this.$emit('getmore')
@@ -130,7 +116,7 @@
 				}
 				//#ifdef MP-TOUTIAO
 				setTimeout(() => {
-					uni.createSelectorQuery().select(`#${this.elId}`).boundingClientRect().exec((ret) => {
+					uni.createSelectorQuery().in(this).select(`#${this.elId}`).boundingClientRect().exec((ret) => {
 						console.log(ret)
 						this.animation = `notice ${ret[0].width / this.speed}s linear infinite both`;
 					});
@@ -138,15 +124,18 @@
 				// #endif
 				//#ifdef H5
 				setTimeout(() => {
-					uni.createSelectorQuery().select(`#${this.elId}`).boundingClientRect().exec((ret) => {
+					uni.createSelectorQuery().in(this).select(`#${this.elId}`).boundingClientRect().exec((ret) => {
 						this.animation = `${ret[0].width / this.speed}s`;
 					});
 				}, 200)
 				// #endif
 				// #ifndef MP-TOUTIAO || H5
-				uni.createSelectorQuery().select(`#${this.elId}`).boundingClientRect().exec((ret) => {
-					this.animation = `notice ${ret[0].width / this.speed}s linear infinite both`;
-				});
+				setTimeout(() => {
+					uni.createSelectorQuery().in(this).select(`#${this.elId}`).boundingClientRect().exec((ret) => {
+						console.log(ret)
+						this.animation = `notice ${ret[0].width / this.speed}s linear infinite both`;
+					});
+				}, 200)
 				// #endif
 			}
 		}
