@@ -6,8 +6,8 @@
 
 <script>
 	import uCharts from './u-charts.js';
-
-	var can = {};
+	var canvases = {};
+	
 	export default {
 		props: {
 			chartType: {
@@ -27,11 +27,9 @@
 				default: 'u-canvas',
 			},
 			cWidth: {
-				type: Number,
 				default: 375,
 			},
 			cHeight: {
-				type: Number,
 				default: 250,
 			},
 			pixelRatio: {
@@ -49,10 +47,6 @@
 			this.init();
 		},
 		// #endif
-		// TODO 监听opts数据变化，做changeData
-		watch() {
-			opts: this.init();
-		},
 		methods: {
 			init() {
 				switch (this.chartType) {
@@ -67,7 +61,7 @@
 				}
 			},
 			initColumnChart() {
-				can[this.canvasId] = new uCharts({
+				canvases[this.canvasId] = new uCharts({
 					$this: this,
 					canvasId: this.canvasId,
 					type: 'column',
@@ -98,7 +92,7 @@
 				});
 			},
 			initLineChart() {
-				can[this.canvasId] = new uCharts({
+				canvases[this.canvasId] = new uCharts({
 					$this: this,
 					canvasId: this.canvasId,
 					type: 'line',
@@ -140,34 +134,26 @@
 					}
 				});
 			},
-			// TODO 更新图例数据需完善
-			changeData() {
-				console.log(this.opts);
-				let newdata = this.opts;
-				can[this.canvasId].updateData({
+			// 这里仅作为示例传入两个参数，cid为canvas-id,newdata为更新的数据，需要更多参数请自行修改
+			changeData(cid,newdata) {
+				canvases[cid].updateData({
 					series: newdata.series,
 					categories: newdata.categories
 				});
 			},
 			touchStart(e) {
-				can[this.canvasId].showToolTip(e, {
+				canvases[this.canvasId].showToolTip(e, {
 					format: function(item, category) {
 						return category + ' ' + item.name + ':' + item.data
 					}
 				});
-				can[this.canvasId].scrollStart(e);
+				canvases[this.canvasId].scrollStart(e);
 			},
 			touchMove(e) {
-				const {
-					disableTouch,
-					throttleTouch,
-					chart,
-					lastMoveTime,
-				} = this;
-				can[this.canvasId].scroll(e);
+				canvases[this.canvasId].scroll(e);
 			},
 			touchEnd(e) {
-				can[this.canvasId].scrollEnd(e);
+				canvases[this.canvasId].scrollEnd(e);
 			},
 			error(e) {
 				console.log(e)

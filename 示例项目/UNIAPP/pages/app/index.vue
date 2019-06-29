@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<block v-for="(item ,index) in info" :key="index">
-			<uni-card :title="item.title" :thumbnail="'../../static/images/charts/'+item.images" bgcolor='#f7f7fa' :images="item.demo" :note="'Tips:'+item.tips" @click="clickCard(item.url)">
+			<uni-card :title="item.title" :thumbnail="'../../static/images/charts/'+item.images" bgcolor='#f7f7fa' :images="item.demo" :texts="item.texts" :note="'Tips:'+item.tips" @click="clickCard(item.url)">
 			</uni-card>
 		</block>
 	</view>
@@ -13,10 +13,10 @@
 		data() {
 			return {
 				info: [{
-				    title: '组件内使用示例',
-					images:'candle.png',
+				    title: '(v-for)组件内使用示例',
+					texts:'通过v-for生成组件的示例，支持不固定的图表类型，支持拖拽，支持动态更新组件图表。',
+					images:'rect.png',
 					url:'demo/component',
-					demo:'../../static/images/demo/demo2.png',
 					tips:'点击查看示例'
 				},{
 				    title: 'K线图与柱状图联动',

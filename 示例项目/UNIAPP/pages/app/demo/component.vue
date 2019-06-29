@@ -1,13 +1,8 @@
 <template>
-	<!-- TODO -->
-	<!-- 1、完善组件绑定拖拽事件x -->
-	<!-- 2、测试各类型组件渲染效果x -->
-	<!-- 3、测试异步接口数据渲染x -->
-	<!-- 4、测试更新组件数据 -->
 	<view>
 		<block v-for="(item, index) in arr" :key="index">
 			<view class="qiun-columns" style="background-color: #FFFFFF;">
-				<u-charts :canvas-id="item.id" :chartType="item.chartType" :opts="item.opts"></u-charts>
+				<u-charts :canvas-id="item.id" :chartType="item.chartType" :cWidth="cWidth" :cHeight="cHeight" :opts="item.opts" :ref="item.id"/>
 			</view>
 		</block>
 		<button class="qiun-button" @tap="changeData()">更新图表</button>
@@ -25,39 +20,9 @@
 		data() {
 			return {
 				textarea: '',
-				arr: [],
-				/*arr: [{
-						opts: {
-							"categories": ["2012", "2013", "2014", "2015", "2016", "2017"],
-							"series": [{
-								"name": "成交量A",
-								"data": [35, 8, 25, 37, 4, 20]
-							}, {
-								"name": "成交量B",
-								"data": [70, 40, 65, 100, 44, 68]
-							}, {
-								"name": "成交量C",
-								"data": [100, 80, 95, 150, 112, 132]
-							}]
-						},
-						chartType: "column",
-						id: "abc"
-					},
-					{
-						opts: {
-							"categories": ["2012", "2013", "2014", "2015", "2016", "2017"],
-							"series": [{
-								"name": "成交量A",
-								"data": [15, 8, 25, 37, 4, 20]
-							}, {
-								"name": "成交量B",
-								"data": [70, 40, 65, 100, 44, 68]
-							}]
-						},
-						chartType: "line",
-						id: "bcd"
-					}
-				]*/
+				cWidth:'',
+				cHeight:'',
+				arr: []
 			}
 		},
 		components: {
@@ -65,6 +30,8 @@
 		},
 		onLoad() {
 			_self = this;
+			this.cWidth=uni.upx2px(750);
+			this.cHeight=uni.upx2px(500);
 			this.getServerData();
 		},
 		methods: {
@@ -84,18 +51,18 @@
 							categories: [],
 							series: []
 						};
-						Column.categories = res.data.data.Column.categories;
-						Column.series = res.data.data.Column.series;
+						Column.categories = res.data.data.ColumnB.categories;
+						Column.series = res.data.data.ColumnB.series;
 
-						_self.textarea = JSON.stringify(res.data.data.ColumnB);
+						_self.textarea = JSON.stringify(res.data.data.LineA);
 
 						let serverData = [{
 							opts: LineA,
-							chartType: "column",
+							chartType: "line",
 							id: "abcc"
 						}, {
 							opts: Column,
-							chartType: "line",
+							chartType: "column",
 							id: "bcdd"
 						}];
 
@@ -107,17 +74,10 @@
 				});
 			},
 			changeData() {
-				if (isJSON(_self.textarea)) {
-					let newdata = JSON.parse(_self.textarea);
-					_self.arr[1].chartType = 'line';
-					_self.arr[1].opts = this.textarea;
-				} else {
-					uni.showToast({
-						title: '数据格式错误',
-						image: '../../../static/images/alert-warning.png'
-					});
-					console.log(_self.textarea);
-				}
+				//这里newdata仅做为演示，实际请先获取后台数据，再调用子组件changeData事件
+				let newdata = JSON.parse(_self.textarea);
+				//'bcdd'为之前后台获取的第二个图表的id，不是固定不变的
+				this.$refs.bcdd[0].changeData('bcdd',newdata)
 			}
 		}
 	}

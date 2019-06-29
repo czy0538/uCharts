@@ -163,7 +163,7 @@
 		},{
 			"path": "pages/app/demo/component",
 			"style": {
-				"navigationBarTitleText": "组件内使用示例",
+				"navigationBarTitleText": "(v-for)组件内使用示例",
 				"navigationBarTextStyle":"black"
 			}
 		},{
