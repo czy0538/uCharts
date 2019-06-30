@@ -800,8 +800,8 @@ function getRadarDataPoints(angleList, center, radius, series, opts) {
 	return data;
 }
 
-function getPieDataPoints(series) {
-	var process = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+function getPieDataPoints(series, radius) {
+	var process = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
 
 	var count = 0;
 	var _start_ = 0;
@@ -818,6 +818,7 @@ function getPieDataPoints(series) {
 		} else {
 			item._proportion_ = item.data / count * process;
 		}
+		item._radius_=radius;
 	}
 	for (let i = 0; i < series.length; i++) {
 		let item = series[i];
@@ -828,16 +829,22 @@ function getPieDataPoints(series) {
 	return series;
 }
 
-function getRoseDataPoints(series, type) {
-	var process = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-
+function getRoseDataPoints(series, type, minRadius, radius) {
+	var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
 	var count = 0;
 	var _start_ = 0;
+	
+	var dataArr=[];
 	for (let i = 0; i < series.length; i++) {
 		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
 		count += item.data;
+		dataArr.push(item.data);
 	}
+	var minData = dataArr.pop();
+	var maxData = dataArr.shift();
+	var radiusLength = radius - minRadius;
+	
 	for (let i = 0; i < series.length; i++) {
 		let item = series[i];
 		item.data = item.data === null ? 0 : item.data;
@@ -846,6 +853,7 @@ function getRoseDataPoints(series, type) {
 		} else {
 			item._proportion_ = item.data / count * process;
 		}
+		item._radius_ = minRadius + radiusLength * ( (item.data - minData)/(maxData-minData) );
 	}
 	for (let i = 0; i < series.length; i++) {
 		let item = series[i];
@@ -1405,7 +1413,7 @@ function drawRadarLabel(angleList, radius, centerPosition, opts, config, context
 }
 
 function drawPieText(series, opts, config, context, radius, center) {
-	var lineRadius = radius + config.pieChartLinePadding;
+	var lineRadius = config.pieChartLinePadding;
 	var textObjectCollection = [];
 	var lastTextObject = null;
 
@@ -1413,21 +1421,23 @@ function drawPieText(series, opts, config, context, radius, center) {
 		var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
 		var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
 		var color = item.color;
+		var radius = item._radius_;
 		return {
 			arc: arc,
 			text: text,
-			color: color
+			color: color,
+			radius: radius
 		};
 	});
 	for (let i = 0; i < seriesConvert.length; i++) {
 		let item = seriesConvert[i];
 		// line end
-		let orginX1 = Math.cos(item.arc) * lineRadius;
-		let orginY1 = Math.sin(item.arc) * lineRadius;
+		let orginX1 = Math.cos(item.arc) * (item.radius+lineRadius);
+		let orginY1 = Math.sin(item.arc) * (item.radius+lineRadius);
 
 		// line start
-		let orginX2 = Math.cos(item.arc) * radius;
-		let orginY2 = Math.sin(item.arc) * radius;
+		let orginX2 = Math.cos(item.arc) * item.radius;
+		let orginY2 = Math.sin(item.arc) * item.radius;
 
 		// text start
 		let orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
@@ -2768,7 +2778,6 @@ function drawPieDataPoints(series, opts, config, context) {
 	var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
 
 	var pieOption = opts.extra.pie || {};
-	series = getPieDataPoints(series, process);
 	var centerPosition = {
 		x: opts.width / 2,
 		y: (opts.height - config.legendHeight) / 2
@@ -2780,8 +2789,9 @@ function drawPieDataPoints(series, opts, config, context) {
 	} else {
 		radius -= 2 * config.padding;
 	}
+	series = getPieDataPoints(series, radius, process);
 
-	var activeRadius = radius + config.pieChartLinePadding / 2;
+	var activeRadius = config.pieChartLinePadding / 2;
 
 	series = series.map(function(eachSeries) {
 		eachSeries._start_ += (pieOption.offsetAngle || 0) * Math.PI / 180;
@@ -2793,7 +2803,7 @@ function drawPieDataPoints(series, opts, config, context) {
 				context.beginPath();
 				context.setFillStyle(hexToRgb(eachSeries.color, opts.extra.pie.activeOpacity || 0.5));
 				context.moveTo(centerPosition.x, centerPosition.y);
-				context.arc(centerPosition.x, centerPosition.y, activeRadius, eachSeries._start_, eachSeries._start_ + 2 *
+				context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_+activeRadius, eachSeries._start_, eachSeries._start_ + 2 *
 					eachSeries._proportion_ * Math.PI);
 				context.closePath();
 				context.fill();
@@ -2805,7 +2815,7 @@ function drawPieDataPoints(series, opts, config, context) {
 		context.setStrokeStyle('#ffffff');
 		context.setFillStyle(eachSeries.color);
 		context.moveTo(centerPosition.x, centerPosition.y);
-		context.arc(centerPosition.x, centerPosition.y, radius, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ *
+		context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ *
 			Math.PI);
 		context.closePath();
 		context.fill();
@@ -2858,7 +2868,6 @@ function drawRoseDataPoints(series, opts, config, context) {
 
 	var roseOption = opts.extra.rose || {};
 	roseOption.type = roseOption.type || 'area';
-	series = getRoseDataPoints(series, roseOption.type, process);
 	var centerPosition = {
 		x: opts.width / 2,
 		y: (opts.height - config.legendHeight) / 2
@@ -2870,24 +2879,25 @@ function drawRoseDataPoints(series, opts, config, context) {
 	} else {
 		radius -= 2 * config.padding;
 	}
+	var minRadius = roseOption.minRadius || radius*0.5;
+	
+	series = getRoseDataPoints(series, roseOption.type, minRadius, radius, process);
 
-	var activeRadius = radius + config.pieChartLinePadding / 2;
+	var activeRadius = config.pieChartLinePadding / 2;
 
 
 	series = series.map(function(eachSeries) {
 		eachSeries._start_ += (roseOption.offsetAngle || 0) * Math.PI / 180;
 		return eachSeries;
 	});
-	console.log(series)
-
+	
 	series.forEach(function(eachSeries, seriesIndex) {
 		if (opts.tooltip) {
 			if (opts.tooltip.index == seriesIndex) {
 				context.beginPath();
 				context.setFillStyle(hexToRgb(eachSeries.color, roseOption.activeOpacity || 0.5));
 				context.moveTo(centerPosition.x, centerPosition.y);
-				context.arc(centerPosition.x, centerPosition.y, activeRadius, eachSeries._start_, eachSeries._start_ + 2 *
-					eachSeries._proportion_ * Math.PI);
+				context.arc(centerPosition.x, centerPosition.y, activeRadius+eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ * Math.PI);
 				context.closePath();
 				context.fill();
 			}
@@ -2898,8 +2908,7 @@ function drawRoseDataPoints(series, opts, config, context) {
 		context.setStrokeStyle('#ffffff');
 		context.setFillStyle(eachSeries.color);
 		context.moveTo(centerPosition.x, centerPosition.y);
-		context.arc(centerPosition.x, centerPosition.y, radius, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ *
-			Math.PI);
+		context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_ , eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ *Math.PI);
 		context.closePath();
 		context.fill();
 		if (opts.disablePieStroke !== true) {
@@ -2919,7 +2928,7 @@ function drawRoseDataPoints(series, opts, config, context) {
 		}
 
 		if (valid) {
-			//drawPieText(series, opts, config, context, radius, centerPosition);
+			drawPieText(series, opts, config, context, radius, centerPosition);
 		}
 	}
 
@@ -3327,7 +3336,7 @@ function drawCharts(type, opts, config, context) {
 		config.xAxisHeight = xAxisHeight;
 		config._xAxisTextAngle_ = angle;
 	}
-	if (type === 'pie' || type === 'ring') {
+	if (type === 'pie' || type === 'ring' || type === 'rose') {
 		config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(series);
 	}
 
@@ -3481,7 +3490,7 @@ function drawCharts(type, opts, config, context) {
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
-					_this.chartData.roseData = drawRoseDataPoints(series, opts, config, context, process);
+					_this.chartData.pieData = drawRoseDataPoints(series, opts, config, context, process);
 					drawLegend(opts.series, opts, config, context);
 					drawToolTipBridge(opts, config, context, process);
 					drawCanvas(opts, context);
@@ -3626,9 +3635,8 @@ var Charts = function Charts(opts) {
 	opts.animation = opts.animation === false ? false : true;
 	var config$$1 = assign({}, config);
 	config$$1.yAxisTitleWidth = opts.yAxis.disabled !== true && opts.yAxis.title ? config$$1.yAxisTitleWidth : 0;
-	if (opts.type == 'pie' || opts.type == 'ring') {
-		config$$1.pieChartLinePadding = opts.dataLabel === false ? 0 : opts.extra.pie.lableWidth || config$$1.pieChartLinePadding *
-			opts.pixelRatio;
+	if (opts.type == 'pie' || opts.type == 'ring' ) {
+		config$$1.pieChartLinePadding = opts.dataLabel === false ? 0 : opts.extra.pie.lableWidth*opts.pixelRatio || config$$1.pieChartLinePadding *opts.pixelRatio;
 	}
 	config$$1.pieChartTextPadding = opts.dataLabel === false ? 0 : config$$1.pieChartTextPadding * opts.pixelRatio;
 	config$$1.yAxisSplit = opts.yAxis.splitNumber ? opts.yAxis.splitNumber : config.yAxisSplit;
@@ -3910,7 +3918,7 @@ Charts.prototype.showToolTip = function(e) {
 		}
 		drawCharts.call(this, opts.type, opts, this.config, this.context);
 	}
-	if (this.opts.type === 'pie' || this.opts.type === 'ring') {
+	if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
 		var index = this.getCurrentDataIndex(e);
 		var currentOffset = this.scrollOption.currentOffset;
 
