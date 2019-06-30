@@ -9,7 +9,7 @@
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">玫瑰图</view>
+			<view class="qiun-title-dot-light">玫瑰图(面积模式)</view>
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
@@ -17,6 +17,17 @@
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
 			<canvas canvas-id="canvasPie" id="canvasPie" class="charts" @touchstart="touchPie"></canvas>
+			<!--#endif-->
+		</view>
+		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
+			<view class="qiun-title-dot-light">玫瑰图(半径模式)</view>
+		</view>
+		<view class="qiun-charts" >
+			<!--#ifdef MP-ALIPAY -->
+			<canvas canvas-id="canvasRose" id="canvasRose" class="charts" :style="{'width':cWidth*pixelRatio+'px','height':cHeight*pixelRatio+'px', 'transform': 'scale('+(1/pixelRatio)+')','margin-left':-cWidth*(pixelRatio-1)/2+'px','margin-top':-cHeight*(pixelRatio-1)/2+'px'}" @touchstart="touchRose"></canvas>
+			<!--#endif-->
+			<!--#ifndef MP-ALIPAY -->
+			<canvas canvas-id="canvasRose" id="canvasRose" class="charts" @touchstart="touchRose"></canvas>
 			<!--#endif-->
 		</view>
 		<!--#ifdef H5 -->
@@ -37,7 +48,8 @@
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
 	var canvaPie=null;
-   
+	var canvaRose=null;
+	
 	export default {
 		data() {
 			return {
@@ -77,6 +89,7 @@
 						Pie.series=res.data.data.Pie.series;
 						_self.textarea = JSON.stringify(res.data.data.Pie);
 						_self.showPie("canvasPie",Pie);
+						_self.showRose("canvasRose",Pie);
 					},
 					fail: () => {
 						_self.tips="网络错误，小程序端请检查合法域名";
@@ -87,7 +100,7 @@
 				canvaPie=new uCharts({
 					$this:_self,
 					canvasId: canvasId,
-					type: 'pie',
+					type: 'rose',
 					fontSize:11,
 					legend:true,
 					background:'#FFFFFF',
@@ -98,7 +111,7 @@
 					height: _self.cHeight*_self.pixelRatio,
 					dataLabel: true,
 					extra: {
-						pie: {
+						rose: {
 							type:'area',
 							minRadius:50,
 							activeOpacity:0.5,
@@ -115,10 +128,46 @@
 					}
 				});
 			},
+			showRose(canvasId,chartData){
+				canvaRose=new uCharts({
+					$this:_self,
+					canvasId: canvasId,
+					type: 'rose',
+					fontSize:11,
+					legend:true,
+					background:'#FFFFFF',
+					pixelRatio:_self.pixelRatio,
+					series: chartData.series,
+					animation: true,
+					width: _self.cWidth*_self.pixelRatio,
+					height: _self.cHeight*_self.pixelRatio,
+					dataLabel: true,
+					extra: {
+						rose: {
+							type:'radius',
+							minRadius:50,
+							activeOpacity:0.5,
+							offsetAngle:0,
+							lableWidth:15
+						}
+					},
+				});
+			},
+			touchRose(e){
+				canvaRose.showToolTip(e, {
+					format: function (item) {
+						return item.name + ':' + item.data 
+					}
+				});
+			},
 			changeData(){
 				if(isJSON(_self.textarea)){
 					let newdata=JSON.parse(_self.textarea);
 					canvaPie.updateData({
+						series: newdata.series,
+						categories: newdata.categories
+					});
+					canvaRose.updateData({
 						series: newdata.series,
 						categories: newdata.categories
 					});
