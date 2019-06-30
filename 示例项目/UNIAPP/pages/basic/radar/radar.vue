@@ -13,10 +13,10 @@
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasRadar" id="canvasRadar" class="charts" :style="{'width':cWidth*pixelRatio+'px','height':cHeight*pixelRatio+'px', 'transform': 'scale('+(1/pixelRatio)+')','margin-left':-cWidth*(pixelRatio-1)/2+'px','margin-top':-cHeight*(pixelRatio-1)/2+'px'}"></canvas>
+			<canvas canvas-id="canvasRadar" id="canvasRadar" class="charts" :style="{'width':cWidth*pixelRatio+'px','height':cHeight*pixelRatio+'px', 'transform': 'scale('+(1/pixelRatio)+')','margin-left':-cWidth*(pixelRatio-1)/2+'px','margin-top':-cHeight*(pixelRatio-1)/2+'px'}" @touchstart="touchRadar"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasRadar" id="canvasRadar" class="charts"></canvas>
+			<canvas canvas-id="canvasRadar" id="canvasRadar" class="charts" @touchstart="touchRadar"></canvas>
 			<!--#endif-->
 		</view>
 		<!--#ifdef H5 -->
@@ -101,6 +101,13 @@
 						radar: {
 							max: 200//雷达数值的最大值
 						}
+					}
+				});
+			},
+			touchRadar(e){
+				canvaRadar.showToolTip(e, {
+					format: function (item) {
+						return item.name + ':' + item.data 
 					}
 				});
 			},

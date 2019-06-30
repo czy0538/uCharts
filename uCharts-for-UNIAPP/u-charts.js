@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190626
+ * uCharts v1.7.0.20190630
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -3136,12 +3136,11 @@ function drawRadarDataPoints(series, opts, config, context) {
 	context.beginPath();
 	context.setLineWidth(1 * opts.pixelRatio);
 	context.setStrokeStyle(radarOption.gridColor || "#cccccc");
-	for (let i = 0; i < coordinateAngle.length; i++) {
-		let angle = coordinateAngle[i];
-		let pos = convertCoordinateOrigin(radius * Math.cos(angle), radius * Math.sin(angle), centerPosition);
-		context.moveTo(centerPosition.x, centerPosition.y);
-		context.lineTo(pos.x, pos.y);
-	}
+	coordinateAngle.forEach(function (angle) {
+	    var pos = convertCoordinateOrigin(radius * Math.cos(angle), radius * Math.sin(angle), centerPosition);
+	    context.moveTo(centerPosition.x, centerPosition.y);
+	    context.lineTo(pos.x, pos.y);
+	});
 	context.stroke();
 	context.closePath();
 
@@ -3152,17 +3151,15 @@ function drawRadarDataPoints(series, opts, config, context) {
 		context.beginPath();
 		context.setLineWidth(1 * opts.pixelRatio);
 		context.setStrokeStyle(radarOption.gridColor || "#cccccc");
-		for (let i = 0; i < coordinateAngle.length; i++) {
-			let angle = coordinateAngle[i];
-			var pos = convertCoordinateOrigin(radius / config.radarGridCount * i * Math.cos(angle), radius / config.radarGridCount *
-				i * Math.sin(angle), centerPosition);
-			if (i === 0) {
-				startPos = pos;
-				context.moveTo(pos.x, pos.y);
-			} else {
-				context.lineTo(pos.x, pos.y);
-			}
-		}
+		coordinateAngle.forEach(function (angle, index) {
+		    var pos = convertCoordinateOrigin(radius / config.radarGridCount * i * Math.cos(angle), radius / config.radarGridCount * i * Math.sin(angle), centerPosition);
+		    if (index === 0) {
+		        startPos = pos;
+		        context.moveTo(pos.x, pos.y);
+		    } else {
+		        context.lineTo(pos.x, pos.y);
+		    }
+		});
 		context.lineTo(startPos.x, startPos.y);
 		context.stroke();
 		context.closePath();
@@ -3504,6 +3501,7 @@ function drawCharts(type, opts, config, context) {
 					}
 					_this.chartData.radarData = drawRadarDataPoints(series, opts, config, context, process);
 					drawLegend(opts.series, opts, config, context);
+					drawToolTipBridge(opts, config, context, process);
 					drawCanvas(opts, context);
 				},
 				onAnimationFinish: function onAnimationFinish() {
@@ -3806,7 +3804,7 @@ Charts.prototype.addEventListener = function(type, listener) {
 };
 
 Charts.prototype.getCurrentDataIndex = function(e) {
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	if (touches) {
 		var _touches$ = getTouches(touches, this.opts, e);
 		if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
@@ -3831,7 +3829,7 @@ Charts.prototype.getCurrentDataIndex = function(e) {
 
 Charts.prototype.showToolTip = function(e) {
 	var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 
 	if (this.opts.type === 'line' || this.opts.type === 'area' || this.opts.type === 'column') {
@@ -3872,8 +3870,7 @@ Charts.prototype.showToolTip = function(e) {
 		if (index > -1) {
 			var seriesData = getSeriesDataItem(this.opts.series, index);
 			if (seriesData.length !== 0) {
-				var _getMixToolTipData = getMixToolTipData(seriesData, this.chartData.calPoints, index, this.opts.categories,
-						option),
+				var _getMixToolTipData = getMixToolTipData(seriesData, this.chartData.calPoints, index, this.opts.categories,option),
 					textList = _getMixToolTipData.textList,
 					offset = _getMixToolTipData.offset;
 				offset.y = _touches$.y;
@@ -3899,8 +3896,7 @@ Charts.prototype.showToolTip = function(e) {
 		if (index > -1) {
 			var seriesData = getSeriesDataItem(this.opts.series, index);
 			if (seriesData.length !== 0) {
-				var _getToolTipData = getCandleToolTipData(this.opts.series[0].data, seriesData, this.chartData.calPoints, index,
-						this.opts.categories, this.opts.extra.candle, option),
+				var _getToolTipData = getCandleToolTipData(this.opts.series[0].data, seriesData, this.chartData.calPoints, index,this.opts.categories, this.opts.extra.candle, option),
 					textList = _getToolTipData.textList,
 					offset = _getToolTipData.offset;
 				offset.y = _touches$.y;
@@ -3943,6 +3939,38 @@ Charts.prototype.showToolTip = function(e) {
 		}
 		drawCharts.call(this, opts.type, opts, this.config, this.context);
 	}
+	if (this.opts.type === 'radar') {
+		var index = this.getCurrentDataIndex(e);
+		var currentOffset = this.scrollOption.currentOffset;
+	
+		var opts = assign({}, this.opts, {
+			_scrollDistance_: currentOffset,
+			animation: false
+		});
+		if (index > -1) {
+	
+			var seriesData = getSeriesDataItem(this.opts.series, index);
+			if (seriesData.length !== 0) {
+				var textList = seriesData.map(function(item) {
+						return {
+							text: option.format ? option.format(item) : item.name + ': ' + item.data,
+							color: item.color
+						};
+				});
+				var offset = {
+					x: _touches$.x,
+					y: _touches$.y
+				};
+				opts.tooltip = {
+					textList: textList,
+					offset: offset,
+					option: option,
+					index: index
+				};
+			}
+		}
+		drawCharts.call(this, opts.type, opts, this.config, this.context);
+	}
 };
 
 Charts.prototype.translate = function(distance) {
@@ -3960,7 +3988,7 @@ Charts.prototype.translate = function(distance) {
 };
 
 Charts.prototype.scrollStart = function(e) {
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		if (touches.x) {
@@ -3982,7 +4010,7 @@ Charts.prototype.scroll = function(e) {
 
 	this.scrollOption.lastMoveTime = currMoveTime;
 
-	var touches = e.changedTouches[0];
+	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		var _distance;
