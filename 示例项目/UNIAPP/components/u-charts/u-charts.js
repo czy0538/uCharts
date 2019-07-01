@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190630
+ * uCharts v1.7.0.20190701
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1329,20 +1329,18 @@ function drawRingTitle(opts, config, context) {
 function drawPointText(points, series, config, context) {
 	// 绘制数据文案
 	var data = series.data;
-	var textColor = series.textColor == undefined ? '#666666' : series.textColor;
-
 	points.forEach(function(item, index) {
 		if (item !== null) {
 			//var formatVal = series.format ? series.format(data[index]) : data[index];
 			context.beginPath();
-			context.setFontSize(config.fontSize);
-			context.setFillStyle(textColor);
+			context.setFontSize(series.textSize || config.fontSize);
+			context.setFillStyle(series.textColor || '#666666');
 			var value = data[index]
 			if (typeof data[index] === 'object' && data[index] !== null) {
 				value = data[index].value
 			}
 			var formatVal = series.format ? series.format(value) : value;
-			context.fillText(formatVal, item.x - measureText(formatVal) / 2, item.y - 2);
+			context.fillText(formatVal, item.x - measureText(formatVal,series.textSize || config.fontSize) / 2, item.y - 2);
 			context.closePath();
 			context.stroke();
 		}
@@ -2552,14 +2550,14 @@ function drawXAxis(categories, opts, config, context) {
 			return index % ratio !== 0 ? '' : item;
 		});*/
 
-
+		var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
 		if (config._xAxisTextAngle_ === 0) {
 			newCategories.forEach(function(item, index) {
-				var offset = eachSpacing / 2 - measureText(item) / 2;
+				var offset = eachSpacing / 2 - measureText(item,xAxisFontSize) / 2;
 				context.beginPath();
-				context.setFontSize(config.fontSize);
+				context.setFontSize(xAxisFontSize);
 				context.setFillStyle(opts.xAxis.fontColor || '#666666');
-				context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
+				context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
 				context.closePath();
 				context.stroke();
 			});
@@ -2568,19 +2566,18 @@ function drawXAxis(categories, opts, config, context) {
 			newCategories.forEach(function(item, index) {
 				context.save();
 				context.beginPath();
-				context.setFontSize(config.fontSize);
+				context.setFontSize(xAxisFontSize);
 				context.setFillStyle(opts.xAxis.fontColor || '#666666');
 				var textWidth = measureText(item);
 				var offset = eachSpacing / 2 - textWidth;
 
-				var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + config.fontSize / 2 +
-						5, opts.height),
+				var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
 					transX = _calRotateTranslate.transX,
 					transY = _calRotateTranslate.transY;
 
 				context.rotate(-1 * config._xAxisTextAngle_);
 				context.translate(transX, transY);
-				context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
+				context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
 				context.closePath();
 				context.stroke();
 				context.restore();
@@ -2665,13 +2662,13 @@ function drawYAxis(series, opts, config, context) {
 		points.push(config.padding + eachSpacing * i);
 	}
 
-
+	var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
 	rangesFormat.forEach(function(item, index) {
 		var pos = points[index] ? points[index] : endY;
 		context.beginPath();
-		context.setFontSize(config.fontSize);
+		context.setFontSize(yAxisFontSize);
 		context.setFillStyle(opts.yAxis.fontColor || '#666666');
-		context.fillText(item, config.padding + config.yAxisTitleWidth, pos + config.fontSize / 2);
+		context.fillText(item, config.padding + config.yAxisTitleWidth, pos + yAxisFontSize / 2);
 		context.closePath();
 		context.stroke();
 	});
