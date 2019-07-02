@@ -109,6 +109,13 @@ var util = {
 	}
 };
 
+//兼容H5点击事件
+function getH5Offset(e) {
+	e.mp={changedTouches:[]};
+	e.mp.changedTouches.push({x:e.offsetX,y:e.offsetY});
+	return e;
+}
+
 // hex 转 rgba
 function hexToRgb(hexValue, opc) {
 	var rgx = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -3353,6 +3360,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3383,6 +3391,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3412,6 +3421,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3439,6 +3449,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3469,6 +3480,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3487,6 +3499,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3505,6 +3518,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3523,6 +3537,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3539,6 +3554,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3555,6 +3571,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3676,6 +3693,12 @@ var Charts = function Charts(opts) {
 	this.config = config$$1;
 	opts.$this = opts.$this ? opts.$this : this;
 	this.context = document.getElementById(opts.canvasId).getContext("2d");
+	this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }
+	this.context.setLineWidth = function(e){ return this.lineWidth=e; }
+	this.context.setLineCap = function(e){ return this.lineCap=e; }
+	this.context.setFontSize = function(e){ return this.font=e+"px sans-serif"; }
+	this.context.setFillStyle = function(e){ return this.fillStyle=e; }
+	this.context.draw = function(){ }
 	// store calcuated chart data
 	// such as chart point coordinate
 	this.chartData = {};
@@ -4051,5 +4074,3 @@ Charts.prototype.scrollEnd = function(e) {
 		this.scrollOption.distance = 0;
 	}
 };
-
-module.exports = Charts;

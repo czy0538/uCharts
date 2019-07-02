@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190701
+ * uCharts v1.7.0.20190702
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -108,6 +108,13 @@ var util = {
 		return !flag;
 	}
 };
+
+//兼容H5点击事件
+function getH5Offset(e) {
+	e.mp={changedTouches:[]};
+	e.mp.changedTouches.push({x:e.offsetX,y:e.offsetY});
+	return e;
+}
 
 // hex 转 rgba
 function hexToRgb(hexValue, opc) {
@@ -3350,6 +3357,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3380,6 +3388,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3409,6 +3418,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3436,6 +3446,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3466,6 +3477,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3484,6 +3496,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3502,6 +3515,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3520,6 +3534,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3536,6 +3551,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeInOut',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3552,6 +3568,7 @@ function drawCharts(type, opts, config, context) {
 				timing: 'easeIn',
 				duration: duration,
 				onProcess: function onProcess(process) {
+					context.clearRect(0, 0, opts.width, opts.height);
 					if (opts.rotate) {
 						contextRotate(context, opts);
 					}
@@ -3673,8 +3690,15 @@ var Charts = function Charts(opts) {
 	this.config = config$$1;
 	opts.$this = opts.$this ? opts.$this : this;
 	this.context = uni.createCanvasContext(opts.canvasId, opts.$this);
-	// store calcuated chart data
-	// such as chart point coordinate
+	/* 兼容原生H5
+	this.context = document.getElementById(opts.canvasId).getContext("2d");
+	this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }
+	this.context.setLineWidth = function(e){ return this.lineWidth=e; }
+	this.context.setLineCap = function(e){ return this.lineCap=e; }
+	this.context.setFontSize = function(e){ return this.font=e+"px sans-serif"; }
+	this.context.setFillStyle = function(e){ return this.fillStyle=e; }
+	this.context.draw = function(){ }
+	*/
 	this.chartData = {};
 	this.event = new Event();
 
