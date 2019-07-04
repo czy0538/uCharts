@@ -56,7 +56,7 @@ function showLineA(canvasId,chartData){
 			splitNumber:5,
 			min:10,
 			max:180,
-			format:(val)=>{return val.toFixed(0)+'元'}
+			format:function(val){return val.toFixed(0)+'元'}
 		},
 		width:600,
 		height:400,

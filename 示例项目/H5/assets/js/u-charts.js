@@ -1154,10 +1154,10 @@ function getYAxisTextList(series, opts, config, stack) {
 	});
 	//var minData = Math.min.apply(this, data);
 	//var maxData = Math.max.apply(this, data);
-	data.map((item) => {
+	data.map(function(item) {
 		if (typeof item === 'object') {
 			if (item.constructor == Array) {
-				item.map((subitem) => {
+				item.map(function(subitem) {
 					sorted.push(subitem);
 				})
 			} else {
