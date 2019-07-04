@@ -3344,7 +3344,7 @@ function drawCharts(type, opts, config, context) {
 		config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(series);
 	}
 
-	var duration = opts.animation ? 1000 : 0;
+	var duration = opts.animation ? opts.duration : 0;
 	this.animationInstance && this.animationInstance.stop();
 
 	//先清空画布,不然百度和支付宝ToolTip有重影
