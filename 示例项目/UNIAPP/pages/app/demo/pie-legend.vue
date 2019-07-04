@@ -4,7 +4,7 @@
 			<view class="qiun-title-dot-light">饼图右侧图例</view>
 		</view>
 		<view class="qiun-charts qiun-rows" >
-			<canvas canvas-id="canvasPie" id="canvasPie" class="charts-pie" @touchstart="touchPie"></canvas>
+			<canvas canvas-id="canvasPie" id="canvasPie" class="charts-pie" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchPie"></canvas>
 			<view class="qiun-bg-white charts-right">
 				<view>
 					<block v-for="(item, index) in piearr" :key="index">

@@ -13,7 +13,7 @@
 		</view>
 		<view class="qiun-charts-rotate" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts-rotate" :style="{'width':cWidth2*pixelRatio+'px','height':cHeight2*pixelRatio+'px', 'transform': 'scale('+(1/pixelRatio)+')','margin-left':-cWidth2*(pixelRatio-1)/2+'px','margin-top':-cHeight2*(pixelRatio-1)/2+'px'}" @touchstart="touchColumn"></canvas>
+			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts-rotate" :width="cWidth2*pixelRatio" :height="cHeight2*pixelRatio" :style="{'width':cWidth2+'px','height':cHeight2+'px'}" @touchstart="touchColumn"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
 			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts-rotate" @touchstart="touchColumn"></canvas>
