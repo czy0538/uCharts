@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190702
+ * uCharts v1.7.0.20190704
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1154,10 +1154,10 @@ function getYAxisTextList(series, opts, config, stack) {
 	});
 	//var minData = Math.min.apply(this, data);
 	//var maxData = Math.max.apply(this, data);
-	data.map((item) => {
+	data.map(function(item) {
 		if (typeof item === 'object') {
 			if (item.constructor == Array) {
-				item.map((subitem) => {
+				item.map(function(subitem) {
 					sorted.push(subitem);
 				})
 			} else {
