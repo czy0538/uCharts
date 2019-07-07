@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190630
+ * uCharts v1.7.0.20190707
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1336,20 +1336,18 @@ function drawRingTitle(opts, config, context) {
 function drawPointText(points, series, config, context) {
 	// 绘制数据文案
 	var data = series.data;
-	var textColor = series.textColor == undefined ? '#666666' : series.textColor;
-
 	points.forEach(function(item, index) {
 		if (item !== null) {
 			//var formatVal = series.format ? series.format(data[index]) : data[index];
 			context.beginPath();
-			context.setFontSize(config.fontSize);
-			context.setFillStyle(textColor);
+			context.setFontSize(series.textSize || config.fontSize);
+			context.setFillStyle(series.textColor || '#666666');
 			var value = data[index]
 			if (typeof data[index] === 'object' && data[index] !== null) {
 				value = data[index].value
 			}
 			var formatVal = series.format ? series.format(value) : value;
-			context.fillText(formatVal, item.x - measureText(formatVal) / 2, item.y - 2);
+			context.fillText(formatVal, item.x - measureText(formatVal,series.textSize || config.fontSize) / 2, item.y - 2);
 			context.closePath();
 			context.stroke();
 		}
@@ -1433,7 +1431,9 @@ function drawPieText(series, opts, config, context, radius, center) {
 			arc: arc,
 			text: text,
 			color: color,
-			radius: radius
+			radius: radius,
+			textColor: item.textColor,
+			textSize: item.textSize,
 		};
 	});
 	for (let i = 0; i < seriesConvert.length; i++) {
@@ -1449,7 +1449,6 @@ function drawPieText(series, opts, config, context, radius, center) {
 		// text start
 		let orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
 		let orginY3 = orginY1;
-
 		let textWidth = measureText(item.text);
 		let startY = orginY3;
 
@@ -1468,7 +1467,6 @@ function drawPieText(series, opts, config, context, radius, center) {
 				}
 			}
 		}
-
 		if (orginX3 < 0) {
 			orginX3 -= textWidth;
 		}
@@ -1489,9 +1487,10 @@ function drawPieText(series, opts, config, context, radius, center) {
 			width: textWidth,
 			height: config.fontSize,
 			text: item.text,
-			color: item.color
+			color: item.color,
+			textColor: item.textColor,
+			textSize: item.textSize
 		};
-
 		lastTextObject = avoidCollision(textObject, lastTextObject);
 		textObjectCollection.push(lastTextObject);
 	}
@@ -1519,8 +1518,8 @@ function drawPieText(series, opts, config, context, radius, center) {
 		context.closePath();
 		context.fill();
 		context.beginPath();
-		context.setFontSize(config.fontSize);
-		context.setFillStyle('#666666');
+		context.setFontSize(item.textSize||config.fontSize);
+		context.setFillStyle(item.textColor||'#666666');
 		context.fillText(item.text, textStartX, textPosition.y + 3);
 		context.closePath();
 		context.stroke();
@@ -2525,21 +2524,15 @@ function drawXAxis(categories, opts, config, context) {
 		let validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth;
 		//默认全部显示X轴标签
 		let maxXAxisListLength = categories.length;
-		//如果不旋转X轴文案
-		if (config._xAxisTextAngle_ === 0) {
-			//如果设置了X轴单屏数量
-			if (opts.xAxis.labelCount) {
-				//如果设置X轴密度
-				if (opts.xAxis.itemCount) {
-					maxXAxisListLength = Math.ceil(categories.length / opts.xAxis.itemCount * opts.xAxis.labelCount);
-				} else {
-					maxXAxisListLength = opts.xAxis.labelCount;
-				}
-				maxXAxisListLength -= 1;
+		//如果设置了X轴单屏数量
+		if (opts.xAxis.labelCount) {
+			//如果设置X轴密度
+			if (opts.xAxis.itemCount) {
+				maxXAxisListLength = Math.ceil(categories.length / opts.xAxis.itemCount * opts.xAxis.labelCount);
+			} else {
+				maxXAxisListLength = opts.xAxis.labelCount;
 			}
-		} else {
-			//旋转标签文案
-			maxXAxisListLength = Math.min(categories.length, Math.ceil(validWidth / config.fontSize / 1.5));
+			maxXAxisListLength -= 1;
 		}
 
 		let ratio = Math.ceil(categories.length / maxXAxisListLength);
@@ -2559,14 +2552,14 @@ function drawXAxis(categories, opts, config, context) {
 			return index % ratio !== 0 ? '' : item;
 		});*/
 
-
+		var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
 		if (config._xAxisTextAngle_ === 0) {
 			newCategories.forEach(function(item, index) {
-				var offset = eachSpacing / 2 - measureText(item) / 2;
+				var offset = eachSpacing / 2 - measureText(item,xAxisFontSize) / 2;
 				context.beginPath();
-				context.setFontSize(config.fontSize);
+				context.setFontSize(xAxisFontSize);
 				context.setFillStyle(opts.xAxis.fontColor || '#666666');
-				context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
+				context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
 				context.closePath();
 				context.stroke();
 			});
@@ -2575,19 +2568,18 @@ function drawXAxis(categories, opts, config, context) {
 			newCategories.forEach(function(item, index) {
 				context.save();
 				context.beginPath();
-				context.setFontSize(config.fontSize);
+				context.setFontSize(xAxisFontSize);
 				context.setFillStyle(opts.xAxis.fontColor || '#666666');
 				var textWidth = measureText(item);
 				var offset = eachSpacing / 2 - textWidth;
 
-				var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + config.fontSize / 2 +
-						5, opts.height),
+				var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
 					transX = _calRotateTranslate.transX,
 					transY = _calRotateTranslate.transY;
 
 				context.rotate(-1 * config._xAxisTextAngle_);
 				context.translate(transX, transY);
-				context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
+				context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
 				context.closePath();
 				context.stroke();
 				context.restore();
@@ -2672,13 +2664,13 @@ function drawYAxis(series, opts, config, context) {
 		points.push(config.padding + eachSpacing * i);
 	}
 
-
+	var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
 	rangesFormat.forEach(function(item, index) {
 		var pos = points[index] ? points[index] : endY;
 		context.beginPath();
-		context.setFontSize(config.fontSize);
+		context.setFontSize(yAxisFontSize);
 		context.setFillStyle(opts.yAxis.fontColor || '#666666');
-		context.fillText(item, config.padding + config.yAxisTitleWidth, pos + config.fontSize / 2);
+		context.fillText(item, config.padding + config.yAxisTitleWidth, pos + yAxisFontSize / 2);
 		context.closePath();
 		context.stroke();
 	});
@@ -3347,7 +3339,7 @@ function drawCharts(type, opts, config, context) {
 		config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(series);
 	}
 
-	var duration = opts.animation ? 1000 : 0;
+	var duration = opts.animation ? opts.duration : 0;
 	this.animationInstance && this.animationInstance.stop();
 
 	//先清空画布,不然百度和支付宝ToolTip有重影
@@ -3699,8 +3691,6 @@ var Charts = function Charts(opts) {
 	this.context.setFontSize = function(e){ return this.font=e+"px sans-serif"; }
 	this.context.setFillStyle = function(e){ return this.fillStyle=e; }
 	this.context.draw = function(){ }
-	// store calcuated chart data
-	// such as chart point coordinate
 	this.chartData = {};
 	this.event = new Event();
 
@@ -4074,3 +4064,5 @@ Charts.prototype.scrollEnd = function(e) {
 		this.scrollOption.distance = 0;
 	}
 };
+
+module.exports = Charts;
