@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190704
+ * uCharts v1.7.0.20190707
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1431,7 +1431,9 @@ function drawPieText(series, opts, config, context, radius, center) {
 			arc: arc,
 			text: text,
 			color: color,
-			radius: radius
+			radius: radius,
+			textColor: item.textColor,
+			textSize: item.textSize,
 		};
 	});
 	for (let i = 0; i < seriesConvert.length; i++) {
@@ -1447,7 +1449,6 @@ function drawPieText(series, opts, config, context, radius, center) {
 		// text start
 		let orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
 		let orginY3 = orginY1;
-
 		let textWidth = measureText(item.text);
 		let startY = orginY3;
 
@@ -1466,7 +1467,6 @@ function drawPieText(series, opts, config, context, radius, center) {
 				}
 			}
 		}
-
 		if (orginX3 < 0) {
 			orginX3 -= textWidth;
 		}
@@ -1487,9 +1487,10 @@ function drawPieText(series, opts, config, context, radius, center) {
 			width: textWidth,
 			height: config.fontSize,
 			text: item.text,
-			color: item.color
+			color: item.color,
+			textColor: item.textColor,
+			textSize: item.textSize
 		};
-
 		lastTextObject = avoidCollision(textObject, lastTextObject);
 		textObjectCollection.push(lastTextObject);
 	}
@@ -1517,8 +1518,8 @@ function drawPieText(series, opts, config, context, radius, center) {
 		context.closePath();
 		context.fill();
 		context.beginPath();
-		context.setFontSize(config.fontSize);
-		context.setFillStyle('#666666');
+		context.setFontSize(item.textSize||config.fontSize);
+		context.setFillStyle(item.textColor||'#666666');
 		context.fillText(item.text, textStartX, textPosition.y + 3);
 		context.closePath();
 		context.stroke();
@@ -2523,21 +2524,15 @@ function drawXAxis(categories, opts, config, context) {
 		let validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth;
 		//默认全部显示X轴标签
 		let maxXAxisListLength = categories.length;
-		//如果不旋转X轴文案
-		if (config._xAxisTextAngle_ === 0) {
-			//如果设置了X轴单屏数量
-			if (opts.xAxis.labelCount) {
-				//如果设置X轴密度
-				if (opts.xAxis.itemCount) {
-					maxXAxisListLength = Math.ceil(categories.length / opts.xAxis.itemCount * opts.xAxis.labelCount);
-				} else {
-					maxXAxisListLength = opts.xAxis.labelCount;
-				}
-				maxXAxisListLength -= 1;
+		//如果设置了X轴单屏数量
+		if (opts.xAxis.labelCount) {
+			//如果设置X轴密度
+			if (opts.xAxis.itemCount) {
+				maxXAxisListLength = Math.ceil(categories.length / opts.xAxis.itemCount * opts.xAxis.labelCount);
+			} else {
+				maxXAxisListLength = opts.xAxis.labelCount;
 			}
-		} else {
-			//旋转标签文案
-			maxXAxisListLength = Math.min(categories.length, Math.ceil(validWidth / config.fontSize / 1.5));
+			maxXAxisListLength -= 1;
 		}
 
 		let ratio = Math.ceil(categories.length / maxXAxisListLength);
