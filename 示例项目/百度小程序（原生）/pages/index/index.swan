@@ -1,0 +1,4 @@
+<!-- index.swan -->
+<view class="qiun-charts">
+    <canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" bindtouchend="touchColumn"></canvas>
+</view>
