@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190707
+ * uCharts v1.7.0.20190709
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -2387,18 +2387,20 @@ function drawMixDataPoints(series, opts, config, context) {
 		// 绘制点数据图
 		if (eachSeries.type == 'point') {
 			var splitPointList = splitPoints(points);
-			splitPointList.forEach(function(points, index) {
+			splitPointList[0].forEach(function(pointsa, index) {
 				context.beginPath();
-				context.setStrokeStyle(eachSeries.color);
-				context.setLineWidth(2 * opts.pixelRatio);
-				context.moveTo(points[0].x, points[0].y);
-				context.arc(points[0].x, points[0].y, 1, 0, 2 * Math.PI);
+				context.setFillStyle(eachSeries.color);
+				context.setStrokeStyle('#FFFFFF');
+				context.setLineWidth(1 * opts.pixelRatio);
+				context.moveTo(pointsa.x + 3.5 * opts.pixelRatio, pointsa.y);
+				context.arc(pointsa.x, pointsa.y, 4* opts.pixelRatio, 0, 2 * Math.PI);
 				context.closePath();
+				context.fill();
 				context.stroke();
 			});
 		}
 
-		if (opts.dataPointShape !== false && eachSeries.type !== 'column') {
+		if (eachSeries.addPoint == true && eachSeries.type !== 'column') {
 			var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
 			drawPointShape(points, eachSeries.color, shape, context, opts);
 		}
@@ -2508,9 +2510,12 @@ function drawXAxis(categories, opts, config, context) {
 				}
 			});
 		} else {
+			opts.xAxis.gridEval = opts.xAxis.gridEval || 1; 
 			xAxisPoints.forEach(function(item, index) {
-				context.moveTo(item, startY);
-				context.lineTo(item, endY);
+				if(index % opts.xAxis.gridEval == 0){
+					context.moveTo(item, startY);
+					context.lineTo(item, endY);
+				}
 			});
 		}
 	}
@@ -3828,7 +3833,7 @@ Charts.prototype.addEventListener = function(type, listener) {
 };
 
 Charts.prototype.getCurrentDataIndex = function(e) {
-	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
+	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
 	if (touches) {
 		var _touches$ = getTouches(touches, this.opts, e);
 		if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
@@ -3853,7 +3858,7 @@ Charts.prototype.getCurrentDataIndex = function(e) {
 
 Charts.prototype.showToolTip = function(e) {
 	var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
+	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 
 	if (this.opts.type === 'line' || this.opts.type === 'area' || this.opts.type === 'column') {
@@ -4012,7 +4017,7 @@ Charts.prototype.translate = function(distance) {
 };
 
 Charts.prototype.scrollStart = function(e) {
-	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
+	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		if (touches.x) {
@@ -4034,7 +4039,7 @@ Charts.prototype.scroll = function(e) {
 
 	this.scrollOption.lastMoveTime = currMoveTime;
 
-	var touches = e.mp.changedTouches[0] || e.changedTouches[0];
+	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		var _distance;
@@ -4067,5 +4072,6 @@ Charts.prototype.scrollEnd = function(e) {
 		this.scrollOption.distance = 0;
 	}
 };
-
+if ( typeof module === "object" && typeof module.exports === "object" ) {
 module.exports = Charts;
+}
