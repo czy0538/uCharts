@@ -4074,3 +4074,6 @@ Charts.prototype.scrollEnd = function(e) {
 		this.scrollOption.distance = 0;
 	}
 };
+if ( typeof module === "object" && typeof module.exports === "object" ) {
+module.exports = Charts;
+}
