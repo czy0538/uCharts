@@ -3,14 +3,18 @@ var _self;
 var canvaColumn = null;
 Page({
   data: {
-    cWidth: '',
-    cHeight: '',
+    cWidth: 700,
+    cHeight: 500,
     pixelRatio:2
   },
   onLoad: function () {
     _self=this;
-    this.cWidth = my.getSystemInfoSync().windowWidth;
-    this.cHeight = 500 / 750 * my.getSystemInfoSync().windowWidth;
+		
+    this.pixelRatio = 2;
+    this.cWidth = 700;
+    this.cHeight = 500;
+
+    
     this.getServerData();
   },
   getServerData: function() {
@@ -35,13 +39,13 @@ Page({
   },
   showColumn(canvasId, chartData) {
     canvaColumn = new uCharts({
-      $this: _self,
+      $this: this,
       canvasId: canvasId,
       type: 'column',
       legend: true,
       fontSize: 11,
       background: '#FFFFFF',
-      pixelRatio: 1,
+      pixelRatio: this.pixelRatio,
       animation: true,
       categories: chartData.categories,
       series: chartData.series,
@@ -52,12 +56,12 @@ Page({
         //disabled:true
       },
       dataLabel: true,
-      width: _self.cWidth ,
-      height: _self.cHeight ,
+      width: this.cWidth,
+      height: this.cHeight,
       extra: {
         column: {
           type: 'group',
-          width: _self.cWidth * 0.45 / chartData.categories.length
+          width: this.cWidth * 0.45 / chartData.categories.length
         }
       }
     });
