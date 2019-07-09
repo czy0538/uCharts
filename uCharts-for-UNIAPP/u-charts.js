@@ -2347,9 +2347,7 @@ function drawMixDataPoints(series, opts, config, context) {
 				context.setGlobalAlpha(1);
 			}
 		}
-
-
-
+		
 		// 绘制折线数据图
 		if (eachSeries.type == 'line') {
 			var splitPointList = splitPoints(points);
@@ -2386,17 +2384,18 @@ function drawMixDataPoints(series, opts, config, context) {
 
 		// 绘制点数据图
 		if (eachSeries.type == 'point') {
-			var splitPointList = splitPoints(points);
-			splitPointList[0].forEach(function(pointsa, index) {
-				context.beginPath();
-				context.setFillStyle(eachSeries.color);
-				context.setStrokeStyle('#FFFFFF');
-				context.setLineWidth(1 * opts.pixelRatio);
-				context.moveTo(pointsa.x + 3.5 * opts.pixelRatio, pointsa.y);
-				context.arc(pointsa.x, pointsa.y, 4* opts.pixelRatio, 0, 2 * Math.PI);
-				context.closePath();
-				context.fill();
-				context.stroke();
+			points.forEach(function(pointsa, index) {
+				if(pointsa){
+					context.beginPath();
+					context.setFillStyle(eachSeries.color);
+					context.setStrokeStyle('#FFFFFF');
+					context.setLineWidth(1 * opts.pixelRatio);
+					context.moveTo(pointsa.x + 3.5 * opts.pixelRatio, pointsa.y);
+					context.arc(pointsa.x, pointsa.y, 4* opts.pixelRatio, 0, 2 * Math.PI);
+					context.closePath();
+					context.fill();
+					context.stroke();
+				}
 			});
 		}
 
