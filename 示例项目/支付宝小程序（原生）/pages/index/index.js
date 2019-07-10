@@ -3,18 +3,15 @@ var _self;
 var canvaColumn = null;
 Page({
   data: {
-    cWidth: 700,
+    cWidth: 750,
     cHeight: 500,
     pixelRatio:2
   },
   onLoad: function () {
     _self=this;
-		
-    this.pixelRatio = 2;
-    this.cWidth = 700;
-    this.cHeight = 500;
-
-    
+    this.cWidth=750;
+    this.cHeight=500;
+    this.pixelRatio=2;
     this.getServerData();
   },
   getServerData: function() {
