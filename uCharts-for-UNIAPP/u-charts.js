@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190709
+ * uCharts v1.7.0.20190712
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1830,21 +1830,23 @@ function drawColumnDataPoints(series, opts, config, context) {
 							//画背景颜色
 							context.beginPath();
 							context.setFillStyle(columnOption.meter.fillColor);
-							var startX = item.x - item.width / 2 + 1;
+							var startX = item.x - item.width / 2 ;
 							var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
 							context.moveTo(startX, item.y);
-							context.fillRect(startX, item.y, item.width - 2, height);
+							context.fillRect(startX, item.y, item.width, height);
 							context.closePath();
 							context.fill();
 							//画边框线
-							context.beginPath();
-							context.setStrokeStyle(eachSeries.color);
-							context.setLineWidth(columnOption.meter.border * opts.pixelRatio);
-							context.moveTo(startX + columnOption.meter.border * 0.5, item.y + height);
-							context.lineTo(startX + columnOption.meter.border * 0.5, item.y + columnOption.meter.border * 0.5);
-							context.lineTo(startX + item.width - columnOption.meter.border, item.y + columnOption.meter.border * 0.5);
-							context.lineTo(startX + item.width - columnOption.meter.border, item.y + height);
-							context.stroke();
+							if(columnOption.meter.border>0){
+								context.beginPath();
+								context.setStrokeStyle(eachSeries.color);
+								context.setLineWidth(columnOption.meter.border * opts.pixelRatio);
+								context.moveTo(startX + columnOption.meter.border*0.5, item.y + height);
+								context.lineTo(startX + columnOption.meter.border*0.5, item.y + columnOption.meter.border*0.5);
+								context.lineTo(startX + item.width - columnOption.meter.border*0.5, item.y + columnOption.meter.border*0.5);
+								context.lineTo(startX + item.width - columnOption.meter.border*0.5, item.y + height);
+								context.stroke();
+							}
 						}
 					});
 				} else {
@@ -1852,10 +1854,10 @@ function drawColumnDataPoints(series, opts, config, context) {
 						if (item !== null) {
 							context.beginPath();
 							context.setFillStyle(item.color || eachSeries.color);
-							var startX = item.x - item.width / 2 + 1;
+							var startX = item.x - item.width / 2;
 							var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
 							context.moveTo(startX, item.y);
-							context.rect(startX, item.y, item.width - 2, height);
+							context.fillRect(startX, item.y, item.width, height);
 							context.closePath();
 							context.fill();
 						}
@@ -4072,5 +4074,6 @@ Charts.prototype.scrollEnd = function(e) {
 	}
 };
 if ( typeof module === "object" && typeof module.exports === "object" ) {
-module.exports = Charts;
+	module.exports = Charts;
+	//export default Charts;//建议使用nodejs的module导出方式，如报错请使用export方式导出
 }
