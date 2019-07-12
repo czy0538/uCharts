@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190712
+ * uCharts v1.7.0.20190709
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1369,15 +1369,15 @@ function drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, conte
 			x: radius * Math.cos(nowAngle * Math.PI),
 			y: radius * Math.sin(nowAngle * Math.PI)
 		};
-		pos.x += centerPosition.x - measureText(nowNumber) / 2;
+		var labelText = gaugeOption.labelFormat ? gaugeOption.labelFormat(nowNumber) : nowNumber;
+		pos.x += centerPosition.x - measureText(labelText) / 2;
 		pos.y += centerPosition.y;
 		var startX = pos.x;
 		var startY = pos.y;
-
 		context.beginPath();
 		context.setFontSize(config.fontSize);
 		context.setFillStyle(gaugeOption.labelColor || '#666666');
-		context.fillText(nowNumber, startX, startY + config.fontSize / 2);
+		context.fillText(labelText, startX, startY + config.fontSize / 2);
 		context.closePath();
 		context.stroke();
 
