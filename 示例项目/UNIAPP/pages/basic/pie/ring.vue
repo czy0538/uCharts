@@ -106,7 +106,7 @@
 						pie: {
 						  offsetAngle: -45,
 						  ringWidth: 40*_self.pixelRatio,
-						  lableWidth:15
+						  labelWidth:15
 						}
 					},
 					background:'#FFFFFF',

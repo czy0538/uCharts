@@ -96,7 +96,7 @@
 					dataLabel: true,
 					extra: {
 						pie: {
-						  lableWidth:15
+						  labelWidth:15
 						}
 					},
 				});

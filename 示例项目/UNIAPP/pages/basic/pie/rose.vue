@@ -116,7 +116,7 @@
 							minRadius:50,
 							activeOpacity:0.5,
 							offsetAngle:0,
-							lableWidth:15
+							labelWidth:15
 						}
 					},
 				});
@@ -148,7 +148,7 @@
 							minRadius:50,
 							activeOpacity:0.5,
 							offsetAngle:0,
-							lableWidth:15
+							labelWidth:15
 						}
 					},
 				});

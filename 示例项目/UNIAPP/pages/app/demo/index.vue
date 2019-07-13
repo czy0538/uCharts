@@ -488,7 +488,7 @@
 					dataLabel: true,
 					extra: {
 						pie: {
-						  lableWidth:15
+						  labelWidth:15
 						}
 					},
 				   });
@@ -514,7 +514,7 @@
 					},
 					extra: {
 						pie: {
-						  lableWidth:15,
+						  labelWidth:15,
 						  ringWidth: 40*_self.pixelRatio,//圆环的宽度
 						  offsetAngle: -45//圆环的角度
 						}
