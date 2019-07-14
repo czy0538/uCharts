@@ -1,4 +1,5 @@
 <!--index.wxml-->
 <view class="qiun-charts">
-  <canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" bindtap="touchColumn"></canvas>
+  <canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" bindtouchstart="touchColumn"></canvas>
+  <canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" bindtouchstart="touchLineA" bindtouchmove="moveLineA" bindtouchend="touchEndLineA"></canvas>
 </view>
