@@ -2,6 +2,9 @@
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
 ## 最近更新
+* [x] 2019.07.14 【featuer】增加 `config.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
+* [x] 2019.07.14 【featuer】增加 `opts.legend` 图例设置，未来将支持上下左右布局图例，目前仍为底部图例。
+* [x] 2019.07.14 【featuer】增加 `opts.padding` Array 默认[15,15,4,15] 画布填充边距，顺序为上右下左，同css，但必须4位 。
 * [x] 2019.07.13 修改updateData方法，不仅仅限于`categories`及`series`更新，支持全部opts参数更新，支持变更图表类型，等同于new uCharts({})。
 * [x] 2019.07.13 更正 `饼图、圆环图、玫瑰图` 的扩展配置`labelWidth`，之前的`lableWidth`拼写错误，更新版本后请注意替换，给您带来的不便请谅解。
 * [x] 2019.07.12 增加 `opts.extra.gauge.labelFormat` 仪表盘数据标签格式化。示例：opts.extra.gauge.labelFormat:function(val){return val.toFixed(2)}。

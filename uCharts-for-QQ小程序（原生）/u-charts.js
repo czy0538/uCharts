@@ -3632,19 +3632,6 @@ var Charts = function Charts(opts) {
 		dashLength:4 * opts.pixelRatio,
 		scrollAlign:'left'
 	},opts.xAxis);
-	opts.legend = assign({}, {
-		show:true,
-		position:'bottom',
-		backgroundColor:'rgba(0,0,0,0)',
-		borderColor:'rgba(0,0,0,0)',
-		borderWidth:0,
-		padding:[5,5,5,5],
-		itemGap:10,
-		fontSize: opts.fontSize,
-		fontColor:'#666666',
-		format:{},
-		hiddenColor:'#CECECE'
-	},opts.legend);
 	opts.extra = assign({}, opts.extra);
 	opts.rotate = opts.rotate ? true : false;
 	opts.animation = opts.animation ? true : false;
@@ -3825,7 +3812,12 @@ Charts.prototype.addEventListener = function(type, listener) {
 };
 
 Charts.prototype.getCurrentDataIndex = function(e) {
-	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
+	var touches = null;
+	if(e.changedTouches){
+		touches = e.changedTouches[0];
+	}else{
+		touches = e.mp.changedTouches[0];
+	}
 	if (touches) {
 		var _touches$ = getTouches(touches, this.opts, e);
 		if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
@@ -3850,7 +3842,16 @@ Charts.prototype.getCurrentDataIndex = function(e) {
 
 Charts.prototype.showToolTip = function(e) {
 	var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
+	var touches = null;
+	if(e.changedTouches){
+		touches = e.changedTouches[0];
+	}else{
+		touches = e.mp.changedTouches[0];
+	}
+	if(!touches){
+		console.log("touchError");
+		return;
+	}
 	var _touches$ = getTouches(touches, this.opts, e);
 
 	if (this.opts.type === 'line' || this.opts.type === 'area' || this.opts.type === 'column') {
@@ -4009,14 +4010,15 @@ Charts.prototype.translate = function(distance) {
 };
 
 Charts.prototype.scrollStart = function(e) {
-	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
+	var touches = null;
+	if(e.changedTouches){
+		touches = e.changedTouches[0];
+	}else{
+		touches = e.mp.changedTouches[0];
+	}
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
-		if (touches.x) {
-			this.scrollOption.startTouchX = _touches$.x;
-		} else {
-			this.scrollOption.startTouchX = _touches$.clientX;
-		}
+		this.scrollOption.startTouchX = _touches$.x;
 	}
 };
 
@@ -4031,15 +4033,16 @@ Charts.prototype.scroll = function(e) {
 
 	this.scrollOption.lastMoveTime = currMoveTime;
 
-	var touches = e.changedTouches[0] || e.mp.changedTouches[0];
+	var touches = null;
+	if(e.changedTouches){
+		touches = e.changedTouches[0];
+	}else{
+		touches = e.mp.changedTouches[0];
+	}
 	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
 		var _distance;
-		if (touches.x) {
-			_distance = _touches$.x - this.scrollOption.startTouchX;
-		} else {
-			_distance = _touches$.clientX - this.scrollOption.startTouchX;
-		}
+		_distance = _touches$.x - this.scrollOption.startTouchX;
 		var currentOffset = this.scrollOption.currentOffset;
 
 		var validDistance = calValidDistance(currentOffset + _distance, this.chartData, this.config, this.opts);
