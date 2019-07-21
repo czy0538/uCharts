@@ -89,7 +89,13 @@
 					canvasId: canvasId,
 					type: 'pie',
 					fontSize:11,
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:0,
+					},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					series: chartData.series,
@@ -105,6 +111,7 @@
 				});
 			},
 			touchPie(e){
+				canvaPie.touchLegend(e);
 				canvaPie.showToolTip(e, {
 					format: function (item) {
 						return item.name + ':' + item.data 

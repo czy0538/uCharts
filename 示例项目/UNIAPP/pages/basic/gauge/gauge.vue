@@ -44,7 +44,8 @@
 				cWidth:'',
 				cHeight:'',
 				pixelRatio:1,
-				textarea:''
+				textarea:'',
+				gaugeWidth:15
 			}
 		},
 		onLoad() {

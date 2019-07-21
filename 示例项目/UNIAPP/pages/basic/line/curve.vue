@@ -90,7 +90,13 @@
 					canvasId: canvasId,
 					type: 'line',
 					fontSize:11,
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:0,
+					},
 					dataLabel:true,
 					dataPointShape:true,
 					background:'#FFFFFF',
@@ -109,8 +115,6 @@
 						gridColor:'#CCCCCC',
 						dashLength:8,
 						splitNumber:5,
-						min:10,
-						max:180,
 						format:(val)=>{return val.toFixed(0)+'元'}
 					},
 					width: _self.cWidth*_self.pixelRatio,
@@ -124,6 +128,7 @@
 				
 			},
 			touchLineA(e) {
+				canvaLineA.touchLegend(e);
 				canvaLineA.showToolTip(e, {
 					format: function (item, category) {
 						return category + ' ' + item.name + ':' + item.data 

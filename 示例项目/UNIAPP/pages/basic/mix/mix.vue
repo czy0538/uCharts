@@ -90,7 +90,13 @@
 					canvasId: canvasId,
 					type: 'mix',
 					fontSize:11,
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:6,
+					},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					categories: chartData.categories,
@@ -144,6 +150,7 @@
 			touchEndMix(e) {
 				canvaMix.scrollEnd(e);
 				//下面是toolTip事件，如果滚动后不需要显示，可不填写
+				canvaMix.touchLegend(e);
 				canvaMix.showToolTip(e, {
 					format: function (item, category) {
 						return category + ' ' + item.name + ':' + item.data 

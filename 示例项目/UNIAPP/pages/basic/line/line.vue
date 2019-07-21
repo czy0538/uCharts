@@ -89,7 +89,13 @@
 					canvasId: canvasId,
 					type: 'line',
 					fontSize:11,
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:0,
+					},
 					dataLabel:false,
 					dataPointShape:true,
 					background:'#FFFFFF',
@@ -123,6 +129,7 @@
 				
 			},
 			touchLineA(e) {
+				canvaLineA.touchLegend(e);
 				canvaLineA.showToolTip(e, {
 					format: function (item, category) {
 						return category + ' ' + item.name + ':' + item.data 

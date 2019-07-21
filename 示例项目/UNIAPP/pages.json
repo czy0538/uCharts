@@ -148,9 +148,9 @@
 			}
 		},
 		{
-			"path": "pages/app/demo/pie-legend",
+			"path": "pages/basic/column/column-scroll",
 			"style": {
-				"navigationBarTitleText": "饼图右侧图例",
+				"navigationBarTitleText": "柱状图带滚动条",
 				"navigationBarTextStyle":"black"
 			}
 		},

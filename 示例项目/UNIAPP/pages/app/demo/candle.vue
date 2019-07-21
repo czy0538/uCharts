@@ -96,23 +96,24 @@
 					canvasId: canvasId,
 					type: 'candle',
 					fontSize:11,
-					legend:true,
+					padding:[0,15,0,15],
+					legend:{
+						show:true,
+					},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					categories: chartData.categories,
 					series: chartData.series,
-					animation: true,
-					enableScroll: true,//开启图表拖拽功能
+					animation: false,
+					enableScroll: true,
 					xAxis: {
-						disableGrid:true,//不绘制X轴网格线
-						labelCount:4,//X轴文案数量
+						disableGrid:true,
+						labelCount:4,
 						//type:'grid',
 						//gridType:'dash',
-						itemCount:_self.itemCount,//可不填写，配合enableScroll图表拖拽功能使用，x轴单屏显示数据的数量，默认为5个
-						scrollShow:true,//新增是否显示滚动条，默认false
+						itemCount:_self.itemCount,
+						scrollShow:true,
 						scrollAlign:'right',
-						//scrollBackgroundColor:'#F7F7FF',//可不填写，配合enableScroll图表拖拽功能使用，X轴滚动条背景颜色,默认为 #EFEBEF
-						//scrollColor:'#DEE7F7',//可不填写，配合enableScroll图表拖拽功能使用，X轴滚动条颜色,默认为 #A6A6A6
 					},
 					yAxis: {
 						//disabled:true
@@ -208,11 +209,14 @@
 					$this:_self,
 					canvasId: canvasId,
 					type: 'column',
-					legend:false,
+					padding:[0,15,0,15],
+					legend:{
+						show:false,
+					},
 					fontSize:11,
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
-					animation: true,
+					animation: false,
 					enableScroll:true,
 					dataLabel:false,
 					categories: chartData.categories,
@@ -227,7 +231,8 @@
 					yAxis: {
 						disableGrid:true,
 						splitNumber: 2,
-						min:0
+						min:0,
+						format:(val)=>{return val.toFixed(0)}
 					},
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight2*_self.pixelRatio,

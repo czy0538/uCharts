@@ -90,7 +90,13 @@
 					canvasId: canvasId,
 					type: 'line',
 					fontSize:11,
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:5,
+					},
 					dataLabel:true,
 					dataPointShape:true,
 					background:'#FFFFFF',
@@ -103,11 +109,9 @@
 						disableGrid:false,
 						type:'grid',
 						gridType:'dash',
-						itemCount:4,//可不填写，配合enableScroll图表拖拽功能使用，x轴单屏显示数据的数量，默认为5个
-						scrollShow:true,//新增是否显示滚动条，默认false
+						itemCount:4,
+						scrollShow:true,
 						scrollAlign:'left',
-						//scrollBackgroundColor:'#F7F7FF',//可不填写，配合enableScroll图表拖拽功能使用，X轴滚动条背景颜色,默认为 #EFEBEF
-						//scrollColor:'#DEE7F7',//可不填写，配合enableScroll图表拖拽功能使用，X轴滚动条颜色,默认为 #A6A6A6
 					},
 					yAxis: {
 						//disabled:true
@@ -136,6 +140,7 @@
 			touchEndLineA(e) {
 				canvaLineA.scrollEnd(e);
 				//下面是toolTip事件，如果滚动后不需要显示，可不填写
+				canvaLineA.touchLegend(e);
 				canvaLineA.showToolTip(e, {
 					format: function (item, category) {
 						return category + ' ' + item.name + ':' + item.data 

@@ -88,7 +88,13 @@
 					canvasId: canvasId,
 					type: 'radar',
 					fontSize:11,
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:0,
+					},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					animation: true,
@@ -105,6 +111,7 @@
 				});
 			},
 			touchRadar(e){
+				canvaRadar.touchLegend(e);
 				canvaRadar.showToolTip(e, {
 					format: function (item) {
 						return item.name + ':' + item.data 

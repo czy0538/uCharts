@@ -102,7 +102,7 @@
 					canvasId: canvasId,
 					type: 'arcbar',
 					fontSize:11,
-					legend:false,
+					legend:{show:false},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					series: chartData.series,

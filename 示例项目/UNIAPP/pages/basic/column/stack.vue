@@ -88,7 +88,13 @@
 					$this:_self,
 					canvasId: canvasId,
 					type: 'column',
-					legend:true,
+					padding:[15,15,0,15],
+					legend:{
+						show:true,
+						padding:5,
+						lineHeight:11,
+						margin:0,
+					},
 					fontSize:11,
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
@@ -114,6 +120,7 @@
 				
 			},
 			touchColumn(e){
+				canvaColumn.touchLegend(e);
 				canvaColumn.showToolTip(e, {
 					format: function (item, category) {
 						return category + ' ' + item.name + ':' + item.data 

@@ -30,12 +30,6 @@
 					url:'demo/index',
 					demo:'/static/images/demo/demo2.png',
 					tips:'点击查看示例'
-				},{
-				    title: '饼图右侧图例',
-					images:'pie.png',
-					url:'demo/pie-legend',
-					demo:'/static/images/demo/demo1.png',
-					tips:'点击查看示例'
 				},
 				/*
 				,{

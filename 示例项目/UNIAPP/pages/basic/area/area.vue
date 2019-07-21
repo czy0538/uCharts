@@ -90,7 +90,16 @@
 					canvasId: canvasId,
 					type: 'area',
 					fontSize:11,
-					legend:true,
+					padding:[0,15,10,15],
+					legend:{
+						show:true,
+						position:'top',
+						float:'center',
+						itemGap:30,
+						padding:5,
+						lineHeight:18,
+						margin:0,
+					},
 					dataLabel:false,
 					dataPointShape:true,
 					background:'#FFFFFF',
@@ -109,8 +118,6 @@
 						gridColor:'#CCCCCC',
 						dashLength:8,
 						splitNumber:5,
-						min:10,
-						max:180,
 					},
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
@@ -126,6 +133,7 @@
 				
 			},
 			touchArea(e) {
+				canvaArea.touchLegend(e);
 				canvaArea.showToolTip(e, {
 					format: function (item, category) {
 						return category + ' ' + item.name + ':' + item.data 

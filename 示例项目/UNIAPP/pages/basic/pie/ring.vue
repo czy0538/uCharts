@@ -13,7 +13,7 @@
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasRing" id="canvasRing" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchRing"></canvas>
+			<canvas canvas-id="canvasRing" id="canvasRing" class="charts" :style="{'width':cWidth*pixelRatio+'px','height':cHeight*pixelRatio+'px', 'transform': 'scale('+(1/pixelRatio)+')','margin-left':-cWidth*(pixelRatio-1)/2+'px','margin-top':-cHeight*(pixelRatio-1)/2+'px'}" @touchstart="touchRing"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
 			<canvas canvas-id="canvasRing" id="canvasRing" class="charts" @touchstart="touchRing"></canvas>
@@ -75,6 +75,10 @@
 						let Ring={series:[]};
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
 						Ring.series=res.data.data.Ring.series;
+						//自定义文案示例，需设置format字段
+						for(let i = 0 ;i < Ring.series.length;i++){
+							Ring.series[i].format=()=>{return Ring.series[i].name+Ring.series[i].data};
+						}
 						_self.textarea = JSON.stringify(res.data.data.Ring);
 						_self.showRing("canvasRing",Ring);
 					},
@@ -89,37 +93,51 @@
 					canvasId: canvasId,
 					type: 'ring',
 					fontSize:11,
-					legend:true,
-					title: {
-						name: '70%',
-						color: '#7cb5ec',
-						fontSize: 25*_self.pixelRatio,
-						offsetY:-20*_self.pixelRatio,
-					},
-					subtitle: {
-						name: '收益率',
-						color: '#666666',
-						fontSize: 15*_self.pixelRatio,
-						offsetY:30*_self.pixelRatio,
-					},
-					extra: {
-						pie: {
-						  offsetAngle: -45,
-						  ringWidth: 40*_self.pixelRatio,
-						  labelWidth:15
-						}
+					padding:[5,5,5,5],
+					legend:{
+						show:true,
+						position:'right',
+						float:'center',
+						itemGap:10,
+						fontSize:11,
+						padding:5,
+						lineHeight:26,
+						margin:5,
+						//backgroundColor:'rgba(41,198,90,0.2)',
+						//borderColor :'rgba(41,198,90,0.5)',
+						borderWidth :1
 					},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					series: chartData.series,
-					animation: true,
+					animation: false,
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
 					disablePieStroke: true,
 					dataLabel: true,
+					subtitle: {
+						name: '70%',
+						color: '#7cb5ec',
+						fontSize: 25*_self.pixelRatio,
+					},
+					title: {
+						name: '收益率',
+						color: '#666666',
+						fontSize: 15*_self.pixelRatio,
+					},
+					extra: {
+						pie: {
+						  offsetAngle: -105,
+						  ringWidth: 40*_self.pixelRatio,
+						  labelWidth:15
+						}
+					},
 				});
 			},
 			touchRing(e){
+				canvaRing.touchLegend(e, {
+					animation : false
+				});
 				canvaRing.showToolTip(e, {
 					format: function (item) {
 						return item.name + ':' + item.data 

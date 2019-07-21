@@ -1,5 +1,5 @@
 /*
- * uCharts v1.7.0.20190713
+ * uCharts v1.8.0 Beta 20190721
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -25,9 +25,9 @@ var config = {
 	xAxisLineHeight: 15,
 	legendHeight: 15,
 	yAxisTitleWidth: 15,
-	padding: 12,
-	pixelRatio: 1, //适配H5高分屏
-	rotate: false, //横屏模式
+	padding: [10,10,10,10],
+	pixelRatio: 1,
+	rotate: false,
 	columePadding: 3,
 	fontSize: 13,
 	//dataPointShape: ['diamond', 'circle', 'triangle', 'rect'],
@@ -53,19 +53,13 @@ var config = {
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 function assign(target, varArgs) {
 	if (target == null) {
-		// TypeError if undefined or null
 		throw new TypeError('Cannot convert undefined or null to object');
 	}
-
 	var to = Object(target);
-
 	for (var index = 1; index < arguments.length; index++) {
 		var nextSource = arguments[index];
-
 		if (nextSource != null) {
-			// Skip over if undefined or null
 			for (var nextKey in nextSource) {
-				// Avoid bugs when hasOwnProperty is shadowed
 				if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
 					to[nextKey] = nextSource[nextKey];
 				}
@@ -131,7 +125,7 @@ function hexToRgb(hexValue, opc) {
 
 function findRange(num, type, limit) {
 	if (isNaN(num)) {
-		throw new Error('[wxCharts] unvalid series data!');
+		throw new Error('[uCharts] unvalid series data!');
 	}
 	limit = limit || 10;
 	type = type ? type : 'upper';
@@ -182,7 +176,7 @@ function calCandleMA(dayArr, nameArr, colorArr, kdata) {
 
 function calValidDistance(distance, chartData, config, opts) {
 
-	var dataChartAreaWidth = opts.width - config.padding - chartData.xAxisPoints[0];
+	var dataChartAreaWidth = opts.width - config.padding[1] - chartData.xAxisPoints[0];
 	var dataChartWidth = chartData.eachSpacing * opts.categories.length;
 	var validDistance = distance;
 	if (distance >= 0) {
@@ -267,7 +261,6 @@ function createCurveControlPoints(points, i) {
 		pBy = points[i + 1].y - (points[i + 2].y - points[i].y) * b;
 	}
 
-	// fix issue https://github.com/xiaolin3303/wx-charts/issues/79
 	if (isNotMiddlePoint(points, i + 1)) {
 		pBy = points[i + 1].y;
 	}
@@ -314,21 +307,40 @@ function avoidCollision(obj, target) {
 	return obj;
 }
 
-function fillSeriesColor(series, config) {
+function fillSeries(series, opts, config) {
 	var index = 0;
 	return series.map(function(item) {
 		if (!item.color) {
 			item.color = config.colors[index];
 			index = (index + 1) % config.colors.length;
 		}
-		return item;
-	});
-}
-
-function fillSeriesType(series, opts) {
-	return series.map(function(item) {
 		if (!item.type) {
 			item.type = opts.type;
+		}
+		if (typeof item.show == "undefined") {
+			item.show = true;
+		}
+		if (!item.type) {
+			item.type = opts.type;
+		}
+		if (!item.pointShape) {
+			item.pointShape = "circle";
+		}
+		if (!item.legendShape) {
+			switch(item.type){
+				case 'line':
+					item.legendShape = "line";
+				break;
+				case 'column':
+					item.legendShape = "rect";
+				break;
+				case 'area':
+					item.legendShape = "triangle";
+				break;
+				default:
+					item.legendShape = "circle";
+			}
+			
 		}
 		return item;
 	});
@@ -349,8 +361,16 @@ function getDataRange(minData, maxData) {
 		limit = 1;
 	} else if (range >= 0.1) {
 		limit = 0.1;
-	} else {
+	} else if (range >= 0.01) {
 		limit = 0.01;
+	} else if (range >= 0.001) {
+		limit = 0.001;
+	} else if (range >= 0.0001) {
+		limit = 0.0001;
+	} else if (range >= 0.00001) {
+		limit = 0.00001;
+	} else {
+		limit = 0.000001;
 	}
 	return {
 		minRange: findRange(minData, 'lower', limit),
@@ -360,9 +380,6 @@ function getDataRange(minData, maxData) {
 
 function measureText(text) {
 	var fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : config.fontSize;
-
-	// wx canvas 未实现measureText方法, 此处自行实现
-	// 适配修改初始字体10px为其他大小的方法
 	text = String(text);
 	var text = text.split('');
 	var width = 0;
@@ -397,8 +414,8 @@ function dataCombine(series) {
 	}, []);
 }
 
-function dataCombineStack(series) {
-	var sum = new Array(series[0].data.length);
+function dataCombineStack(series,len) {
+	var sum = new Array(len);
 	for (var j = 0; j < sum.length; j++) {
 		sum[j] = 0;
 	}
@@ -415,17 +432,15 @@ function dataCombineStack(series) {
 function getTouches(touches, opts, e) {
 	let x, y;
 	if (touches.clientX) {
-		if (opts.rotate) { //适配横屏
+		if (opts.rotate) {
 			y = opts.height - touches.clientX * opts.pixelRatio;
-			x = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) *
-				opts.pixelRatio;
+			x = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) * opts.pixelRatio;
 		} else {
 			x = touches.clientX * opts.pixelRatio;
-			y = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) *
-				opts.pixelRatio;
+			y = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) * opts.pixelRatio;
 		}
 	} else {
-		if (opts.rotate) { //适配横屏
+		if (opts.rotate) {
 			y = opts.height - touches.x * opts.pixelRatio;
 			x = touches.y * opts.pixelRatio;
 		} else {
@@ -443,14 +458,15 @@ function getSeriesDataItem(series, index) {
 	var data = [];
 	for (let i = 0; i < series.length; i++) {
 		let item = series[i];
-		if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
+		if (item.data[index] !== null && typeof item.data[index] !== 'undefined' && item.show) {
 			let seriesItem = {};
 			seriesItem.color = item.color;
 			seriesItem.type = item.type;
 			seriesItem.style = item.style;
-			seriesItem.shape = item.shape;
+			seriesItem.pointShape = item.pointShape;
 			seriesItem.disableLegend = item.disableLegend;
 			seriesItem.name = item.name;
+			seriesItem.show  = item.show ;
 			seriesItem.data = item.format ? item.format(item.data[index]) : item.data[index];
 			data.push(seriesItem);
 		}
@@ -613,6 +629,16 @@ function getCandleToolTipData(series, seriesData, calPoints, index, categories, 
 	};
 }
 
+function filterSeries(series){
+	let tempSeries=[];
+	for(let i=0;i<series.length;i++){
+		if(series[i].show == true){
+			tempSeries.push(series[i])
+		}
+	}
+	return tempSeries;
+}
+
 function findCurrentIndex(currentPoints, xAxisPoints, opts, config) {
 	var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
 	var currentIndex = -1;
@@ -627,10 +653,31 @@ function findCurrentIndex(currentPoints, xAxisPoints, opts, config) {
 	return currentIndex;
 }
 
+function findLegendIndex(currentPoints, legendData, opts) {
+	let currentIndex = -1;
+	if (isInExactLegendArea(currentPoints, legendData.area)) {
+		let points = legendData.points;
+		for (let i = 0, len = points.length; i < len; i++) {
+			let item = points[i];
+			for (let j = 0; j < item.length ; j++) {
+				let area = item[j]['area'];
+				if (currentPoints.x > area[0] && currentPoints.x < area[2] && currentPoints.y > area[1] && currentPoints.y < area[3]) {
+					currentIndex = j;
+					break;
+				}
+			}
+		}
+		return currentIndex;
+	}
+	return currentIndex;
+}
+
+function isInExactLegendArea(currentPoints, area) {
+	return currentPoints.x > area.start.x && currentPoints.x < area.end.x && currentPoints.y >area.start.y && currentPoints.y < area.end.y;
+}
+
 function isInExactChartArea(currentPoints, opts, config) {
-	return currentPoints.x < opts.width - config.padding && currentPoints.x > config.padding + config.yAxisWidth + config.yAxisTitleWidth &&
-		currentPoints.y > config.padding && currentPoints.y < opts.height - config.legendHeight - config.xAxisHeight - config
-		.padding;
+	return currentPoints.x < opts.width - opts.area[1] && currentPoints.x > opts.area[3] && currentPoints.y > opts.area[0] && currentPoints.y < opts.height - opts.area[2];
 }
 
 function findRadarChartCurrentIndex(currentPoints, radarData, count) {
@@ -716,40 +763,143 @@ function splitPoints(points) {
 	return newPoints;
 }
 
-function calLegendData(series, opts, config) {
-	if (opts.legend === false) {
-		return {
-			legendList: [],
-			legendHeight: 0
-		};
+function calLegendData(series, opts, config, chartData) {
+	let legendData={
+		area:{
+			start:{x:0,y:0},
+			end:{x:0,y:0},
+			width:0,
+			height:0,
+			wholeWidth:0,
+			wholeHeight:0
+		},
+		points:[],
+		widthArr:[],
+		heightArr:[]
+	};
+	if (opts.legend.show === false) {
+		chartData.legendData = legendData;
+		return legendData;
 	}
-	//适配H5高分屏
-	var padding = 5 * opts.pixelRatio;
-	var marginTop = 8 * opts.pixelRatio;
-	var shapeWidth = 15 * opts.pixelRatio;
-	var legendList = [];
-	var widthCount = 0;
-	var currentRow = [];
-	for (let i = 0; i < series.length; i++) {
-		let item = series[i];
-		let itemWidth = 3 * padding + shapeWidth + measureText(item.name || 'undefined');
-		if (widthCount + itemWidth > opts.width) {
+	
+	let padding = opts.legend.padding;
+	let margin = opts.legend.margin;
+	let fontSize =  opts.legend.fontSize;
+	let shapeWidth = 15 * opts.pixelRatio;
+	let shapeRight = 5 * opts.pixelRatio;
+	let lineHeight = Math.max(opts.legend.lineHeight*opts.pixelRatio, fontSize);
+	if(opts.legend.position == 'top' || opts.legend.position == 'bottom'){
+		let legendList = [];
+		let widthCount = 0;
+		let widthCountArr = [];
+		let currentRow = [];
+		for (let i = 0; i < series.length; i++) {
+			let item = series[i];
+			let itemWidth = shapeWidth + shapeRight + measureText(item.name || 'undefined',fontSize) + opts.legend.itemGap;
+			if (widthCount + itemWidth > opts.width-config.padding[1]-config.padding[3]) {
+				legendList.push(currentRow);
+				widthCountArr.push(widthCount - opts.legend.itemGap);
+				widthCount = itemWidth;
+				currentRow = [item];
+			} else {
+				widthCount += itemWidth;
+				currentRow.push(item);
+			}
+		}
+		if (currentRow.length) {
 			legendList.push(currentRow);
-			widthCount = itemWidth;
-			currentRow = [item];
-		} else {
-			widthCount += itemWidth;
-			currentRow.push(item);
+			widthCountArr.push(widthCount - opts.legend.itemGap);
+			legendData.widthArr = widthCountArr;
+			let legendWidth = Math.max.apply(null, widthCountArr);
+			switch(opts.legend.float){
+				case 'left':
+					legendData.area.start.x = config.padding[3];
+					legendData.area.end.x = config.padding[3] + 2 * padding ;
+				break;
+				case 'right':
+					legendData.area.start.x = opts.width - config.padding[1] - legendWidth - 2 * padding ;
+					legendData.area.end.x = opts.width - config.padding[1];
+				break;
+				default:
+					legendData.area.start.x = (opts.width - legendWidth)/2 - padding ;
+					legendData.area.end.x = (opts.width + legendWidth)/2 + padding ;
+			}
+			legendData.area.width = legendWidth + 2 * padding;
+			legendData.area.wholeWidth = legendWidth + 2 * padding;
+			legendData.area.height = legendList.length * lineHeight + 2*padding;
+			legendData.area.wholeHeight = legendList.length * lineHeight + 2*padding + 2 * margin;
+			legendData.points=legendList;
+		}
+	}else{
+		let len = series.length;
+		let maxHeight = opts.height - config.padding[0] - config.padding[2] - 2 * margin - 2 * padding;
+		let maxLength = Math.min(Math.floor(maxHeight / lineHeight),len);
+		legendData.area.height = maxLength * lineHeight + padding*2;
+		legendData.area.wholeHeight = maxLength * lineHeight + padding*2;
+		switch(opts.legend.float){
+			case 'top':
+				legendData.area.start.y = config.padding[0] + margin;
+				legendData.area.end.y = config.padding[0] + margin + legendData.area.height;
+			break;
+			case 'bottom':
+				legendData.area.start.y = opts.height - config.padding[2] - margin - legendData.area.height;
+				legendData.area.end.y = opts.height - config.padding[2] - margin;
+			break;
+			default:
+				legendData.area.start.y = (opts.height - legendData.area.height)/2;
+				legendData.area.end.y = (opts.height + legendData.area.height)/2 ;
+		}
+		let lineNum = len % maxLength === 0 ? len / maxLength : Math.floor( (len / maxLength) + 1 );
+		let currentRow = [];
+		for (let i = 0; i < lineNum; i++) {
+			let temp = series.slice(i*maxLength, i*maxLength+maxLength);
+			currentRow.push(temp);
+		}
+		
+		legendData.points=currentRow;
+		
+		if (currentRow.length) {
+			for (let i = 0; i < currentRow.length; i++) {
+				let item = currentRow[i];
+				let maxWidth = 0;
+				for (let j = 0; j < item.length; j++) {
+					let itemWidth = shapeWidth + shapeRight + measureText(item[j].name || 'undefined',fontSize) + opts.legend.itemGap;
+					if (itemWidth > maxWidth) {
+						maxWidth = itemWidth;
+					}
+				}
+				legendData.widthArr.push(maxWidth);
+				legendData.heightArr.push(item.length * lineHeight + padding*2);
+			}
+			let legendWidth = 0
+			for(let i=0;i<legendData.widthArr.length;i++){
+				legendWidth += legendData.widthArr[i] ;
+			}
+			legendData.area.width = legendWidth - opts.legend.itemGap + 2 * padding;
+			legendData.area.wholeWidth = legendData.area.width + padding;
 		}
 	}
-	if (currentRow.length) {
-		legendList.push(currentRow);
+	
+	switch(opts.legend.position){
+		case 'top':
+			legendData.area.start.y = config.padding[0] + margin;
+			legendData.area.end.y = config.padding[0] + margin + legendData.area.height;
+		break;
+		case 'bottom':
+			legendData.area.start.y = opts.height - config.padding[2] - legendData.area.height - margin;
+			legendData.area.end.y = opts.height - config.padding[2] - margin;
+		break;
+		case 'left':
+			legendData.area.start.x = config.padding[3];
+			legendData.area.end.x = config.padding[3] + legendData.area.width;
+		break;
+		case 'right':
+			legendData.area.start.x = opts.width - config.padding[1] - legendData.area.width;
+			legendData.area.end.x = opts.width - config.padding[1];
+		break;
 	}
-
-	return {
-		legendList: legendList,
-		legendHeight: legendList.length * (config.fontSize + marginTop) + padding
-	};
+	chartData.legendData = legendData;
+	return legendData;
 }
 
 function calCategoriesData(categories, opts, config) {
@@ -757,24 +907,18 @@ function calCategoriesData(categories, opts, config) {
 		angle: 0,
 		xAxisHeight: config.xAxisHeight
 	};
-
 	var _getXAxisPoints = getXAxisPoints(categories, opts, config),
 		eachSpacing = _getXAxisPoints.eachSpacing;
-
-	// get max length of categories text
-
 
 	var categoriesTextLenth = categories.map(function(item) {
 		return measureText(item);
 	});
-
 	var maxTextLength = Math.max.apply(this, categoriesTextLenth);
 
 	if (opts.xAxis.rotateLabel == true && maxTextLength + 2 * config.xAxisTextPadding > eachSpacing) {
 		result.angle = 45 * Math.PI / 180;
 		result.xAxisHeight = 2 * config.xAxisTextPadding + maxTextLength * Math.sin(result.angle);
 	}
-
 	return result;
 }
 
@@ -964,6 +1108,9 @@ function fixColumeData(points, eachSpacing, columnLen, index, config, opts) {
 		if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
 			item.width = Math.min(item.width, +opts.extra.column.width);
 		} 
+		if(item.width<=0){
+			item.width = 1;
+		}
 		item.x += (index + 0.5 - columnLen / 2) * item.width;
 		return item;
 	});
@@ -974,13 +1121,12 @@ function fixColumeMeterData(points, eachSpacing, columnLen, index, config, opts,
 		if (item === null) {
 			return null;
 		}
-		item.width = eachSpacing - 2 * config.columePadding;
-
+		item.width = Math.ceil((eachSpacing - 2 * config.columePadding)/2);
+		
 		if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
 			item.width = Math.min(item.width, +opts.extra.column.width);
-		} else {
-			item.width = Math.min(item.width, 25);
 		}
+		
 		if (index > 0) {
 			item.width -= 2 * border;
 		}
@@ -995,12 +1141,10 @@ function fixColumeStackData(points, eachSpacing, columnLen, index, config, opts,
 		if (item === null) {
 			return null;
 		}
-		item.width = eachSpacing - 2 * config.columePadding;
+		item.width = Math.ceil((eachSpacing - 2 * config.columePadding)/2);
 
 		if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
 			item.width = Math.min(item.width, +opts.extra.column.width);
-		} else {
-			item.width = Math.min(item.width, 25);
 		}
 		return item;
 	});
@@ -1008,13 +1152,13 @@ function fixColumeStackData(points, eachSpacing, columnLen, index, config, opts,
 
 function getXAxisPoints(categories, opts, config) {
 	var yAxisTotalWidth = config.yAxisWidth + config.yAxisTitleWidth;
-	var spacingValid = opts.width - 2 * config.padding - yAxisTotalWidth;
+	var spacingValid = opts.width - opts.area[1] - opts.area[3];
 	var dataCount = opts.enableScroll ? Math.min(opts.xAxis.itemCount, categories.length) : categories.length;
 	var eachSpacing = spacingValid / dataCount;
 
 	var xAxisPoints = [];
-	var startX = config.padding + yAxisTotalWidth;
-	var endX = opts.width - config.padding;
+	var startX = opts.area[3];
+	var endX = opts.width - opts.area[1];
 	categories.forEach(function(item, index) {
 		xAxisPoints.push(startX + index * eachSpacing);
 	});
@@ -1036,7 +1180,7 @@ function getCandleDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing,
 	var process = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 1;
 
 	var points = [];
-	var validHeight = opts.height - 2 * config.padding - config.xAxisHeight - config.legendHeight;
+	var validHeight = opts.height - opts.area[0] - opts.area[2];
 	data.forEach(function(item, index) {
 		if (item === null) {
 			points.push(null);
@@ -1048,7 +1192,7 @@ function getCandleDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing,
 				var value = items.value || items;
 				var height = validHeight * (value - minRange) / (maxRange - minRange);
 				height *= process;
-				point.y = opts.height - config.xAxisHeight - config.legendHeight - Math.round(height) - config.padding;
+				point.y = opts.height - Math.round(height) - opts.area[2];
 				cPoints.push(point);
 			});
 			points.push(cPoints);
@@ -1062,7 +1206,7 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
 	var process = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 1;
 
 	var points = [];
-	var validHeight = opts.height - 2 * config.padding - config.xAxisHeight - config.legendHeight;
+	var validHeight = opts.height - opts.area[0] - opts.area[2] ;
 	data.forEach(function(item, index) {
 		if (item === null) {
 			points.push(null);
@@ -1076,7 +1220,7 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
 			}
 			var height = validHeight * (value - minRange) / (maxRange - minRange);
 			height *= process;
-			point.y = opts.height - config.xAxisHeight - config.legendHeight - Math.round(height) - config.padding;
+			point.y = opts.height - Math.round(height) - opts.area[2];
 			points.push(point);
 		}
 	});
@@ -1087,7 +1231,7 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
 function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex, stackSeries) {
 	var process = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 1;
 	var points = [];
-	var validHeight = opts.height - 2 * config.padding - config.xAxisHeight - config.legendHeight;
+	var validHeight = opts.height - opts.area[0] - opts.area[2];
 
 	data.forEach(function(item, index) {
 		if (item === null) {
@@ -1113,8 +1257,8 @@ function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, 
 			var heightc = height0;
 			height *= process;
 			heightc *= process;
-			point.y = opts.height - config.xAxisHeight - config.legendHeight - Math.round(height) - config.padding;
-			point.y0 = opts.height - config.xAxisHeight - config.legendHeight - Math.round(heightc) - config.padding;
+			point.y = opts.height - Math.round(height) - opts.area[2];
+			point.y0 = opts.height - Math.round(heightc) - opts.area[2];
 			points.push(point);
 		}
 	});
@@ -1125,18 +1269,15 @@ function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, 
 function getYAxisTextList(series, opts, config, stack) {
 	var data;
 	if (stack == 'stack') {
-		//data = dataCombine(series);
-		data = dataCombineStack(series);
+		data = dataCombineStack(series,opts.categories.length);
 	} else {
 		data = dataCombine(series);
 	}
-
 	var sorted = [];
 	// remove null from data
 	data = data.filter(function(item) {
 		//return item !== null;
 		if (typeof item === 'object' && item !== null) {
-			//判断是否为数组
 			if (item.constructor == Array) {
 				return item !== null;
 			} else {
@@ -1146,8 +1287,6 @@ function getYAxisTextList(series, opts, config, stack) {
 			return item !== null;
 		}
 	});
-	//var minData = Math.min.apply(this, data);
-	//var maxData = Math.max.apply(this, data);
 	data.map(function(item) {
 		if (typeof item === 'object') {
 			if (item.constructor == Array) {
@@ -1160,7 +1299,6 @@ function getYAxisTextList(series, opts, config, stack) {
 		} else {
 			sorted.push(item);
 		}
-		//typeof item === 'object' ? sorted.push(item.value) : sorted.push(item)
 	})
 	var minData = 0;
 	var maxData = 0;
@@ -1175,10 +1313,8 @@ function getYAxisTextList(series, opts, config, stack) {
 		maxData = Math.max(opts.yAxis.max, maxData);
 	}
 
-	// fix issue https://github.com/xiaolin3303/wx-charts/issues/9
 	if (minData === maxData) {
 		var rangeSpan = maxData || 10;
-		//minData -= rangeSpan;
 		maxData += rangeSpan;
 	}
 
@@ -1197,14 +1333,13 @@ function getYAxisTextList(series, opts, config, stack) {
 
 function calYAxisData(series, opts, config) {
 	//堆叠图重算Y轴
-	var columnstyle = assign({}, opts.extra.column || {
-		"type": ""
-	});
-
+	var columnstyle = assign({}, {
+		type: ""
+	},opts.extra.column);
 	var ranges = getYAxisTextList(series, opts, config, columnstyle.type);
 	var yAxisWidth = config.yAxisWidth;
 	var rangesFormat = ranges.map(function(item) {
-		item = util.toFixed(item, 2);
+		item = util.toFixed(item, 6);
 		item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
 		yAxisWidth = Math.max(yAxisWidth, measureText(item) + 5);
 		return item;
@@ -1222,11 +1357,11 @@ function calYAxisData(series, opts, config) {
 
 function calTooltipYAxisData(point, series, opts, config, eachSpacing) {
 	var ranges = getYAxisTextList(series, opts, config);
-	var spacingValid = opts.height - 2 * config.padding - config.xAxisHeight - config.legendHeight;
+	var spacingValid = opts.height - opts.area[0] - opts.area[2];
 	let maxVal = ranges[0];
 	let minVal = ranges[ranges.length - 1];
-	let minAxis = config.padding;
-	let maxAxis = config.padding + spacingValid;
+	let minAxis = config.padding[3];
+	let maxAxis = config.padding[1] + spacingValid;
 	let item = maxVal - (maxVal - minVal) * (point - minAxis) / (maxAxis - minAxis);
 	item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
 	return item;
@@ -1287,7 +1422,7 @@ function drawPointShape(points, color, shape, context, opts) {
 	context.stroke();
 }
 
-function drawRingTitle(opts, config, context) {
+function drawRingTitle(opts, config, context , center) {
 	var titlefontSize = opts.title.fontSize || config.titleFontSize;
 	var subtitlefontSize = opts.subtitle.fontSize || config.subtitleFontSize;
 	var title = opts.title.name || '';
@@ -1297,12 +1432,13 @@ function drawRingTitle(opts, config, context) {
 	var titleHeight = title ? titlefontSize : 0;
 	var subtitleHeight = subtitle ? subtitlefontSize : 0;
 	var margin = 5;
+	
 	if (subtitle) {
 		var textWidth = measureText(subtitle, subtitlefontSize);
-		var startX = (opts.width - textWidth) / 2 + (opts.subtitle.offsetX || 0);
-		var startY = ((opts.height - config.legendHeight + subtitlefontSize) / 2) + (opts.subtitle.offsetY || 0);
+		var startX = center.x - textWidth / 2 + (opts.subtitle.offsetX || 0);
+		var startY = center.y + subtitlefontSize / 2 + (opts.subtitle.offsetY || 0);
 		if (title) {
-			startY -= (titleHeight + margin) / 2;
+			startY += (titleHeight + margin) / 2;
 		}
 		context.beginPath();
 		context.setFontSize(subtitlefontSize);
@@ -1313,10 +1449,10 @@ function drawRingTitle(opts, config, context) {
 	}
 	if (title) {
 		var _textWidth = measureText(title, titlefontSize);
-		var _startX = (opts.width - _textWidth) / 2 + (opts.title.offsetX || 0);
-		var _startY = ((opts.height - config.legendHeight + titlefontSize) / 2) + (opts.title.offsetY || 0);
+		var _startX = center.x - _textWidth / 2 + (opts.title.offsetX || 0);
+		var _startY = center.y + titlefontSize / 2 + (opts.title.offsetY || 0);
 		if (subtitle) {
-			_startY += (subtitleHeight + margin) / 2;
+			_startY -= (subtitleHeight + margin) / 2;
 		}
 		context.beginPath();
 		context.setFontSize(titlefontSize);
@@ -1525,8 +1661,8 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
 	var toolTipOption = opts.extra.tooltip || {};
 	toolTipOption.gridType = toolTipOption.gridType == undefined ? 'solid' : toolTipOption.gridType;
 	toolTipOption.dashLength = toolTipOption.dashLength == undefined ? 4 : toolTipOption.dashLength;
-	var startY = config.padding;
-	var endY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
+	var startY = opts.area[0];
+	var endY = opts.height - opts.area[2];
 
 	if (toolTipOption.gridType == 'dash') {
 		context.setLineDash([toolTipOption.dashLength, toolTipOption.dashLength]);
@@ -1570,8 +1706,8 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 	var toolTipOption = opts.extra.tooltip || {};
 	toolTipOption.gridType = toolTipOption.gridType == undefined ? 'solid' : toolTipOption.gridType;
 	toolTipOption.dashLength = toolTipOption.dashLength == undefined ? 4 : toolTipOption.dashLength;
-	var startX = config.padding + config.yAxisWidth + config.yAxisTitleWidth;
-	var endX = opts.width - config.padding;
+	var startX = config.padding[3] + config.yAxisWidth + config.yAxisTitleWidth;
+	var endX = opts.width - config.padding[1];
 
 	if (toolTipOption.gridType == 'dash') {
 		context.setLineDash([toolTipOption.dashLength, toolTipOption.dashLength]);
@@ -1621,8 +1757,8 @@ function drawToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
 	};
 	toolTipOption.activeBgColor = toolTipOption.activeBgColor ? toolTipOption.activeBgColor : '#000000';
 	toolTipOption.activeBgOpacity = toolTipOption.activeBgOpacity ? toolTipOption.activeBgOpacity : 0.08;
-	var startY = config.padding;
-	var endY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
+	var startY = opts.area[0];
+	var endY = opts.height - opts.area[2];
 	context.beginPath();
 	context.setFillStyle(hexToRgb(toolTipOption.activeBgColor, toolTipOption.activeBgOpacity));
 	context.rect(offsetX - eachSpacing / 2, startY, eachSpacing, endY - startY);
@@ -1653,7 +1789,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
 	}, offset);
 	offset.y -= 8 * opts.pixelRatio;
 	var textWidth = textList.map(function(item) {
-		return measureText(item.text);
+		return measureText(item.text,config.fontSize);
 	});
 
 	var toolTipWidth = legendWidth + legendMarginRight + 4 * config.toolTipPadding + Math.max.apply(null, textWidth);
@@ -1732,7 +1868,7 @@ function drawYAxisTitle(title, opts, config, context) {
 	context.setFillStyle(opts.yAxis.titleFontColor || '#333333');
 	context.translate(0, opts.height);
 	context.rotate(-90 * Math.PI / 180);
-	context.fillText(title, startX, config.padding + 0.5 * config.fontSize);
+	context.fillText(title, startX, config.padding[3] + 0.5 * config.fontSize);
 	context.closePath();
 	context.stroke();
 	context.restore();
@@ -1740,21 +1876,20 @@ function drawYAxisTitle(title, opts, config, context) {
 
 function drawColumnDataPoints(series, opts, config, context) {
 	var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-	var columnOption = opts.extra.column || {
-		type: {},
-		meter: {}
-	};
-	columnOption.type = columnOption.type == undefined ? 'group' : columnOption.type;
-	columnOption.meter = columnOption.meter || {}
-	columnOption.meter.border = columnOption.meter.border == undefined ? 4 : columnOption.meter.border;
-	columnOption.meter.fillColor = columnOption.meter.fillColor == undefined ? '#FFFFFF' : columnOption.meter.fillColor;
 	var _calYAxisData = calYAxisData(series, opts, config),
 		ranges = _calYAxisData.ranges;
 
 	var _getXAxisPoints = getXAxisPoints(opts.categories, opts, config),
 		xAxisPoints = _getXAxisPoints.xAxisPoints,
 		eachSpacing = _getXAxisPoints.eachSpacing;
-
+	var columnOption = assign({},{
+		type:'group',
+		width:eachSpacing/2,
+		meter:{
+			border:4,
+			fillColor:'#FFFFFF'
+		}
+	},opts.extra.column);
 	var minRange = ranges.pop();
 	var maxRange = ranges.shift();
 	var calPoints = [];
@@ -1772,8 +1907,7 @@ function drawColumnDataPoints(series, opts, config, context) {
 		switch (columnOption.type) {
 			case 'group':
 				var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-				var tooltipPoints = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config,
-					seriesIndex, series, process);
+				var tooltipPoints = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config,seriesIndex, series, process);
 				calPoints.push(tooltipPoints);
 				points = fixColumeData(points, eachSpacing, series.length, seriesIndex, config, opts);
 				points.forEach(function(item, index) {
@@ -1781,7 +1915,7 @@ function drawColumnDataPoints(series, opts, config, context) {
 						context.beginPath();
 						context.setFillStyle(item.color || eachSeries.color);
 						var startX = item.x - item.width / 2 + 1;
-						var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
+						var height = opts.height - item.y - opts.area[2];
 						context.moveTo(startX, item.y);
 						context.fillRect(startX, item.y, item.width - 2, height);
 						context.closePath();
@@ -1801,8 +1935,8 @@ function drawColumnDataPoints(series, opts, config, context) {
 						context.beginPath();
 						context.setFillStyle(item.color || eachSeries.color);
 						var startX = item.x - item.width / 2 + 1;
-						var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
-						var height0 = opts.height - item.y0 - config.padding - config.xAxisHeight - config.legendHeight;
+						var height = opts.height - item.y - opts.area[2];
+						var height0 = opts.height - item.y0 - opts.area[2];
 						if (seriesIndex > 0) {
 							height -= height0;
 						}
@@ -1825,7 +1959,7 @@ function drawColumnDataPoints(series, opts, config, context) {
 							context.beginPath();
 							context.setFillStyle(columnOption.meter.fillColor);
 							var startX = item.x - item.width / 2 ;
-							var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
+							var height = opts.height - item.y - opts.area[2];
 							context.moveTo(startX, item.y);
 							context.fillRect(startX, item.y, item.width, height);
 							context.closePath();
@@ -1849,7 +1983,7 @@ function drawColumnDataPoints(series, opts, config, context) {
 							context.beginPath();
 							context.setFillStyle(item.color || eachSeries.color);
 							var startX = item.x - item.width / 2;
-							var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
+							var height = opts.height - item.y - opts.area[2];
 							context.moveTo(startX, item.y);
 							context.fillRect(startX, item.y, item.width, height);
 							context.closePath();
@@ -2037,7 +2171,7 @@ function drawAreaDataPoints(series, opts, config, context) {
 
 	var minRange = ranges.pop();
 	var maxRange = ranges.shift();
-	var endY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
+	var endY = opts.height - opts.area[2];
 	var calPoints = [];
 
 	context.save();
@@ -2254,7 +2388,7 @@ function drawMixDataPoints(series, opts, config, context) {
 
 	var minRange = ranges.pop();
 	var maxRange = ranges.shift();
-	var endY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
+	var endY = opts.height - opts.area[2];
 	var calPoints = [];
 
 	var columnIndex = 0;
@@ -2286,7 +2420,7 @@ function drawMixDataPoints(series, opts, config, context) {
 					context.beginPath();
 					context.setFillStyle(item.color || eachSeries.color);
 					var startX = item.x - item.width / 2 + 1;
-					var height = opts.height - item.y - config.padding - config.xAxisHeight - config.legendHeight;
+					var height = opts.height - item.y - opts.area[2];
 					context.moveTo(startX, item.y);
 					context.rect(startX, item.y, item.width - 2, height);
 					context.closePath();
@@ -2450,14 +2584,14 @@ function drawXAxis(categories, opts, config, context) {
 		endX = _getXAxisPoints4.endX,
 		eachSpacing = _getXAxisPoints4.eachSpacing;
 
-	var startY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
-	var endY = config.padding;
+	var startY = opts.height - opts.area[2];
+	var endY = opts.area[0];
 
 
 	//绘制滚动条
 	if (opts.enableScroll && opts.xAxis.scrollShow) {
-		var scrollY = opts.height - config.padding - config.legendHeight + 6 * opts.pixelRatio;
-		var scrollScreenWidth = endX - startX;
+		var scrollY = opts.height - opts.area[2] + config.xAxisHeight;
+		var scrollScreenWidth = endX - startX ;
 		var scrollTotalWidth = eachSpacing * (xAxisPoints.length - 1);
 		var scrollWidth = scrollScreenWidth * scrollScreenWidth / scrollTotalWidth;
 		var scrollLeft = 0;
@@ -2521,7 +2655,7 @@ function drawXAxis(categories, opts, config, context) {
 	//不绘制X轴
 	if (opts.xAxis.disabled !== true) {
 		// 对X轴列表做抽稀处理
-		let validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth;
+		let validWidth = opts.width - config.padding[1] - config.padding[3] - config.yAxisWidth - config.yAxisTitleWidth;
 		//默认全部显示X轴标签
 		let maxXAxisListLength = categories.length;
 		//如果设置了X轴单屏数量
@@ -2547,11 +2681,7 @@ function drawXAxis(categories, opts, config, context) {
 			}
 		}
 		newCategories[cgLength - 1] = categories[cgLength - 1];
-		/*
-		categories = categories.map(function (item, index) {
-			return index % ratio !== 0 ? '' : item;
-		});*/
-
+		
 		var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
 		if (config._xAxisTextAngle_ === 0) {
 			newCategories.forEach(function(item, index) {
@@ -2559,7 +2689,7 @@ function drawXAxis(categories, opts, config, context) {
 				context.beginPath();
 				context.setFontSize(xAxisFontSize);
 				context.setFillStyle(opts.xAxis.fontColor || '#666666');
-				context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
+				context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight - xAxisFontSize)/2);
 				context.closePath();
 				context.stroke();
 			});
@@ -2594,21 +2724,19 @@ function drawYAxisGrid(categories, opts, config, context) {
 	if (opts.yAxis.disableGrid === true) {
 		return;
 	}
-	var spacingValid = opts.height - 2 * config.padding - config.xAxisHeight - config.legendHeight;
-	var eachSpacing = Math.floor(spacingValid / config.yAxisSplit);
-	var yAxisTotalWidth = config.yAxisWidth + config.yAxisTitleWidth;
-	var startX = config.padding + yAxisTotalWidth;
+	var spacingValid = opts.height - opts.area[0] - opts.area[2];
+	var eachSpacing = spacingValid / config.yAxisSplit;
+	var startX = opts.area[3];
 	var _getXAxisPoints4 = getXAxisPoints(categories, opts, config),
 		xAxisPoints = _getXAxisPoints4.xAxisPoints,
 		xAxiseachSpacing = _getXAxisPoints4.eachSpacing;
 	var TotalWidth = xAxiseachSpacing * (xAxisPoints.length - 1);
 	var endX = startX + TotalWidth;
-
+	
 	var points = [];
-	for (var i = 0; i < config.yAxisSplit; i++) {
-		points.push(config.padding + eachSpacing * i);
+	for (var i = 0; i < config.yAxisSplit+1; i++) {
+		points.push(opts.height - opts.area[2] - eachSpacing * i);
 	}
-	points.push(config.padding + eachSpacing * config.yAxisSplit + 2);
 
 	context.save();
 	if (opts._scrollDistance_ && opts._scrollDistance_ !== 0) {
@@ -2620,7 +2748,6 @@ function drawYAxisGrid(categories, opts, config, context) {
 	}
 	context.beginPath();
 	context.setStrokeStyle(opts.yAxis.gridColor || "#cccccc");
-
 	context.setLineWidth(1 * opts.pixelRatio);
 	points.forEach(function(item, index) {
 		context.moveTo(startX, item);
@@ -2637,31 +2764,30 @@ function drawYAxis(series, opts, config, context) {
 	if (opts.yAxis.disabled === true) {
 		return;
 	}
-
 	var _calYAxisData4 = calYAxisData(series, opts, config),
 		rangesFormat = _calYAxisData4.rangesFormat;
-
-	var yAxisTotalWidth = config.yAxisWidth + config.yAxisTitleWidth;
-
-	var spacingValid = opts.height - 2 * config.padding - config.xAxisHeight - config.legendHeight;
+	var spacingValid = opts.height - opts.area[0] - opts.area[2];
 	var eachSpacing = Math.floor(spacingValid / config.yAxisSplit);
-	var startX = config.padding + yAxisTotalWidth;
-	var endX = opts.width - config.padding;
-	var endY = opts.height - config.padding - config.xAxisHeight - config.legendHeight + config.xAxisTextPadding;
-
+	var startX = opts.area[3];
+	var endX = opts.width - opts.area[1];
+	var endY = opts.height - opts.area[2];
+	var fillEndY = endY + config.xAxisHeight;
+	if(opts.xAxis.scrollShow){
+		fillEndY -= 3*opts.pixelRatio;
+	}
 	// set YAxis background
 	context.beginPath();
 	context.setFillStyle(opts.background || '#ffffff');
 	if (opts._scrollDistance_ < 0) {
-		context.fillRect(0, 0, startX, endY + config.xAxisHeight);
+		context.fillRect(0, 0, startX, fillEndY);
 	}
-	context.fillRect(endX, 0, opts.width, endY + config.xAxisHeight);
+	context.fillRect(endX, 0, opts.width, fillEndY);
 	context.closePath();
 	context.stroke();
 
 	var points = [];
 	for (var i = 0; i <= config.yAxisSplit; i++) {
-		points.push(config.padding + eachSpacing * i);
+		points.push(opts.area[0] + eachSpacing * i);
 	}
 
 	var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
@@ -2670,7 +2796,7 @@ function drawYAxis(series, opts, config, context) {
 		context.beginPath();
 		context.setFontSize(yAxisFontSize);
 		context.setFillStyle(opts.yAxis.fontColor || '#666666');
-		context.fillText(item, config.padding + config.yAxisTitleWidth, pos + yAxisFontSize / 2);
+		context.fillText(item, opts.area[3] - config.yAxisWidth, pos + yAxisFontSize / 2);
 		context.closePath();
 		context.stroke();
 	});
@@ -2681,94 +2807,112 @@ function drawYAxis(series, opts, config, context) {
 	}
 }
 
-function drawLegend(series, opts, config, context) {
-	if (opts.legend === false) {
+function drawLegend(series, opts, config, context , chartData) {
+	if (opts.legend.show === false) {
 		return;
 	}
-	// each legend shape width 15px
-	// the spacing between shape and text in each legend is the `padding`
-	// each legend spacing is the `padding`
-	// legend margin top `config.padding`
-
-	var _calLegendData = calLegendData(series, opts, config),
-		legendList = _calLegendData.legendList;
-
-	var padding = 5 * opts.pixelRatio;
-	var marginTop = 10 * opts.pixelRatio;
-	var shapeWidth = 15 * opts.pixelRatio;
+	let legendData = chartData.legendData;
+	let legendList = legendData.points;
+	let legendArea = legendData.area;
+	let padding = opts.legend.padding;
+	let fontSize =  opts.legend.fontSize;
+	let shapeWidth = 15 * opts.pixelRatio;
+	let shapeRight = 5 * opts.pixelRatio;
+	let itemGap = opts.legend.itemGap;
+	let lineHeight = Math.max(opts.legend.lineHeight*opts.pixelRatio, fontSize);
+	
+	//画背景及边框
+	context.beginPath();
+	context.setLineWidth(opts.legend.borderWidth);
+	context.setStrokeStyle(opts.legend.borderColor);
+	context.setFillStyle(opts.legend.backgroundColor);
+	context.moveTo(legendArea.start.x, legendArea.start.y);
+	context.rect(legendArea.start.x, legendArea.start.y, legendArea.width, legendArea.height);
+	context.closePath();
+	context.fill();
+	context.stroke();
+	
 	legendList.forEach(function(itemList, listIndex) {
-		var width = 0;
-		for (let i = 0; i < itemList.length; i++) {
-			let item = itemList[i];
-			item.name = item.name || 'undefined';
-			width += 3 * padding + measureText(item.name) + shapeWidth;
+		let width = 0;
+		let height = 0;
+		width = legendData.widthArr[listIndex];
+		height = legendData.heightArr[listIndex];
+		let startX=0;
+		let startY=0;
+		if(opts.legend.position=='top' || opts.legend.position=='bottom'){
+			startX = legendArea.start.x + (legendArea.width - width)/2;
+			startY = legendArea.start.y + padding + listIndex * lineHeight;
+		}else{
+			if(listIndex == 0){
+				width = 0;
+			}else{
+				width = legendData.widthArr[listIndex - 1];
+			}
+			startX = legendArea.start.x + padding + width;
+			startY = legendArea.start.y + padding + (legendArea.height - height)/2;
 		}
-		var startX = (opts.width - width) / 2 + padding;
-		var startY = opts.height - config.padding - config.legendHeight + listIndex * (config.fontSize + marginTop) +
-			padding + marginTop;
-
+		
 		context.setFontSize(config.fontSize);
 		for (let i = 0; i < itemList.length; i++) {
 			let item = itemList[i];
-			switch (opts.type) {
+			item.area = [0,0,0,0];
+			item.area[0]=startX;
+			item.area[1]=startY;
+			item.area[3]=startY+lineHeight;
+			context.beginPath();
+			context.setLineWidth(1 * opts.pixelRatio);
+			context.setStrokeStyle(item.show ? item.color : opts.legend.hiddenColor);
+			context.setFillStyle(item.show ? item.color : opts.legend.hiddenColor);
+			switch (item.legendShape) {
 				case 'line':
-					context.beginPath();
-					context.setLineWidth(1 * opts.pixelRatio);
-					context.setStrokeStyle(item.color);
-					context.setFillStyle(item.color);
-					context.moveTo(startX + 7.5 * opts.pixelRatio, startY + 5 * opts.pixelRatio);
-					context.arc(startX + 7.5 * opts.pixelRatio, startY + 5 * opts.pixelRatio, 6 * opts.pixelRatio, 0, 2 * Math.PI);
-					context.closePath();
-					context.fill();
-					context.stroke();
+					context.moveTo(startX, startY + 0.5 * lineHeight - 2 * opts.pixelRatio);
+					context.fillRect(startX, startY+ 0.5 * lineHeight - 2 * opts.pixelRatio, 15 * opts.pixelRatio, 4 * opts.pixelRatio);
 					break;
-				case 'pie':
-					context.beginPath();
-					context.setLineWidth(1 * opts.pixelRatio);
-					context.setStrokeStyle(item.color);
-					context.setFillStyle(item.color);
-					context.moveTo(startX + 7.5 * opts.pixelRatio, startY + 5 * opts.pixelRatio);
-					context.arc(startX + 7.5 * opts.pixelRatio, startY + 5 * opts.pixelRatio, 6 * opts.pixelRatio, 0, 2 * Math.PI);
-					context.closePath();
-					context.fill();
-					context.stroke();
+				case 'triangle':
+					context.moveTo(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight - 5 * opts.pixelRatio);
+					context.lineTo(startX + 2.5 * opts.pixelRatio, startY + 0.5 * lineHeight + 5 * opts.pixelRatio);
+					context.lineTo(startX + 12.5 * opts.pixelRatio, startY + 0.5 * lineHeight + 5 * opts.pixelRatio );
+					context.lineTo(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight - 5 * opts.pixelRatio);
 					break;
-				case 'ring':
-				case 'rose':
-					context.beginPath();
-					context.setLineWidth(1 * opts.pixelRatio);
-					context.setStrokeStyle(item.color);
-					context.setFillStyle(item.color);
-					context.moveTo(startX + 7.5 * opts.pixelRatio, startY + 5 * opts.pixelRatio);
-					context.arc(startX + 7.5 * opts.pixelRatio, startY + 5 * opts.pixelRatio, 6 * opts.pixelRatio, 0, 2 * Math.PI);
-					context.closePath();
-					context.fill();
-					context.stroke();
+				case 'diamond':
+					context.moveTo(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight - 5 * opts.pixelRatio);
+					context.lineTo(startX + 2.5 * opts.pixelRatio, startY + 0.5 * lineHeight);
+					context.lineTo(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight + 5 * opts.pixelRatio );
+					context.lineTo(startX + 12.5 * opts.pixelRatio, startY + 0.5 * lineHeight);
+					context.lineTo(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight - 5 * opts.pixelRatio);
 					break;
-					//圆弧进度图不显示图例
-				case 'gauge':
+				case 'circle':
+					context.moveTo(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight);
+					context.arc(startX + 7.5 * opts.pixelRatio, startY + 0.5 * lineHeight, 5 * opts.pixelRatio, 0, 2 * Math.PI);
 					break;
-				case 'arcbar':
+				case 'rect':
+					context.moveTo(startX, startY + 0.5 * lineHeight - 5 * opts.pixelRatio);
+					context.fillRect(startX, startY+ 0.5 * lineHeight - 5 * opts.pixelRatio, 15 * opts.pixelRatio, 10 * opts.pixelRatio);
 					break;
 				default:
-					context.beginPath();
-					context.setLineWidth(1 * opts.pixelRatio);
-					context.setStrokeStyle(item.color);
-					context.setFillStyle(item.color);
-					context.moveTo(startX, startY);
-					context.fillRect(startX, startY, 15 * opts.pixelRatio, 10 * opts.pixelRatio);
-					context.closePath();
-					context.fill();
-					context.stroke();
+					context.moveTo(startX, startY + 0.5 * lineHeight - 5 * opts.pixelRatio);
+					context.fillRect(startX, startY+ 0.5 * lineHeight - 5 * opts.pixelRatio, 15 * opts.pixelRatio, 10 * opts.pixelRatio);
 			}
-			startX += padding + shapeWidth;
+			context.closePath();
+			context.fill();
+			context.stroke();
+			
+			startX += shapeWidth + shapeRight;
+			let fontTrans = 0.5 * lineHeight + 0.5 *fontSize -2;
 			context.beginPath();
-			context.setFontSize(config.fontSize);
-			context.setFillStyle(opts.extra.legendTextColor || '#333333');
-			context.fillText(item.name, startX, startY + 6 * opts.pixelRatio + 3 * opts.pixelRatio);
+			context.setFontSize(fontSize);
+			context.setFillStyle(item.show ? opts.legend.fontColor : opts.legend.hiddenColor);
+			context.fillText(item.name, startX, startY + fontTrans);
 			context.closePath();
 			context.stroke();
-			startX += measureText(item.name) + 2 * padding;
+			if(opts.legend.position=='top' || opts.legend.position=='bottom'){
+				startX += measureText(item.name,fontSize) + itemGap;
+				item.area[2] = startX;
+			}else{
+				item.area[2] = startX + measureText(item.name,fontSize) + itemGap;;
+				startX -= shapeWidth + shapeRight;
+				startY += lineHeight;
+			}
 		}
 	});
 }
@@ -2778,16 +2922,11 @@ function drawPieDataPoints(series, opts, config, context) {
 
 	var pieOption = opts.extra.pie || {};
 	var centerPosition = {
-		x: opts.width / 2,
-		y: (opts.height - config.legendHeight) / 2
+		x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
+		y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
 	};
-	var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_,
-		centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding);
-	if (opts.dataLabel) {
-		radius -= 10;
-	} else {
-		radius -= 2 * config.padding;
-	}
+	var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_,(opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
+
 	series = getPieDataPoints(series, radius, process);
 
 	var activeRadius = config.pieChartLinePadding / 2;
@@ -2851,7 +2990,7 @@ function drawPieDataPoints(series, opts, config, context) {
 	}
 
 	if (process === 1 && opts.type === 'ring') {
-		drawRingTitle(opts, config, context);
+		drawRingTitle(opts, config, context , centerPosition);
 	}
 
 	return {
@@ -2867,15 +3006,15 @@ function drawRoseDataPoints(series, opts, config, context) {
 	var roseOption = opts.extra.rose || {};
 	roseOption.type = roseOption.type || 'area';
 	var centerPosition = {
-		x: opts.width / 2,
-		y: (opts.height - config.legendHeight) / 2
+		x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
+		y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
 	};
-	var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_,
-		centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding);
+	var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_,centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding);
 	if (opts.dataLabel) {
 		radius -= 10;
 	} else {
-		radius -= 2 * config.padding;
+		//TODO逻辑不对
+		radius -= (config.padding[1]+config.padding[3]);
 	}
 	var minRadius = roseOption.minRadius || radius*0.5;
 	
@@ -2916,7 +3055,6 @@ function drawRoseDataPoints(series, opts, config, context) {
 
 
 	if (opts.dataLabel !== false && process === 1) {
-		// fix https://github.com/xiaolin3303/wx-charts/issues/132
 		var valid = false;
 		for (var i = 0, len = series.length; i < len; i++) {
 			if (series[i].data > 0) {
@@ -2939,39 +3077,33 @@ function drawRoseDataPoints(series, opts, config, context) {
 
 function drawArcbarDataPoints(series, opts, config, context) {
 	var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-
-	var arcbarOption = opts.extra.arcbar || {};
-	arcbarOption.startAngle = arcbarOption.startAngle ? arcbarOption.startAngle : 0.75;
-	arcbarOption.endAngle = arcbarOption.endAngle ? arcbarOption.endAngle : 0.25;
-	arcbarOption.type = arcbarOption.type ? arcbarOption.type : 'default';
+	var arcbarOption = assign({},{
+		startAngle:0.75,
+		endAngle:0.25,
+		type:'default',
+		width:12 * opts.pixelRatio
+	},opts.extra.arcbar);
 
 	series = getArcbarDataPoints(series, arcbarOption, process);
 	var centerPosition = {
-		x: opts.width / 2,
-		y: (opts.height) / 2
+		x: config.padding[3]+(opts.width - config.padding[1] - config.padding[3]) / 2,
+		y: config.padding[0]+(opts.height - config.padding[0] - config.padding[2]) / 2
 	};
-	var radius = Math.min(centerPosition.x, centerPosition.y);
-
-	if (typeof arcbarOption.width === 'number' && arcbarOption.width > 0) {
-		arcbarOption.width = arcbarOption.width;
-	} else {
-		arcbarOption.width = 12 * opts.pixelRatio;
-	}
-	radius -= config.padding + arcbarOption.width / 2;
+	var radius = Math.min(centerPosition.x - config.padding[3], centerPosition.y - config.padding[0]);
+	radius -= arcbarOption.width / 2;
 
 	//背景颜色
-	context.setLineWidth(arcbarOption.width); // 设置圆环的宽度
-	context.setStrokeStyle(arcbarOption.backgroundColor || '#E9E9E9'); // 设置圆环的颜色
-	context.setLineCap('round'); // 设置圆环端点的形状
-	context.beginPath(); //开始一个新的路径
+	context.setLineWidth(arcbarOption.width);
+	context.setStrokeStyle(arcbarOption.backgroundColor || '#E9E9E9');
+	context.setLineCap('round');
+	context.beginPath(); 
 	if (arcbarOption.type == 'default') {
 		context.arc(centerPosition.x, centerPosition.y, radius, arcbarOption.startAngle * Math.PI, arcbarOption.endAngle *
 			Math.PI, false);
 	} else {
 		context.arc(centerPosition.x, centerPosition.y, radius, 0, 2 * Math.PI, false);
 	}
-
-	context.stroke(); //对当前路径进行描边
+	context.stroke(); 
 
 	for (let i = 0; i < series.length; i++) {
 		let eachSeries = series[i];
@@ -2983,7 +3115,9 @@ function drawArcbarDataPoints(series, opts, config, context) {
 			Math.PI, false);
 		context.stroke();
 	}
-	drawRingTitle(opts, config, context);
+	
+	drawRingTitle(opts, config, context , centerPosition);
+	
 	return {
 		center: centerPosition,
 		radius: radius,
@@ -2993,30 +3127,41 @@ function drawArcbarDataPoints(series, opts, config, context) {
 
 function drawGaugeDataPoints(categories, series, opts, config, context) {
 	var process = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
-	var gaugeOption = opts.extra.gauge || {};
-	gaugeOption.startAngle = gaugeOption.startAngle ? gaugeOption.startAngle : 0.75;
+
+	var gaugeOption = assign({},{
+		startAngle:0.75,
+		endAngle:0.25,
+		width:15,
+		splitLine:{
+			fixRadius:0,
+			splitNumber:10,
+			width:15,
+			color:'#FFFFFF',
+			childNumber:5,
+			childWidth:5
+		},
+		pointer:{
+			width:15,
+			color:'auto'
+		}
+	},opts.extra.gauge);
+	
 	if (gaugeOption.oldAngle == undefined) {
 		gaugeOption.oldAngle = gaugeOption.startAngle;
 	}
 	if (gaugeOption.oldData == undefined) {
 		gaugeOption.oldData = 0;
 	}
-	gaugeOption.endAngle = gaugeOption.endAngle ? gaugeOption.endAngle : 0.25;
+	
 	categories = getGaugeAxisPoints(categories, gaugeOption.startAngle, gaugeOption.endAngle);
+	
 	var centerPosition = {
-		x: opts.width / 2,
-		y: (opts.height) / 2
+		x: config.padding[3]+(opts.width - config.padding[1] - config.padding[3]) / 2,
+		y: config.padding[0]+(opts.height - config.padding[0] - config.padding[2]) / 2
 	};
-	var radius = Math.min(centerPosition.x, centerPosition.y);
-	if (typeof gaugeOption.width === 'number' && gaugeOption.width > 0) {
-		gaugeOption.width = gaugeOption.width;
-	} else {
-		gaugeOption.width = 15 * opts.pixelRatio;
-	}
-	radius -= config.padding + gaugeOption.width / 2;
+	var radius = Math.min(centerPosition.x - config.padding[3], centerPosition.y - config.padding[0]);
+	radius -= gaugeOption.width / 2;
 	var innerRadius = radius - gaugeOption.width;
-
-
 
 	//画背景
 	context.setLineWidth(gaugeOption.width);
@@ -3033,13 +3178,6 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 
 	//画刻度线
 	let totalAngle = gaugeOption.startAngle - gaugeOption.endAngle + 1;
-	gaugeOption.splitLine.fixRadius = gaugeOption.splitLine.fixRadius ? gaugeOption.splitLine.fixRadius : 0;
-	gaugeOption.splitLine.splitNumber = gaugeOption.splitLine.splitNumber ? gaugeOption.splitLine.splitNumber : 10;
-	gaugeOption.splitLine.width = gaugeOption.splitLine.width ? gaugeOption.splitLine.width : 15 * opts.pixelRatio;
-	gaugeOption.splitLine.color = gaugeOption.splitLine.color ? gaugeOption.splitLine.color : '#FFFFFF';
-	gaugeOption.splitLine.childNumber = gaugeOption.splitLine.childNumber ? gaugeOption.splitLine.childNumber : 5;
-	gaugeOption.splitLine.childWidth = gaugeOption.splitLine.childWidth ? gaugeOption.splitLine.childWidth : 5 * opts.pixelRatio;
-
 	let splitAngle = totalAngle / gaugeOption.splitLine.splitNumber;
 	let childAngle = totalAngle / gaugeOption.splitLine.splitNumber / gaugeOption.splitLine.childNumber;
 	let startX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius;
@@ -3076,12 +3214,6 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 	context.restore();
 
 	//画指针
-	gaugeOption.pointer.width = gaugeOption.pointer.width ? gaugeOption.pointer.width : 15 * opts.pixelRatio;
-	if (gaugeOption.pointer.color == undefined || gaugeOption.pointer.color == 'auto') {
-		gaugeOption.pointer.color == 'auto';
-	} else {
-		gaugeOption.pointer.color == gaugeOption.pointer.color;
-	}
 	series = getGaugeDataPoints(series, categories, gaugeOption, process);
 
 	for (let i = 0; i < series.length; i++) {
@@ -3109,7 +3241,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 		drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, context);
 	}
 
-	drawRingTitle(opts, config, context);
+	drawRingTitle(opts, config, context , centerPosition);
 
 	if (process === 1 && opts.type === 'gauge') {
 		gaugeOption.oldAngle = series[0]._proportion_;
@@ -3130,14 +3262,14 @@ function drawRadarDataPoints(series, opts, config, context) {
 	var radarOption = opts.extra.radar || {};
 	var coordinateAngle = getRadarCoordinateSeries(opts.categories.length);
 	var centerPosition = {
-		x: opts.width / 2,
-		y: (opts.height - config.legendHeight) / 2
+		x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
+		y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
 	};
 
 	var radius = Math.min(centerPosition.x - (getMaxTextListLength(opts.categories) + config.radarLabelTextMargin),
 		centerPosition.y - config.radarLabelTextMargin);
-
-	radius -= config.padding;
+	//TODO逻辑不对
+	radius -= config.padding[1];
 
 	// draw grid
 	context.beginPath();
@@ -3150,7 +3282,6 @@ function drawRadarDataPoints(series, opts, config, context) {
 	});
 	context.stroke();
 	context.closePath();
-
 	// draw split line grid
 
 	var _loop = function _loop(i) {
@@ -3220,11 +3351,9 @@ var Timing = {
 	easeIn: function easeIn(pos) {
 		return Math.pow(pos, 3);
 	},
-
 	easeOut: function easeOut(pos) {
 		return Math.pow(pos - 1, 3) + 1;
 	},
-
 	easeInOut: function easeInOut(pos) {
 		if ((pos /= 0.5) < 1) {
 			return 0.5 * Math.pow(pos, 3);
@@ -3232,7 +3361,6 @@ var Timing = {
 			return 0.5 * (Math.pow(pos - 2, 3) + 2);
 		}
 	},
-
 	linear: function linear(pos) {
 		return pos;
 	}
@@ -3242,15 +3370,12 @@ function Animation(opts) {
 	this.isStop = false;
 	opts.duration = typeof opts.duration === 'undefined' ? 1000 : opts.duration;
 	opts.timing = opts.timing || 'linear';
-
 	var delay = 17;
 
 	var createAnimationFrame = function createAnimationFrame() {
-
 		if (typeof requestAnimationFrame !== 'undefined') {
 			return requestAnimationFrame;
 		} else if (typeof setTimeout !== 'undefined') {
-
 			return function(step, delay) {
 				setTimeout(function() {
 					var timeStamp = +new Date();
@@ -3258,7 +3383,6 @@ function Animation(opts) {
 				}, delay);
 			};
 		} else {
-
 			return function(step) {
 				step(null);
 			};
@@ -3266,9 +3390,7 @@ function Animation(opts) {
 	};
 	var animationFrame = createAnimationFrame();
 	var startTimeStamp = null;
-
 	var _step = function step(timestamp) {
-
 		if (timestamp === null || this.isStop === true) {
 			opts.onProcess && opts.onProcess(1);
 			opts.onAnimationFinish && opts.onAnimationFinish();
@@ -3303,41 +3425,76 @@ function drawCharts(type, opts, config, context) {
 	var _this = this;
 	var series = opts.series;
 	var categories = opts.categories;
-	series = fillSeriesColor(series, config);
-	series = fillSeriesType(series, opts);
-	let seriesMA = null;
-	
+	series = fillSeries(series, opts, config);
+	var duration = opts.animation ? opts.duration : 0;
+	this.animationInstance && this.animationInstance.stop();
+	var seriesMA = null;
 	if (type == 'candle') {
 		let average = assign({}, opts.extra.candle.average);
 		if (average.show) {
 			seriesMA = calCandleMA(average.day, average.name, average.color, series[0].data);
+			seriesMA = fillSeries(seriesMA, opts, config);
 			opts.seriesMA = seriesMA;
 		}
 	}
-
-	var _calLegendData = calLegendData(series, opts, config),
-		legendHeight = _calLegendData.legendHeight;
-
+	
+	/* 原始series数据 */
+	var _series_ = series;
+	opts._series_=_series_;
+	/* 过滤掉show=false的series */
+	series=filterSeries(opts.series);
+	
+	
+	/*
+	//复位绘图区域
+	for(let i=0;i<4;i++){
+		opts.area[i]=config.padding[i];
+	}
+	
+	//通过计算三大区域：图例、X轴、Y轴的大小，确定绘图区域
+	var _calLegendData = calLegendData(seriesMA, opts, config, _this.chartData),
+		legendHeight = _calLegendData.area.wholeHeight,
+		legendWidth = _calLegendData.area.wholeWidth;
+	//TODO废弃config.legendHeight参数
 	config.legendHeight = legendHeight;
-
+	switch(opts.legend.position){
+		case 'top':
+			opts.area[0] += legendHeight;
+		break;
+		case 'bottom':
+			opts.area[2] += legendHeight;
+		break;
+		case 'left':
+			opts.area[3] += legendWidth;
+		break;
+		case 'right':
+			opts.area[1] += legendWidth;
+		break;
+	}
+	
 	var _calYAxisData = calYAxisData(series, opts, config),
 		yAxisWidth = _calYAxisData.yAxisWidth;
-
-	config.yAxisWidth = yAxisWidth;
+	if (type === 'line' || type === 'column' || type === 'area' || type === 'mix' || type === 'candle') {
+		config.yAxisWidth = yAxisWidth;
+		opts.area[3] += yAxisWidth;
+		_this.chartData.yAxisData=_calYAxisData;
+	}else{
+		config.yAxisWidth = yAxisWidth;
+	}
 	if (categories && categories.length) {
 		var _calCategoriesData = calCategoriesData(categories, opts, config),
 			xAxisHeight = _calCategoriesData.xAxisHeight,
 			angle = _calCategoriesData.angle;
-
 		config.xAxisHeight = xAxisHeight;
 		config._xAxisTextAngle_ = angle;
+		opts.area[2] += xAxisHeight;
 	}
-	if (type === 'pie' || type === 'ring' || type === 'rose') {
-		config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(series);
-	}
+	_this.chartData.categoriesData=_calCategoriesData;
+	*/
 
-	var duration = opts.animation ? opts.duration : 0;
-	this.animationInstance && this.animationInstance.stop();
+	if (type === 'pie' || type === 'ring' || type === 'rose') {
+		config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(_series_);
+	}
 
 	switch (type) {
 		case 'line':
@@ -3359,8 +3516,8 @@ function drawCharts(type, opts, config, context) {
 					_this.chartData.xAxisPoints = xAxisPoints;
 					_this.chartData.calPoints = calPoints;
 					_this.chartData.eachSpacing = eachSpacing;
-					drawLegend(opts.series, opts, config, context);
 					drawYAxis(series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
 					drawCanvas(opts, context);
 
@@ -3390,8 +3547,8 @@ function drawCharts(type, opts, config, context) {
 					_this.chartData.xAxisPoints = xAxisPoints;
 					_this.chartData.calPoints = calPoints;
 					_this.chartData.eachSpacing = eachSpacing;
-					drawLegend(opts.series, opts, config, context);
 					drawYAxis(series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
 					drawCanvas(opts, context);
 				},
@@ -3419,8 +3576,8 @@ function drawCharts(type, opts, config, context) {
 					_this.chartData.xAxisPoints = xAxisPoints;
 					_this.chartData.calPoints = calPoints;
 					_this.chartData.eachSpacing = eachSpacing;
-					drawLegend(opts.series, opts, config, context);
 					drawYAxis(series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
 					drawCanvas(opts, context);
 				},
@@ -3448,8 +3605,8 @@ function drawCharts(type, opts, config, context) {
 					_this.chartData.xAxisPoints = xAxisPoints;
 					_this.chartData.calPoints = calPoints;
 					_this.chartData.eachSpacing = eachSpacing;
-					drawLegend(opts.series, opts, config, context);
 					drawYAxis(series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
 
 					drawCanvas(opts, context);
@@ -3470,7 +3627,7 @@ function drawCharts(type, opts, config, context) {
 						contextRotate(context, opts);
 					}
 					_this.chartData.pieData = drawPieDataPoints(series, opts, config, context, process);
-					drawLegend(opts.series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process);
 					drawCanvas(opts, context);
 				},
@@ -3489,7 +3646,7 @@ function drawCharts(type, opts, config, context) {
 						contextRotate(context, opts);
 					}
 					_this.chartData.pieData = drawRoseDataPoints(series, opts, config, context, process);
-					drawLegend(opts.series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process);
 					drawCanvas(opts, context);
 				},
@@ -3508,7 +3665,7 @@ function drawCharts(type, opts, config, context) {
 						contextRotate(context, opts);
 					}
 					_this.chartData.radarData = drawRadarDataPoints(series, opts, config, context, process);
-					drawLegend(opts.series, opts, config, context);
+					drawLegend(opts.series, opts, config, context, _this.chartData);
 					drawToolTipBridge(opts, config, context, process);
 					drawCanvas(opts, context);
 				},
@@ -3570,12 +3727,12 @@ function drawCharts(type, opts, config, context) {
 					_this.chartData.xAxisPoints = xAxisPoints;
 					_this.chartData.calPoints = calPoints;
 					_this.chartData.eachSpacing = eachSpacing;
-					if (seriesMA) {
-						drawLegend(seriesMA, opts, config, context);
-					} else {
-						drawLegend(opts.series, opts, config, context);
-					}
 					drawYAxis(series, opts, config, context);
+					if (seriesMA) {
+						drawLegend(seriesMA, opts, config, context, _this.chartData);
+					} else {
+						drawLegend(opts.series, opts, config, context, _this.chartData);
+					}
 					drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
 					drawCanvas(opts, context);
 				},
@@ -3632,10 +3789,36 @@ var Charts = function Charts(opts) {
 		dashLength:4 * opts.pixelRatio,
 		scrollAlign:'left'
 	},opts.xAxis);
+	opts.legend = assign({}, {
+		show:true,
+		position:'bottom',
+		float:'center',
+		backgroundColor:'rgba(0,0,0,0)',
+		borderColor:'rgba(0,0,0,0)',
+		borderWidth:0,
+		padding:5,
+		margin:5,
+		itemGap:10,
+		fontSize: opts.fontSize,
+		lineHeight:opts.fontSize,
+		fontColor:'#333333',
+		format:{},
+		hiddenColor:'#CECECE'
+	},opts.legend);
+	opts.legend.borderWidth = opts.legend.borderWidth * opts.pixelRatio;
+	opts.legend.itemGap = opts.legend.itemGap * opts.pixelRatio;
+	opts.legend.padding = opts.legend.padding * opts.pixelRatio;
+	opts.legend.margin = opts.legend.margin * opts.pixelRatio;
 	opts.extra = assign({}, opts.extra);
 	opts.rotate = opts.rotate ? true : false;
 	opts.animation = opts.animation ? true : false;
-	var config$$1 = assign({}, config);
+	let config$$1 = assign({}, config);
+	opts.padding = opts.padding ? opts.padding : config$$1.padding;
+	for(let i=0; i<4 ; i++){
+		opts.padding[i] *= opts.pixelRatio;
+		config$$1.padding[i] = opts.padding[i];
+	}
+	config$$1.colors = opts.colors ? opts.colors : config$$1.colors;
 	config$$1.yAxisTitleWidth = opts.yAxis.disabled !== true && opts.yAxis.title ? config$$1.yAxisTitleWidth : 0;
 	if (opts.type == 'pie' || opts.type == 'ring' ) {
 		config$$1.pieChartLinePadding = opts.dataLabel === false ? 0 : opts.extra.pie.labelWidth*opts.pixelRatio || config$$1.pieChartLinePadding *opts.pixelRatio;
@@ -3662,7 +3845,6 @@ var Charts = function Charts(opts) {
 	}
 	config$$1.xAxisLineHeight = config.xAxisLineHeight * opts.pixelRatio;
 	config$$1.legendHeight = config.legendHeight * opts.pixelRatio;
-	config$$1.padding = config.padding * opts.pixelRatio;
 	config$$1.fontSize = opts.fontSize;
 	config$$1.titleFontSize = config.titleFontSize * opts.pixelRatio;
 	config$$1.subtitleFontSize = config.subtitleFontSize * opts.pixelRatio;
@@ -3670,8 +3852,7 @@ var Charts = function Charts(opts) {
 	config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pixelRatio;
 	config$$1.columePadding = config.columePadding * opts.pixelRatio;
 
-	this.opts = opts;
-	this.config = config$$1;
+	
 	opts.$this = opts.$this ? opts.$this : this;
 	this.context = tt.createCanvasContext(opts.canvasId, opts.$this);
 	/* 兼容原生H5
@@ -3683,15 +3864,66 @@ var Charts = function Charts(opts) {
 	this.context.setFillStyle = function(e){ return this.fillStyle=e; }
 	this.context.draw = function(){ }
 	*/
-	this.chartData = {};
+	this.chartData = {
+	};
 	this.event = new Event();
-
 	this.scrollOption = {
 		currentOffset: 0,
 		startTouchX: 0,
 		distance: 0,
 		lastMoveTime: 0
 	};
+	
+	opts.area = new Array(4);
+	//复位绘图区域
+	for(let i=0;i<4;i++){
+		opts.area[i]=opts.padding[i];
+	}
+	
+	//通过计算三大区域：图例、X轴、Y轴的大小，确定绘图区域
+	var _calLegendData = calLegendData(opts.series, opts, config$$1, this.chartData),
+		legendHeight = _calLegendData.area.wholeHeight,
+		legendWidth = _calLegendData.area.wholeWidth;
+	//TODO废弃config.legendHeight参数
+	config$$1.legendHeight = legendHeight;
+	switch(opts.legend.position){
+		case 'top':
+			opts.area[0] += legendHeight;
+		break;
+		case 'bottom':
+			opts.area[2] += legendHeight;
+		break;
+		case 'left':
+			opts.area[3] += legendWidth;
+		break;
+		case 'right':
+			opts.area[1] += legendWidth;
+		break;
+	}
+	
+	
+	var _calYAxisData = calYAxisData(opts.series, opts, config$$1),
+		yAxisWidth = _calYAxisData.yAxisWidth;
+	if (opts.type === 'line' || opts.type === 'column' || opts.type === 'area' || opts.type === 'mix' || opts.type === 'candle') {
+		config$$1.yAxisWidth = yAxisWidth;
+		opts.area[3] += yAxisWidth;
+		this.chartData.yAxisData=_calYAxisData;
+	}else{
+		config$$1.yAxisWidth = yAxisWidth;
+	}
+	if (opts.categories && opts.categories.length) {
+		var _calCategoriesData = calCategoriesData(opts.categories, opts, config$$1),
+			xAxisHeight = _calCategoriesData.xAxisHeight,
+			angle = _calCategoriesData.angle;
+		config$$1.xAxisHeight = xAxisHeight;
+		config$$1._xAxisTextAngle_ = angle;
+		opts.area[2] += xAxisHeight;
+	}
+	this.chartData.categoriesData=_calCategoriesData;
+
+
+
+
 
 	//计算右对齐偏移距离
 	if (opts.enableScroll && opts.xAxis.scrollAlign == 'right') {
@@ -3715,7 +3947,9 @@ var Charts = function Charts(opts) {
 		};
 		opts._scrollDistance_ = offsetLeft;
 	}
-
+	this.opts = opts;
+	this.config = config$$1;
+	
 	drawCharts.call(this, opts.type, opts, config$$1, this.context);
 };
 
@@ -3799,7 +4033,6 @@ Charts.prototype.zoom = function() {
 		lastMoveTime: 0
 	};
 	this.opts._scrollDistance_ = offsetLeft;
-
 	drawCharts.call(this, this.opts.type, this.opts, this.config, this.context);
 };
 
@@ -3819,7 +4052,7 @@ Charts.prototype.getCurrentDataIndex = function(e) {
 		touches = e.mp.changedTouches[0];
 	}
 	if (touches) {
-		var _touches$ = getTouches(touches, this.opts, e);
+		let _touches$ = getTouches(touches, this.opts, e);
 		if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
 			return findPieChartCurrentIndex({
 				x: _touches$.x,
@@ -3840,6 +4073,43 @@ Charts.prototype.getCurrentDataIndex = function(e) {
 	return -1;
 };
 
+Charts.prototype.getLegendDataIndex = function(e) {
+	var touches = null;
+	if(e.changedTouches){
+		touches = e.changedTouches[0];
+	}else{
+		touches = e.mp.changedTouches[0];
+	}
+	if (touches) {
+		let _touches$ = getTouches(touches, this.opts, e);
+		return findLegendIndex({
+			x: _touches$.x,
+			y: _touches$.y
+		}, this.chartData.legendData);
+	}
+	return -1;
+};
+
+Charts.prototype.touchLegend = function(e) {
+	var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	var touches = null;
+	if(e.changedTouches){
+		touches = e.changedTouches[0];
+	}else{
+		touches = e.mp.changedTouches[0];
+	}
+	if(touches){
+		var _touches$ = getTouches(touches, this.opts, e);
+		var index = this.getLegendDataIndex(e);
+		if(index >= 0){
+			this.opts.series[index].show = !this.opts.series[index].show;
+			this.opts.animation = option.animation ? true : false;
+			drawCharts.call(this, this.opts.type, this.opts, this.config, this.context);
+		}
+	}
+	
+};
+
 Charts.prototype.showToolTip = function(e) {
 	var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	var touches = null;
@@ -3850,20 +4120,16 @@ Charts.prototype.showToolTip = function(e) {
 	}
 	if(!touches){
 		console.log("touchError");
-		return;
 	}
 	var _touches$ = getTouches(touches, this.opts, e);
-
 	if (this.opts.type === 'line' || this.opts.type === 'area' || this.opts.type === 'column') {
 		var index = this.getCurrentDataIndex(e);
 		var currentOffset = this.scrollOption.currentOffset;
-
 		var opts = assign({}, this.opts, {
 			_scrollDistance_: currentOffset,
 			animation: false
 		});
 		if (index > -1) {
-
 			var seriesData = getSeriesDataItem(this.opts.series, index);
 			if (seriesData.length !== 0) {
 				var _getToolTipData = getToolTipData(seriesData, this.chartData.calPoints, index, this.opts.categories, option),
@@ -3881,10 +4147,8 @@ Charts.prototype.showToolTip = function(e) {
 		drawCharts.call(this, opts.type, opts, this.config, this.context);
 	}
 	if (this.opts.type === 'mix') {
-
 		var index = this.getCurrentDataIndex(e);
 		var currentOffset = this.scrollOption.currentOffset;
-
 		var opts = assign({}, this.opts, {
 			_scrollDistance_: currentOffset,
 			animation: false
@@ -3907,10 +4171,8 @@ Charts.prototype.showToolTip = function(e) {
 		drawCharts.call(this, opts.type, opts, this.config, this.context);
 	}
 	if (this.opts.type === 'candle') {
-
 		var index = this.getCurrentDataIndex(e);
 		var currentOffset = this.scrollOption.currentOffset;
-
 		var opts = assign({}, this.opts, {
 			_scrollDistance_: currentOffset,
 			animation: false
@@ -3935,13 +4197,11 @@ Charts.prototype.showToolTip = function(e) {
 	if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
 		var index = this.getCurrentDataIndex(e);
 		var currentOffset = this.scrollOption.currentOffset;
-
 		var opts = assign({}, this.opts, {
 			_scrollDistance_: currentOffset,
 			animation: false
 		});
 		if (index > -1) {
-
 			var seriesData = this.opts.series[index];
 			var textList = [{
 				text: option.format ? option.format(seriesData) : seriesData.name + ': ' + seriesData.data,
@@ -3951,7 +4211,6 @@ Charts.prototype.showToolTip = function(e) {
 				x: _touches$.x,
 				y: _touches$.y
 			};
-
 			opts.tooltip = {
 				textList: textList,
 				offset: offset,
@@ -3970,7 +4229,6 @@ Charts.prototype.showToolTip = function(e) {
 			animation: false
 		});
 		if (index > -1) {
-	
 			var seriesData = getSeriesDataItem(this.opts.series, index);
 			if (seriesData.length !== 0) {
 				var textList = seriesData.map(function(item) {
@@ -4030,23 +4288,19 @@ Charts.prototype.scroll = function(e) {
 	let currMoveTime = Date.now();
 	let duration = currMoveTime - this.scrollOption.lastMoveTime;
 	if (duration < Math.floor(1000 / Limit)) return;
-
 	this.scrollOption.lastMoveTime = currMoveTime;
-
 	var touches = null;
 	if(e.changedTouches){
 		touches = e.changedTouches[0];
 	}else{
 		touches = e.mp.changedTouches[0];
 	}
-	var _touches$ = getTouches(touches, this.opts, e);
 	if (touches && this.opts.enableScroll === true) {
+		var _touches$ = getTouches(touches, this.opts, e);
 		var _distance;
 		_distance = _touches$.x - this.scrollOption.startTouchX;
 		var currentOffset = this.scrollOption.currentOffset;
-
 		var validDistance = calValidDistance(currentOffset + _distance, this.chartData, this.config, this.opts);
-
 		this.scrollOption.distance = _distance = validDistance - currentOffset;
 		var opts = assign({}, this.opts, {
 			_scrollDistance_: currentOffset + _distance,
@@ -4062,7 +4316,6 @@ Charts.prototype.scrollEnd = function(e) {
 		var _scrollOption = this.scrollOption,
 			currentOffset = _scrollOption.currentOffset,
 			distance = _scrollOption.distance;
-
 		this.scrollOption.currentOffset = currentOffset + distance;
 		this.scrollOption.distance = 0;
 	}
