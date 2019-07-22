@@ -1,8 +1,10 @@
 # 🎊 喜讯！《uCharts 高性能跨全端图表》荣获插件大赛一等奖。
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
-## 最近更新
-* [x] 2019.07.14 增加 `config.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
+## 最近1个月更新
+* [x] 2019.07.21 【重要】升级为1.8.0Beta版本，增加图例位置自定义及图例点击事件，修复直角坐标系中绘图不精确的问题，修复饼图类半径计算问题，修复一些已知bug。如需稳定版，请用码云地址[uCharts v1.7.0](https://gitee.com/uCharts/uCharts/repository/archive/v1.7.0)
+* [x] 2019.07.19 增加 `opts.colors` 图表配色方案，不传则使用系统默认配置。
+* [x] 2019.07.14 增加 `opts.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
 * [x] 2019.07.14 增加 `opts.legend` 图例设置，未来将支持上下左右布局图例，目前仍为底部图例。
 * [x] 2019.07.14 增加 `opts.padding` Array 默认[15,15,4,15] 画布填充边距，顺序为上右下左，同css，但必须4位 。
 * [x] 2019.07.13 修改updateData方法，不仅仅限于`categories`及`series`更新，支持全部opts参数更新，支持变更图表类型，等同于new uCharts({})。
@@ -18,19 +20,6 @@
 * [x] 2019.07.01 新增 `opts.yAxis.fontSize` 参数，用于控制 `Y` 轴标签的字体大小。
 * [x] 2019.07.01 新增 `opts.xAxis.fontSize` 参数，用于控制 `X` 轴标签的字体大小。
 * [x] 2019.07.01 新增 `opts.series.textSize` 参数，用于控制数据标签的字体大小。
-* [x] 2019.06.30 新增玫瑰图，详见 demo。
-* [x] 2019.06.30 新增雷达图 `ToolTip` 效果，详见雷达图 demo。
-* [x] 2019.06.28 新增 `component.vue` 组件，并提供组件下使用 `uCharts` 应用示例。
-* [x] 2019.06.26 新增各厂商小程序原生调用 `JS` 文件支持（非 uin-app 项目），详见 gitee 码云首页目录示例。
-* [x] 2019.06.26 新增对 `dataLabel` 字体颜色的控制，增加`opts.series.textColor` 参数。
-* [x] 2019.06.25 优化 29 处 `forEach` 循环，更替为 `for` 循环。
-* [x] 2019.06.24 将 `K` 线的均线挂载到 `opts` 上，方便调用。更改 demo 网络请求地址。
-* [x] 2019.06.23 完善 `K` 线图，增加 `K` 线图与柱状图联动 demo，详见应用 -> `K` 线图与柱状图联动。
-* [x] 2019.06.22 增加 `opts.xAxis.labelCount` 参数，`X` 轴可见区域标签数量（即 `X` 轴数刻度标签单屏幕限制显示的数量），用于解决 `X` 轴文案问题。
-* [x] 2019.06.22 优化拖拽事件，增加 `opts.extra.touchMoveLimit` 图表拖拽时，每秒重新渲染的帧数，针对图表拖拽卡顿。
-* [x] 2019.06.17 增加 `updateData` 更新图表时，是否显示动画效果 `animation` ，参见 `API` 更新图表方法。
-* [x] 2019.06.17 增加 `updateData` 更新图表时，滚动条位置设置`scrollPosition`，参见 `API` 更新图表方法。
-
 
 # [uCharts 官方网站](https://www.ucharts.cn)
 # <https://www.ucharts.cn>
@@ -39,7 +28,7 @@
 # `小伙伴们，需要 star 哦~~~`
 
 # [在线文档（参数在 API 章节）](http://doc.ucharts.cn)
-
+# [在线文档（备用地址）](https://www.kancloud.cn/qiun/ucharts/content)
 
 ## QQ交流群：371774600
 ## 口令【`gitee`】
