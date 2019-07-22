@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.0 Beta 20190721
+ * uCharts v1.8.0 Beta 20190722
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -176,7 +176,7 @@ function calCandleMA(dayArr, nameArr, colorArr, kdata) {
 
 function calValidDistance(distance, chartData, config, opts) {
 
-	var dataChartAreaWidth = opts.width - config.padding[1] - chartData.xAxisPoints[0];
+	var dataChartAreaWidth = opts.width - opts.area[1] - opts.area[3];
 	var dataChartWidth = chartData.eachSpacing * opts.categories.length;
 	var validDistance = distance;
 	if (distance >= 0) {
@@ -1679,7 +1679,7 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
 	if (toolTipOption.xAxisLabel) {
 		let labelText = opts.categories[opts.tooltip.index];
 		context.setFontSize(config.fontSize);
-		let textWidth = context.measureText(labelText).width;
+		let textWidth = measureText(labelText,config.fontSize);
 
 		let textX = offsetX - config.toolTipPadding - 0.5 * textWidth;
 		let textY = endY;
@@ -1725,7 +1725,7 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 
 		let labelText = calTooltipYAxisData(opts.tooltip.offset.y, opts.series, opts, config, eachSpacing);
 		context.setFontSize(config.fontSize);
-		let textWidth = context.measureText(labelText).width;
+		let textWidth = measureText(labelText,config.fontSize);
 
 		let textX = startX - 2 * config.toolTipPadding - textWidth;
 		let textY = opts.tooltip.offset.y;
@@ -2811,6 +2811,7 @@ function drawLegend(series, opts, config, context , chartData) {
 	if (opts.legend.show === false) {
 		return;
 	}
+	console.log('series',series);
 	let legendData = chartData.legendData;
 	let legendList = legendData.points;
 	let legendArea = legendData.area;
@@ -3922,14 +3923,8 @@ var Charts = function Charts(opts) {
 	this.chartData.categoriesData=_calCategoriesData;
 
 
-
-
-
 	//计算右对齐偏移距离
 	if (opts.enableScroll && opts.xAxis.scrollAlign == 'right') {
-		let _calYAxisData = calYAxisData(opts.series, opts, config$$1),
-			yAxisWidth = _calYAxisData.yAxisWidth;
-		config$$1.yAxisWidth = yAxisWidth;
 		let offsetLeft = 0;
 		let _getXAxisPoints0 = getXAxisPoints(opts.categories, opts, config$$1),
 			xAxisPoints = _getXAxisPoints0.xAxisPoints,
