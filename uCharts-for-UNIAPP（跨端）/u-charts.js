@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.0 Beta 20190722
+ * uCharts v1.8.0 Beta 20190721
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1706,7 +1706,7 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 	var toolTipOption = opts.extra.tooltip || {};
 	toolTipOption.gridType = toolTipOption.gridType == undefined ? 'solid' : toolTipOption.gridType;
 	toolTipOption.dashLength = toolTipOption.dashLength == undefined ? 4 : toolTipOption.dashLength;
-	var startX = config.padding[3] + config.yAxisWidth + config.yAxisTitleWidth;
+	var startX = opts.area[3];
 	var endX = opts.width - config.padding[1];
 
 	if (toolTipOption.gridType == 'dash') {
@@ -1726,16 +1726,18 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 		let labelText = calTooltipYAxisData(opts.tooltip.offset.y, opts.series, opts, config, eachSpacing);
 		context.setFontSize(config.fontSize);
 		let textWidth = measureText(labelText,config.fontSize);
-
-		let textX = startX - 2 * config.toolTipPadding - textWidth;
+		let bgStartX = config.padding[3] + config.yAxisTitleWidth;
+		let bgEndX = bgStartX + config.yAxisWidth;
+		let bgWidth = bgEndX - bgStartX;
+		
+		let textX = bgStartX + (bgWidth - textWidth)/2;
 		let textY = opts.tooltip.offset.y;
 		context.beginPath();
 		context.setFillStyle(hexToRgb(toolTipOption.labelBgColor || config.toolTipBackground, toolTipOption.labelBgOpacity ||
 			config.toolTipOpacity));
 		context.setStrokeStyle(toolTipOption.labelBgColor || config.toolTipBackground);
 		context.setLineWidth(1 * opts.pixelRatio);
-		context.rect(textX, textY - 0.5 * config.fontSize - config.toolTipPadding, textWidth + 2 * config.toolTipPadding,
-			config.fontSize + 2 * config.toolTipPadding);
+		context.rect(bgStartX, textY - 0.5 * config.fontSize - config.toolTipPadding, bgWidth ,config.fontSize + 2 * config.toolTipPadding);
 		context.closePath();
 		context.stroke();
 		context.fill();
@@ -1743,7 +1745,7 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 		context.beginPath();
 		context.setFontSize(config.fontSize);
 		context.setFillStyle(toolTipOption.labelFontColor || config.fontColor);
-		context.fillText(labelText, textX + config.toolTipPadding, textY + 0.5 * config.fontSize);
+		context.fillText(labelText, textX, textY + 0.5 * config.fontSize);
 		context.closePath();
 		context.stroke();
 	}
@@ -2811,7 +2813,6 @@ function drawLegend(series, opts, config, context , chartData) {
 	if (opts.legend.show === false) {
 		return;
 	}
-	console.log('series',series);
 	let legendData = chartData.legendData;
 	let legendList = legendData.points;
 	let legendArea = legendData.area;
@@ -3437,6 +3438,7 @@ function drawCharts(type, opts, config, context) {
 			seriesMA = fillSeries(seriesMA, opts, config);
 			opts.seriesMA = seriesMA;
 		}
+		calLegendData(seriesMA, opts, config, _this.chartData);
 	}
 	
 	/* 原始series数据 */
@@ -3444,54 +3446,6 @@ function drawCharts(type, opts, config, context) {
 	opts._series_=_series_;
 	/* 过滤掉show=false的series */
 	series=filterSeries(opts.series);
-	
-	
-	/*
-	//复位绘图区域
-	for(let i=0;i<4;i++){
-		opts.area[i]=config.padding[i];
-	}
-	
-	//通过计算三大区域：图例、X轴、Y轴的大小，确定绘图区域
-	var _calLegendData = calLegendData(seriesMA, opts, config, _this.chartData),
-		legendHeight = _calLegendData.area.wholeHeight,
-		legendWidth = _calLegendData.area.wholeWidth;
-	//TODO废弃config.legendHeight参数
-	config.legendHeight = legendHeight;
-	switch(opts.legend.position){
-		case 'top':
-			opts.area[0] += legendHeight;
-		break;
-		case 'bottom':
-			opts.area[2] += legendHeight;
-		break;
-		case 'left':
-			opts.area[3] += legendWidth;
-		break;
-		case 'right':
-			opts.area[1] += legendWidth;
-		break;
-	}
-	
-	var _calYAxisData = calYAxisData(series, opts, config),
-		yAxisWidth = _calYAxisData.yAxisWidth;
-	if (type === 'line' || type === 'column' || type === 'area' || type === 'mix' || type === 'candle') {
-		config.yAxisWidth = yAxisWidth;
-		opts.area[3] += yAxisWidth;
-		_this.chartData.yAxisData=_calYAxisData;
-	}else{
-		config.yAxisWidth = yAxisWidth;
-	}
-	if (categories && categories.length) {
-		var _calCategoriesData = calCategoriesData(categories, opts, config),
-			xAxisHeight = _calCategoriesData.xAxisHeight,
-			angle = _calCategoriesData.angle;
-		config.xAxisHeight = xAxisHeight;
-		config._xAxisTextAngle_ = angle;
-		opts.area[2] += xAxisHeight;
-	}
-	_this.chartData.categoriesData=_calCategoriesData;
-	*/
 
 	if (type === 'pie' || type === 'ring' || type === 'rose') {
 		config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(_series_);
