@@ -2,6 +2,9 @@
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
 ## 最近1个月更新
+* [x] 2019.07.23 增加opts.seriesMA，数据格式同opts.series, K线图自定义折线数据列表，内容同series，仅在opts.extra.candle.average.show为false时调用此数据，（默认调用此数据）。
+* [x] 2019.07.22 修改tooltip水平标签逻辑。
+* [x] 2019.07.22 修复K线图X轴Y轴标签在IOS下背景框显示不完整的bug。
 * [x] 2019.07.21 【重要】升级为1.8.0Beta版本，增加图例位置自定义及图例点击事件，修复直角坐标系中绘图不精确的问题，修复饼图类半径计算问题，修复一些已知bug。如需稳定版，请用码云地址[uCharts v1.7.0](https://gitee.com/uCharts/uCharts/repository/archive/v1.7.0)
 * [x] 2019.07.19 增加 `opts.colors` 图表配色方案，不传则使用系统默认配置。
 * [x] 2019.07.14 增加 `opts.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
