@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.0 Beta 20190722
+ * uCharts v1.8.0 Beta 20190723
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1667,12 +1667,11 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
 	if (toolTipOption.gridType == 'dash') {
 		context.setLineDash([toolTipOption.dashLength, toolTipOption.dashLength]);
 	}
-	context.beginPath();
 	context.setStrokeStyle(toolTipOption.gridColor || '#cccccc');
 	context.setLineWidth(1 * opts.pixelRatio);
+	context.beginPath();
 	context.moveTo(offsetX, startY);
 	context.lineTo(offsetX, endY);
-	context.closePath();
 	context.stroke();
 	context.setLineDash([]);
 
@@ -1712,12 +1711,11 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 	if (toolTipOption.gridType == 'dash') {
 		context.setLineDash([toolTipOption.dashLength, toolTipOption.dashLength]);
 	}
-	context.beginPath();
 	context.setStrokeStyle(toolTipOption.gridColor || '#cccccc');
 	context.setLineWidth(1 * opts.pixelRatio);
+	context.beginPath();
 	context.moveTo(startX, opts.tooltip.offset.y);
 	context.lineTo(endX, opts.tooltip.offset.y);
-	context.closePath();
 	context.stroke();
 	context.setLineDash([]);
 
@@ -2625,13 +2623,14 @@ function drawXAxis(categories, opts, config, context) {
 		context.translate(opts._scrollDistance_, 0);
 	}
 
-	context.beginPath();
+	
 	context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
 	context.setLineCap('butt');
 	context.setLineWidth(1 * opts.pixelRatio);
 	if (opts.xAxis.gridType == 'dash') {
 		context.setLineDash([opts.xAxis.dashLength, opts.xAxis.dashLength]);
 	}
+	context.beginPath();
 	if (opts.xAxis.disableGrid !== true) {
 		if (opts.xAxis.type === 'calibration') {
 			xAxisPoints.forEach(function(item, index) {
@@ -2650,7 +2649,6 @@ function drawXAxis(categories, opts, config, context) {
 			});
 		}
 	}
-	context.closePath();
 	context.stroke();
 	context.setLineDash([]);
 
@@ -2748,14 +2746,13 @@ function drawYAxisGrid(categories, opts, config, context) {
 	if (opts.yAxis.gridType == 'dash') {
 		context.setLineDash([opts.yAxis.dashLength, opts.yAxis.dashLength]);
 	}
-	context.beginPath();
 	context.setStrokeStyle(opts.yAxis.gridColor || "#cccccc");
 	context.setLineWidth(1 * opts.pixelRatio);
+	context.beginPath();
 	points.forEach(function(item, index) {
 		context.moveTo(startX, item);
 		context.lineTo(endX, item);
 	});
-	context.closePath();
 	context.stroke();
 	context.setLineDash([]);
 
