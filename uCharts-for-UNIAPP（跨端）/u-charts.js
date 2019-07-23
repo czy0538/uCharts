@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.0 Beta 20190721
+ * uCharts v1.8.0 Beta 20190722
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -3437,6 +3437,8 @@ function drawCharts(type, opts, config, context) {
 			seriesMA = calCandleMA(average.day, average.name, average.color, series[0].data);
 			seriesMA = fillSeries(seriesMA, opts, config);
 			opts.seriesMA = seriesMA;
+		}else if(opts.seriesMA){
+			seriesMA = opts.seriesMA = fillSeries(opts.seriesMA, opts, config);
 		}
 		calLegendData(seriesMA, opts, config, _this.chartData);
 	}
