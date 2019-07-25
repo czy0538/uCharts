@@ -2,6 +2,10 @@
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
 ## 最近1个月更新
+* [x] 2019.07.25 修复ToolTip在点击相对画布底部的情况下超出画布显示不完整的bug。
+* [x] 2019.07.25 修复多行图例点击获取索引错误的bug。
+* [x] 2019.07.25 修复更新图表数据时padding、Y轴标签、图例等其他基础数据未同步更新的bug。
+* [x] 2019.07.25 调整了padding及chartData挂载到opts，为后续性能提升做准备，格式化整体代码格式。
 * [x] 2019.07.23 修复X轴Y轴网格、辅助线为线段时，线段偶尔重叠的bug。
 * [x] 2019.07.23 增加opts.seriesMA，数据格式同opts.series, K线图自定义折线数据列表，内容同series，仅在opts.extra.candle.average.show为false时调用此数据，（默认调用此数据）。
 * [x] 2019.07.22 修改tooltip水平标签逻辑。
@@ -10,7 +14,7 @@
 * [x] 2019.07.19 增加 `opts.colors` 图表配色方案，不传则使用系统默认配置。
 * [x] 2019.07.14 增加 `opts.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
 * [x] 2019.07.14 增加 `opts.legend` 图例设置，未来将支持上下左右布局图例，目前仍为底部图例。
-* [x] 2019.07.14 增加 `opts.padding` Array 默认[15,15,4,15] 画布填充边距，顺序为上右下左，同css，但必须4位 。
+* [x] 2019.07.14 增加 `opts.padding` Array 默认 [10, 10, 10, 10] 画布填充边距，顺序为上右下左，同css，但必须4位 。
 * [x] 2019.07.13 修改updateData方法，不仅仅限于`categories`及`series`更新，支持全部opts参数更新，支持变更图表类型，等同于new uCharts({})。
 * [x] 2019.07.13 更正 `饼图、圆环图、玫瑰图` 的扩展配置`labelWidth`，之前的`lableWidth`拼写错误，更新版本后请注意替换，给您带来的不便请谅解。
 * [x] 2019.07.12 增加 `opts.extra.gauge.labelFormat` 仪表盘数据标签格式化。示例：opts.extra.gauge.labelFormat:function(val){return val.toFixed(2)}。
