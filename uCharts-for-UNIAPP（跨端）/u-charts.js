@@ -30,7 +30,7 @@ var config = {
   columePadding: 3,
   fontSize: 13,
   //dataPointShape: ['diamond', 'circle', 'triangle', 'rect'],
-  dataPointShape: ['circle', 'circle', 'circle', 'circle'], 
+  dataPointShape: ['circle', 'circle', 'circle', 'circle'],
   colors: ['#1890ff', '#2fc25b', '#facc14', '#f04864', '#8543e0', '#90ed7d'],
   pieChartLinePadding: 15,
   pieChartTextPadding: 5,
@@ -1340,10 +1340,11 @@ function calYAxisData(series, opts, config) {
   }, opts.extra.column);
   var ranges = getYAxisTextList(series, opts, config, columnstyle.type);
   var yAxisWidth = config.yAxisWidth;
+  var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
   var rangesFormat = ranges.map(function(item) {
     item = util.toFixed(item, 6);
     item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
-    yAxisWidth = Math.max(yAxisWidth, measureText(item) + 5);
+    yAxisWidth = Math.max(yAxisWidth, measureText(item,yAxisFontSize) + 5);
     return item;
   });
   if (opts.yAxis.disabled === true) {
@@ -1755,10 +1756,10 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
 }
 
 function drawToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
-  var toolTipOption =assign({},{
+  var toolTipOption = assign({}, {
     activeBgColor: '#000000',
     activeBgOpacity: 0.08
-  },opts.extra.tooltip);
+  }, opts.extra.tooltip);
   var startY = opts.area[0];
   var endY = opts.height - opts.area[2];
   context.beginPath();
@@ -1769,11 +1770,11 @@ function drawToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
 }
 
 function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxisPoints) {
-  var toolTipOption =assign({},{
+  var toolTipOption = assign({}, {
     bgColor: '#000000',
     bgOpacity: 0.7,
     fontColor: '#FFFFFF'
-  },opts.extra.tooltip);
+  }, opts.extra.tooltip);
   var legendWidth = 4 * opts.pixelRatio;
   var legendMarginRight = 5 * opts.pixelRatio;
   var arrowWidth = 8 * opts.pixelRatio;
@@ -1797,7 +1798,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
   if (offset.x - Math.abs(opts._scrollDistance_) + arrowWidth + toolTipWidth > opts.width) {
     isOverRightBorder = true;
   }
-  if (toolTipHeight + offset.y > opts.height){
+  if (toolTipHeight + offset.y > opts.height) {
     offset.y = opts.height - toolTipHeight;
   }
   // draw background rect
@@ -2924,22 +2925,29 @@ function drawLegend(series, opts, config, context, chartData) {
 
 function drawPieDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-
-  var pieOption = opts.extra.pie || {};
+  var pieOption = assign({}, {
+    activeOpacity: 0.5,
+    activeRadius: 10 * opts.pixelRatio,
+    offsetAngle: 0,
+    labelWidth: 15 * opts.pixelRatio,
+    ringWidth: 0
+  }, opts.extra.pie);
   var centerPosition = {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
   };
-  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding -
-    config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding
-  );
+  if(config.pieChartLinePadding == 0){
+    config.pieChartLinePadding = pieOption.activeRadius;
+  }
+  
+  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
 
   series = getPieDataPoints(series, radius, process);
 
-  var activeRadius = config.pieChartLinePadding / 2;
+  var activeRadius = pieOption.activeRadius;
 
   series = series.map(function(eachSeries) {
-    eachSeries._start_ += (pieOption.offsetAngle || 0) * Math.PI / 180;
+    eachSeries._start_ += (pieOption.offsetAngle) * Math.PI / 180;
     return eachSeries;
   });
   series.forEach(function(eachSeries, seriesIndex) {
@@ -2961,9 +2969,7 @@ function drawPieDataPoints(series, opts, config, context) {
     context.setStrokeStyle('#ffffff');
     context.setFillStyle(eachSeries.color);
     context.moveTo(centerPosition.x, centerPosition.y);
-    context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 *
-      eachSeries._proportion_ *
-      Math.PI);
+    context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ * Math.PI);
     context.closePath();
     context.fill();
     if (opts.disablePieStroke !== true) {
@@ -3011,9 +3017,16 @@ function drawPieDataPoints(series, opts, config, context) {
 
 function drawRoseDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-
-  var roseOption = opts.extra.rose || {};
-  roseOption.type = roseOption.type || 'area';
+  var roseOption = assign({}, {
+    type: 'area',
+    activeOpacity: 0.5,
+    activeRadius: 10 * opts.pixelRatio,
+    offsetAngle: 0,
+    labelWidth: 15 * opts.pixelRatio
+  }, opts.extra.rose);
+  if(config.pieChartLinePadding == 0){
+    config.pieChartLinePadding = roseOption.activeRadius;
+  }
   var centerPosition = {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
@@ -3030,7 +3043,7 @@ function drawRoseDataPoints(series, opts, config, context) {
 
   series = getRoseDataPoints(series, roseOption.type, minRadius, radius, process);
 
-  var activeRadius = config.pieChartLinePadding / 2;
+  var activeRadius = roseOption.activeRadius;
 
   series = series.map(function(eachSeries) {
     eachSeries._start_ += (roseOption.offsetAngle || 0) * Math.PI / 180;
@@ -3096,10 +3109,11 @@ function drawArcbarDataPoints(series, opts, config, context) {
 
   series = getArcbarDataPoints(series, arcbarOption, process);
   var centerPosition = {
-    x: opts.padding[3] + (opts.width - opts.padding[1] - opts.padding[3]) / 2,
-    y: opts.padding[0] + (opts.height - opts.padding[0] - opts.padding[2]) / 2
+    x: opts.width / 2,
+    y: opts.height / 2
   };
-  var radius = Math.min(centerPosition.x - opts.padding[3], centerPosition.y - opts.padding[0]);
+  var radius = Math.min(centerPosition.x , centerPosition.y );
+  radius -= 5 * opts.pixelRatio;
   radius -= arcbarOption.width / 2;
 
   //背景颜色
@@ -3137,7 +3151,6 @@ function drawArcbarDataPoints(series, opts, config, context) {
 
 function drawGaugeDataPoints(categories, series, opts, config, context) {
   var process = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
-
   var gaugeOption = assign({}, {
     startAngle: 0.75,
     endAngle: 0.25,
@@ -3166,10 +3179,11 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
   categories = getGaugeAxisPoints(categories, gaugeOption.startAngle, gaugeOption.endAngle);
 
   var centerPosition = {
-    x: opts.padding[3] + (opts.width - opts.padding[1] - opts.padding[3]) / 2,
-    y: opts.padding[0] + (opts.height - opts.padding[0] - opts.padding[2]) / 2
+    x: opts.width / 2,
+    y: opts.height / 2
   };
-  var radius = Math.min(centerPosition.x - opts.padding[3], centerPosition.y - opts.padding[0]);
+  var radius = Math.min(centerPosition.x , centerPosition.y );
+  radius -= 5 * opts.pixelRatio;
   radius -= gaugeOption.width / 2;
   var innerRadius = radius - gaugeOption.width;
 
@@ -3454,10 +3468,7 @@ function drawCharts(type, opts, config, context) {
   }
 
   //重新计算图表区域
-  opts.padding = opts.padding ? opts.padding : config.padding;
-  for (let i = 0; i < 4; i++) {
-    opts.padding[i] *= opts.pixelRatio;
-  }
+  
   opts.area = new Array(4);
   //复位绘图区域
   for (let j = 0; j < 4; j++) {
@@ -3851,6 +3862,7 @@ var Charts = function Charts(opts) {
   opts.extra = assign({}, opts.extra);
   opts.rotate = opts.rotate ? true : false;
   opts.animation = opts.animation ? true : false;
+
   let config$$1 = assign({}, config);
   config$$1.colors = opts.colors ? opts.colors : config$$1.colors;
   config$$1.yAxisTitleWidth = opts.yAxis.disabled !== true && opts.yAxis.title ? config$$1.yAxisTitleWidth : 0;
@@ -3862,6 +3874,7 @@ var Charts = function Charts(opts) {
   }
   config$$1.pieChartTextPadding = opts.dataLabel === false ? 0 : config$$1.pieChartTextPadding * opts.pixelRatio;
   config$$1.yAxisSplit = opts.yAxis.splitNumber ? opts.yAxis.splitNumber : config.yAxisSplit;
+  
   //屏幕旋转
   config$$1.rotate = opts.rotate;
   if (opts.rotate) {
@@ -3872,6 +3885,10 @@ var Charts = function Charts(opts) {
   }
 
   //适配高分屏
+  opts.padding = opts.padding ? opts.padding : config$$1.padding;
+  for (let i = 0; i < 4; i++) {
+    opts.padding[i] *= opts.pixelRatio;
+  }
   config$$1.yAxisWidth = config.yAxisWidth * opts.pixelRatio;
   config$$1.xAxisHeight = config.xAxisHeight * opts.pixelRatio;
   if (opts.enableScroll && opts.xAxis.scrollShow) {
