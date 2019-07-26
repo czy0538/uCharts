@@ -3462,6 +3462,8 @@ function drawCharts(type, opts, config, context) {
       opts.seriesMA = seriesMA;
     } else if (opts.seriesMA) {
       seriesMA = opts.seriesMA = fillSeries(opts.seriesMA, opts, config);
+    } else {
+      seriesMA = series;
     }
   } else {
     seriesMA = series;
