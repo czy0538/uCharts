@@ -1341,7 +1341,7 @@ function calYAxisData(series, opts, config) {
   var rangesFormat = ranges.map(function(item) {
     item = util.toFixed(item, 6);
     item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
-    yAxisWidth = Math.max(yAxisWidth, measureText(item,yAxisFontSize) + 5);
+    yAxisWidth = Math.max(yAxisWidth, measureText(item, yAxisFontSize) + 5);
     return item;
   });
   if (opts.yAxis.disabled === true) {
@@ -1365,6 +1365,15 @@ function calTooltipYAxisData(point, series, opts, config, eachSpacing) {
   let item = maxVal - (maxVal - minVal) * (point - minAxis) / (maxAxis - minAxis);
   item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
   return item;
+}
+
+function calMarkLineData(minRange, maxRange, points, opts) {
+  let spacingValid = opts.height - opts.area[0] - opts.area[2];
+  for (let i = 0; i < points.length; i++) {
+    let height = spacingValid * (points[i].value - minRange) / (maxRange - minRange);
+    points[i].y = opts.height - Math.round(height) - opts.area[2];
+  }
+  return points;
 }
 
 function contextRotate(context, opts) {
@@ -1682,14 +1691,13 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
     context.setFontSize(config.fontSize);
     let textWidth = measureText(labelText, config.fontSize);
 
-    let textX = offsetX - config.toolTipPadding - 0.5 * textWidth;
+    let textX = offsetX - 0.5 * textWidth;
     let textY = endY;
     context.beginPath();
-    context.setFillStyle(hexToRgb(toolTipOption.labelBgColor || config.toolTipBackground, toolTipOption.labelBgOpacity ||
-      config.toolTipOpacity));
+    context.setFillStyle(hexToRgb(toolTipOption.labelBgColor || config.toolTipBackground, toolTipOption.labelBgOpacity || config.toolTipOpacity));
     context.setStrokeStyle(toolTipOption.labelBgColor || config.toolTipBackground);
     context.setLineWidth(1 * opts.pixelRatio);
-    context.rect(textX, textY, textWidth + 2 * config.toolTipPadding, config.fontSize + 2 * config.toolTipPadding);
+    context.rect(textX - config.toolTipPadding, textY, textWidth + 2 * config.toolTipPadding, config.fontSize + 2 * config.toolTipPadding);
     context.closePath();
     context.stroke();
     context.fill();
@@ -1697,16 +1705,76 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
     context.beginPath();
     context.setFontSize(config.fontSize);
     context.setFillStyle(toolTipOption.labelFontColor || config.fontColor);
-    context.fillText(labelText, textX + 2 * config.toolTipPadding, textY + config.toolTipPadding + config.fontSize);
+    context.fillText(labelText, textX, textY + config.toolTipPadding + config.fontSize);
     context.closePath();
     context.stroke();
   }
 }
 
+function drawMarkLine(minRange, maxRange, opts, config, context) {
+  let markLineOption = assign({}, {
+    type: 'solid',
+    dashLength: 4,
+    data: []
+  }, opts.extra.markLine);
+  let startX = opts.area[3];
+  let endX = opts.width - opts.padding[1];
+  let points = calMarkLineData(minRange, maxRange, markLineOption.data, opts);
+
+  for (let i = 0; i < points.length; i++) {
+    let item = assign({}, {
+      lineColor: '#DE4A42',
+      showLabel: false,
+      labelFontColor: '#666666',
+      labelBgColor: '#DFE8FF',
+      labelBgOpacity: 0.8,
+      yAxisIndex: 0
+    }, points[i]);
+
+    if (markLineOption.type == 'dash') {
+      context.setLineDash([markLineOption.dashLength, markLineOption.dashLength]);
+    }
+    context.setStrokeStyle(item.lineColor);
+    context.setLineWidth(1 * opts.pixelRatio);
+    context.beginPath();
+    context.moveTo(startX, item.y);
+    context.lineTo(endX, item.y);
+    context.stroke();
+    context.setLineDash([]);
+    if (item.showLabel) {
+      let labelText = opts.yAxis.format ? opts.yAxis.format(Number(item.value)) : item.value;
+      context.setFontSize(config.fontSize);
+      let textWidth = measureText(labelText, config.fontSize);
+      let bgStartX = opts.padding[3] + config.yAxisTitleWidth - config.toolTipPadding;
+      let bgEndX = Math.max(opts.area[3], textWidth + config.toolTipPadding * 2);
+      let bgWidth = bgEndX - bgStartX;
+
+      let textX = bgStartX + (bgWidth - textWidth) / 2;
+      let textY = item.y;
+      context.setFillStyle(hexToRgb(item.labelBgColor, item.labelBgOpacity));
+      context.setStrokeStyle(item.labelBgColor);
+      context.setLineWidth(1 * opts.pixelRatio);
+      context.beginPath();
+      context.rect(bgStartX, textY - 0.5 * config.fontSize - config.toolTipPadding, bgWidth, config.fontSize + 2 * config.toolTipPadding);
+      context.closePath();
+      context.stroke();
+      context.fill();
+
+      context.beginPath();
+      context.setFontSize(config.fontSize);
+      context.setFillStyle(item.labelFontColor);
+      context.fillText(labelText, textX, textY + 0.5 * config.fontSize);
+      context.stroke();
+    }
+  }
+}
+
 function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoints) {
-  var toolTipOption = opts.extra.tooltip || {};
-  toolTipOption.gridType = toolTipOption.gridType == undefined ? 'solid' : toolTipOption.gridType;
-  toolTipOption.dashLength = toolTipOption.dashLength == undefined ? 4 : toolTipOption.dashLength;
+  var toolTipOption = assign({}, {
+    gridType: 'solid',
+    dashLength: 4
+  }, opts.extra.tooltip);
+
   var startX = opts.area[3];
   var endX = opts.width - opts.padding[1];
 
@@ -1722,23 +1790,20 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
   context.setLineDash([]);
 
   if (toolTipOption.yAxisLabel) {
-
     let labelText = calTooltipYAxisData(opts.tooltip.offset.y, opts.series, opts, config, eachSpacing);
     context.setFontSize(config.fontSize);
     let textWidth = measureText(labelText, config.fontSize);
-    let bgStartX = opts.padding[3] + config.yAxisTitleWidth;
-    let bgEndX = bgStartX + config.yAxisWidth;
+    let bgStartX = opts.padding[3] + config.yAxisTitleWidth - config.toolTipPadding;
+    let bgEndX = Math.max(opts.area[3], textWidth + config.toolTipPadding * 2);
     let bgWidth = bgEndX - bgStartX;
 
     let textX = bgStartX + (bgWidth - textWidth) / 2;
     let textY = opts.tooltip.offset.y;
     context.beginPath();
-    context.setFillStyle(hexToRgb(toolTipOption.labelBgColor || config.toolTipBackground, toolTipOption.labelBgOpacity ||
-      config.toolTipOpacity));
+    context.setFillStyle(hexToRgb(toolTipOption.labelBgColor || config.toolTipBackground, toolTipOption.labelBgOpacity || config.toolTipOpacity));
     context.setStrokeStyle(toolTipOption.labelBgColor || config.toolTipBackground);
     context.setLineWidth(1 * opts.pixelRatio);
-    context.rect(bgStartX, textY - 0.5 * config.fontSize - config.toolTipPadding, bgWidth, config.fontSize + 2 * config
-      .toolTipPadding);
+    context.rect(bgStartX, textY - 0.5 * config.fontSize - config.toolTipPadding, bgWidth, config.fontSize + 2 * config.toolTipPadding);
     context.closePath();
     context.stroke();
     context.fill();
@@ -1874,7 +1939,7 @@ function drawYAxisTitle(title, opts, config, context) {
 
 function drawColumnDataPoints(series, opts, config, context) {
   let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let ranges = [].concat(opts.chartData.yAxisData.ranges);
   let xAxisData = opts.chartData.xAxisData,
     xAxisPoints = xAxisData.xAxisPoints,
     eachSpacing = xAxisData.eachSpacing;
@@ -1968,10 +2033,8 @@ function drawColumnDataPoints(series, opts, config, context) {
                 context.setStrokeStyle(eachSeries.color);
                 context.setLineWidth(columnOption.meter.border * opts.pixelRatio);
                 context.moveTo(startX + columnOption.meter.border * 0.5, item.y + height);
-                context.lineTo(startX + columnOption.meter.border * 0.5, item.y + columnOption.meter.border *
-                  0.5);
-                context.lineTo(startX + item.width - columnOption.meter.border * 0.5, item.y + columnOption.meter
-                  .border * 0.5);
+                context.lineTo(startX + columnOption.meter.border * 0.5, item.y + columnOption.meter.border * 0.5);
+                context.lineTo(startX + item.width - columnOption.meter.border * 0.5, item.y + columnOption.meter.border * 0.5);
                 context.lineTo(startX + item.width - columnOption.meter.border * 0.5, item.y + height);
                 context.stroke();
               }
@@ -1994,6 +2057,7 @@ function drawColumnDataPoints(series, opts, config, context) {
         break;
     }
   });
+
   if (opts.dataLabel !== false && process === 1) {
     series.forEach(function(eachSeries, seriesIndex) {
       var data = eachSeries.data;
@@ -2023,29 +2087,33 @@ function drawColumnDataPoints(series, opts, config, context) {
   return {
     xAxisPoints: xAxisPoints,
     calPoints: calPoints,
-    eachSpacing: eachSpacing
+    eachSpacing: eachSpacing,
+    minRange: minRange,
+    maxRange: maxRange
   };
 }
 
 function drawCandleDataPoints(series, seriesMA, opts, config, context) {
   var process = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
-  var candleOption = opts.extra.candle || {
+  var candleOption = assign({}, {
     color: {},
     average: {}
-  };
-  candleOption.color.upLine = candleOption.color.upLine ? candleOption.color.upLine : '#f04864';
-  candleOption.color.upFill = candleOption.color.upFill ? candleOption.color.upFill : '#f04864';
-  candleOption.color.downLine = candleOption.color.downLine ? candleOption.color.downLine : '#2fc25b';
-  candleOption.color.downFill = candleOption.color.downFill ? candleOption.color.downFill : '#2fc25b';
-  candleOption.average.show = candleOption.average.show === true ? true : false;
-  candleOption.average.name = candleOption.average.name ? candleOption.average.name : [];
-  candleOption.average.day = candleOption.average.day ? candleOption.average.day : [];
-  candleOption.average.color = candleOption.average.color ? candleOption.average.color : ['#1890ff', '#2fc25b',
-    '#facc14', '#f04864', '#8543e0', '#90ed7d'
-  ];
+  }, opts.extra.candle);
+  candleOption.color = assign({}, {
+    upLine: '#f04864',
+    upFill: '#f04864',
+    downLine: '#2fc25b',
+    downFill: '#2fc25b'
+  }, candleOption.color);
+  candleOption.average = assign({}, {
+    show: false,
+    name: [],
+    day: [],
+    color: config.colors
+  }, candleOption.average);
   opts.extra.candle = candleOption;
 
-  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let ranges = [].concat(opts.chartData.yAxisData.ranges);
   let xAxisData = opts.chartData.xAxisData,
     xAxisPoints = xAxisData.xAxisPoints,
     eachSpacing = xAxisData.eachSpacing;
@@ -2143,7 +2211,9 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
   return {
     xAxisPoints: xAxisPoints,
     calPoints: calPoints,
-    eachSpacing: eachSpacing
+    eachSpacing: eachSpacing,
+    minRange: minRange,
+    maxRange: maxRange
   };
 }
 
@@ -2159,8 +2229,8 @@ function drawAreaDataPoints(series, opts, config, context) {
   areaOption.opacity = areaOption.opacity ? areaOption.opacity : 0.2;
   areaOption.addLine = areaOption.addLine == true ? true : false;
   areaOption.width = areaOption.width ? areaOption.width : 2;
-  
-  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+
+  let ranges = [].concat(opts.chartData.yAxisData.ranges);
   let xAxisData = opts.chartData.xAxisData,
     xAxisPoints = xAxisData.xAxisPoints,
     eachSpacing = xAxisData.eachSpacing;
@@ -2269,6 +2339,7 @@ function drawAreaDataPoints(series, opts, config, context) {
     }
 
   });
+
   if (opts.dataLabel !== false && process === 1) {
     series.forEach(function(eachSeries, seriesIndex) {
       var data = eachSeries.data;
@@ -2282,7 +2353,9 @@ function drawAreaDataPoints(series, opts, config, context) {
   return {
     xAxisPoints: xAxisPoints,
     calPoints: calPoints,
-    eachSpacing: eachSpacing
+    eachSpacing: eachSpacing,
+    minRange: minRange,
+    maxRange: maxRange
   };
 }
 
@@ -2294,8 +2367,8 @@ function drawLineDataPoints(series, opts, config, context) {
   };
   lineOption.type = lineOption.type ? lineOption.type : 'straight';
   lineOption.width = lineOption.width ? lineOption.width : 2;
-  
-  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+
+  let ranges = [].concat(opts.chartData.yAxisData.ranges);
   let xAxisData = opts.chartData.xAxisData,
     xAxisPoints = xAxisData.xAxisPoints,
     eachSpacing = xAxisData.eachSpacing;
@@ -2355,6 +2428,7 @@ function drawLineDataPoints(series, opts, config, context) {
       drawPointShape(points, eachSeries.color, shape, context, opts);
     }
   });
+
   if (opts.dataLabel !== false && process === 1) {
     series.forEach(function(eachSeries, seriesIndex) {
       var data = eachSeries.data;
@@ -2368,17 +2442,19 @@ function drawLineDataPoints(series, opts, config, context) {
   return {
     xAxisPoints: xAxisPoints,
     calPoints: calPoints,
-    eachSpacing: eachSpacing
+    eachSpacing: eachSpacing,
+    minRange: minRange,
+    maxRange: maxRange
   };
 }
 
 function drawMixDataPoints(series, opts, config, context) {
   let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let ranges = [].concat(opts.chartData.yAxisData.ranges);
   let xAxisData = opts.chartData.xAxisData,
     xAxisPoints = xAxisData.xAxisPoints,
     eachSpacing = xAxisData.eachSpacing;
-    
+
   let minRange = ranges.pop();
   let maxRange = ranges.shift();
   let endY = opts.height - opts.area[2];
@@ -2550,14 +2626,16 @@ function drawMixDataPoints(series, opts, config, context) {
   return {
     xAxisPoints: xAxisPoints,
     calPoints: calPoints,
-    eachSpacing: eachSpacing
+    eachSpacing: eachSpacing,
+    minRange: minRange,
+    maxRange: maxRange
   };
 }
 
 function drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints) {
   var toolTipOption = opts.extra.tooltip || {};
-  if (toolTipOption.horizentalLine && opts.tooltip && process === 1 && (opts.type == 'line' || opts.type == 'area' ||
-      opts.type == 'column' || opts.type == 'candle' || opts.type == 'mix')) {
+  if (toolTipOption.horizentalLine && opts.tooltip && process === 1 && (opts.type == 'line' || opts.type == 'area' || opts.type == 'column' || opts.type == 'candle' || opts.type ==
+      'mix')) {
     drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoints)
   }
   context.save();
@@ -2921,11 +2999,12 @@ function drawPieDataPoints(series, opts, config, context) {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
   };
-  if(config.pieChartLinePadding == 0){
+  if (config.pieChartLinePadding == 0) {
     config.pieChartLinePadding = pieOption.activeRadius;
   }
-  
-  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
+
+  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[
+    0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
 
   series = getPieDataPoints(series, radius, process);
 
@@ -3009,7 +3088,7 @@ function drawRoseDataPoints(series, opts, config, context) {
     offsetAngle: 0,
     labelWidth: 15 * opts.pixelRatio
   }, opts.extra.rose);
-  if(config.pieChartLinePadding == 0){
+  if (config.pieChartLinePadding == 0) {
     config.pieChartLinePadding = roseOption.activeRadius;
   }
   var centerPosition = {
@@ -3097,7 +3176,7 @@ function drawArcbarDataPoints(series, opts, config, context) {
     x: opts.width / 2,
     y: opts.height / 2
   };
-  var radius = Math.min(centerPosition.x , centerPosition.y );
+  var radius = Math.min(centerPosition.x, centerPosition.y);
   radius -= 5 * opts.pixelRatio;
   radius -= arcbarOption.width / 2;
 
@@ -3167,7 +3246,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
     x: opts.width / 2,
     y: opts.height / 2
   };
-  var radius = Math.min(centerPosition.x , centerPosition.y );
+  var radius = Math.min(centerPosition.x, centerPosition.y);
   radius -= 5 * opts.pixelRatio;
   radius -= gaugeOption.width / 2;
   var innerRadius = radius - gaugeOption.width;
@@ -3460,9 +3539,8 @@ function drawCharts(type, opts, config, context) {
   /* 过滤掉show=false的series */
   series = filterSeries(series);
 
-
   //重新计算图表区域
-  
+
   opts.area = new Array(4);
   //复位绘图区域
   for (let j = 0; j < 4; j++) {
@@ -3499,7 +3577,7 @@ function drawCharts(type, opts, config, context) {
     config.yAxisWidth = yAxisWidth;
   }
   opts.chartData.yAxisData = _calYAxisData;
-  
+
   if (opts.categories && opts.categories.length) {
     opts.chartData.xAxisData = getXAxisPoints(opts.categories, opts, config);
     let _calCategoriesData = calCategoriesData(opts.categories, opts, config, opts.chartData.xAxisData.eachSpacing),
@@ -3510,7 +3588,7 @@ function drawCharts(type, opts, config, context) {
     opts.area[2] += xAxisHeight;
     opts.chartData.categoriesData = _calCategoriesData;
   }
-    
+
   //计算右对齐偏移距离
   if (opts.enableScroll && opts.xAxis.scrollAlign == 'right' && opts._scrollDistance_ === undefined) {
     let offsetLeft = 0,
@@ -3549,12 +3627,16 @@ function drawCharts(type, opts, config, context) {
           var _drawLineDataPoints = drawLineDataPoints(series, opts, config, context, process),
             xAxisPoints = _drawLineDataPoints.xAxisPoints,
             calPoints = _drawLineDataPoints.calPoints,
-            eachSpacing = _drawLineDataPoints.eachSpacing;
-
+            eachSpacing = _drawLineDataPoints.eachSpacing,
+            minRange = _drawLineDataPoints.minRange,
+            maxRange = _drawLineDataPoints.maxRange;
           opts.chartData.xAxisPoints = xAxisPoints;
           opts.chartData.calPoints = calPoints;
           opts.chartData.eachSpacing = eachSpacing;
           drawYAxis(series, opts, config, context);
+          if (opts.enableMarkLine !== false && process === 1) {
+            drawMarkLine(minRange, maxRange, opts, config, context);
+          }
           drawLegend(opts.series, opts, config, context, opts.chartData);
           drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
           drawCanvas(opts, context);
@@ -3564,7 +3646,6 @@ function drawCharts(type, opts, config, context) {
           _this.event.trigger('renderComplete');
         }
       });
-
       break;
     case 'mix':
       this.animationInstance = new Animation({
@@ -3580,12 +3661,16 @@ function drawCharts(type, opts, config, context) {
           var _drawMixDataPoints = drawMixDataPoints(series, opts, config, context, process),
             xAxisPoints = _drawMixDataPoints.xAxisPoints,
             calPoints = _drawMixDataPoints.calPoints,
-            eachSpacing = _drawMixDataPoints.eachSpacing;
-
+            eachSpacing = _drawMixDataPoints.eachSpacing,
+            minRange = _drawMixDataPoints.minRange,
+            maxRange = _drawMixDataPoints.maxRange;
           opts.chartData.xAxisPoints = xAxisPoints;
           opts.chartData.calPoints = calPoints;
           opts.chartData.eachSpacing = eachSpacing;
           drawYAxis(series, opts, config, context);
+          if (opts.enableMarkLine !== false && process === 1) {
+            drawMarkLine(minRange, maxRange, opts, config, context);
+          }
           drawLegend(opts.series, opts, config, context, opts.chartData);
           drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
           drawCanvas(opts, context);
@@ -3594,7 +3679,6 @@ function drawCharts(type, opts, config, context) {
           _this.event.trigger('renderComplete');
         }
       });
-
       break;
     case 'column':
       this.animationInstance = new Animation({
@@ -3610,11 +3694,16 @@ function drawCharts(type, opts, config, context) {
           var _drawColumnDataPoints = drawColumnDataPoints(series, opts, config, context, process),
             xAxisPoints = _drawColumnDataPoints.xAxisPoints,
             calPoints = _drawColumnDataPoints.calPoints,
-            eachSpacing = _drawColumnDataPoints.eachSpacing;
+            eachSpacing = _drawColumnDataPoints.eachSpacing,
+            minRange = _drawColumnDataPoints.minRange,
+            maxRange = _drawColumnDataPoints.maxRange;
           opts.chartData.xAxisPoints = xAxisPoints;
           opts.chartData.calPoints = calPoints;
           opts.chartData.eachSpacing = eachSpacing;
           drawYAxis(series, opts, config, context);
+          if (opts.enableMarkLine !== false && process === 1) {
+            drawMarkLine(minRange, maxRange, opts, config, context);
+          }
           drawLegend(opts.series, opts, config, context, opts.chartData);
           drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
           drawCanvas(opts, context);
@@ -3638,15 +3727,18 @@ function drawCharts(type, opts, config, context) {
           var _drawAreaDataPoints = drawAreaDataPoints(series, opts, config, context, process),
             xAxisPoints = _drawAreaDataPoints.xAxisPoints,
             calPoints = _drawAreaDataPoints.calPoints,
-            eachSpacing = _drawAreaDataPoints.eachSpacing;
-
+            eachSpacing = _drawAreaDataPoints.eachSpacing,
+            minRange = _drawAreaDataPoints.minRange,
+            maxRange = _drawAreaDataPoints.maxRange;
           opts.chartData.xAxisPoints = xAxisPoints;
           opts.chartData.calPoints = calPoints;
           opts.chartData.eachSpacing = eachSpacing;
           drawYAxis(series, opts, config, context);
+          if (opts.enableMarkLine !== false && process === 1) {
+            drawMarkLine(minRange, maxRange, opts, config, context);
+          }
           drawLegend(opts.series, opts, config, context, opts.chartData);
           drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
-
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
@@ -3760,12 +3852,16 @@ function drawCharts(type, opts, config, context) {
           var _drawCandleDataPoints = drawCandleDataPoints(series, seriesMA, opts, config, context, process),
             xAxisPoints = _drawCandleDataPoints.xAxisPoints,
             calPoints = _drawCandleDataPoints.calPoints,
-            eachSpacing = _drawCandleDataPoints.eachSpacing;
-
+            eachSpacing = _drawCandleDataPoints.eachSpacing,
+            minRange = _drawCandleDataPoints.minRange,
+            maxRange = _drawCandleDataPoints.maxRange;
           opts.chartData.xAxisPoints = xAxisPoints;
           opts.chartData.calPoints = calPoints;
           opts.chartData.eachSpacing = eachSpacing;
           drawYAxis(series, opts, config, context);
+          if (opts.enableMarkLine !== false && process === 1) {
+            drawMarkLine(minRange, maxRange, opts, config, context);
+          }
           if (seriesMA) {
             drawLegend(seriesMA, opts, config, context, opts.chartData);
           } else {
@@ -3863,7 +3959,7 @@ var Charts = function Charts(opts) {
   }
   config$$1.pieChartTextPadding = opts.dataLabel === false ? 0 : config$$1.pieChartTextPadding * opts.pixelRatio;
   config$$1.yAxisSplit = opts.yAxis.splitNumber ? opts.yAxis.splitNumber : config.yAxisSplit;
-  
+
   //屏幕旋转
   config$$1.rotate = opts.rotate;
   if (opts.rotate) {
