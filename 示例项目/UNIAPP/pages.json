@@ -71,6 +71,13 @@
 			}
 		},
 		{
+			"path": "pages/basic/column/mark-line",
+			"style": {
+				"navigationBarTitleText": "标记线",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/basic/candle/candle",
 			"style": {
 				"navigationBarTitleText": "基本K线图",

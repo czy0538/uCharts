@@ -108,6 +108,7 @@
 					},
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
+          enableMarkLine: true,/***需要开启标记线***/
 					categories: chartData.categories,
 					series: chartData.series,
 					animation: true,
@@ -162,8 +163,21 @@
 							labelBgOpacity:0.95,
 							labelAlign:'left',
 							labelFontColor:'#666666'
-						}
-					},
+						},
+            markLine: {
+              type: 'dash',
+              dashLength: 5,
+              data: [{
+                value:2150,
+                lineColor: '#f04864',
+                showLabel:true
+              },{
+                value:2350,
+                lineColor: '#f04864',
+                showLabel:true
+              }]
+            }
+					}
 				});
 				
 			},

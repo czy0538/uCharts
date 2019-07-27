@@ -99,7 +99,6 @@
 						position:'right',
 						float:'center',
 						itemGap:10,
-						fontSize:11,
 						padding:5,
 						lineHeight:26,
 						margin:5,

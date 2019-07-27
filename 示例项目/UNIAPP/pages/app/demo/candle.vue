@@ -96,7 +96,7 @@
 					canvasId: canvasId,
 					type: 'candle',
 					fontSize:11,
-					padding:[0,15,0,15],
+					padding:[10,15,0,15],
 					legend:{
 						show:true,
 					},
@@ -209,7 +209,7 @@
 					$this:_self,
 					canvasId: canvasId,
 					type: 'column',
-					padding:[0,15,0,15],
+					padding:[10,15,0,15],
 					legend:{
 						show:false,
 					},

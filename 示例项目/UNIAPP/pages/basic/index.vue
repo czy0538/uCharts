@@ -42,6 +42,7 @@ export default {
 			{image:'/static/images/charts/column-meter.png',text:'温度计',url:'column/meter'},
 			{image:'/static/images/charts/bar-group.png',text:'横屏模式',url:'column/rotate'},
 			{image:'/static/images/charts/column-scroll.png',text:'滚动条',url:'column/column-scroll'},
+      {image:'/static/images/charts/mark-line.png',text:'标记线',url:'column/mark-line'},
 			{image:'/static/images/charts/line.png',text:'折线图',url:'line/line'},
 			{image:'/static/images/charts/line-curve.png',text:'曲线图',url:'line/curve'},
 			{image:'/static/images/charts/line-scroll.png',text:'滚动条',url:'line/line-scroll'},

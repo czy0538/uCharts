@@ -120,7 +120,6 @@
 				
 			},
 			touchColumn(e){
-				canvaColumn.touchLegend(e);
 				canvaColumn.showToolTip(e, {
 					format: function (item, category) {
 						if(typeof item.data === 'object'){
@@ -130,13 +129,15 @@
 						}
 					}
 				});
+        canvaColumn.touchLegend(e,{animation:true});
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){
 					let newdata=JSON.parse(_self.textarea);
 					canvaColumn.updateData({
 						series: newdata.series,
-						categories: newdata.categories
+						categories: newdata.categories,
+						animation:true
 					});
 				}else{
 					uni.showToast({

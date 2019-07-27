@@ -113,6 +113,7 @@
 					},
 					yAxis: {
 						gridType:'dash',
+						dashLength:4,
 						splitNumber:5,
 						min:10,
 						max:180,

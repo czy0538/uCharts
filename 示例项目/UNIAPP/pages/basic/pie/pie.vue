@@ -105,18 +105,17 @@
 					dataLabel: true,
 					extra: {
 						pie: {
-						  labelWidth:15
 						}
 					},
 				});
 			},
 			touchPie(e){
-				canvaPie.touchLegend(e);
 				canvaPie.showToolTip(e, {
 					format: function (item) {
 						return item.name + ':' + item.data 
 					}
 				});
+				canvaPie.touchLegend(e,{animation:true});
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){

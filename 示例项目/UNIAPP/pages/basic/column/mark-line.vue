@@ -5,18 +5,18 @@
 			<view class="qiun-title-dot-light">页面地址</view>
 		</view>
 		<view class="qiun-bg-white qiun-padding">
-		    <text>pages/basic/column/column-scroll</text>
+		    <text>pages/basic/column/mark-line</text>
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">柱状图带滚动条</view>
+			<view class="qiun-title-dot-light">标记线</view>
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" disable-scroll=true @touchstart="touchColumn" @touchmove="moveColumn" @touchend="touchEndColumn"></canvas>
+			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchColumn"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" disable-scroll=true @touchstart="touchColumn" @touchmove="moveColumn" @touchend="touchEndColumn"></canvas>
+			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" @touchstart="touchColumn"></canvas>
 			<!--#endif-->
 		</view>
 		<!--#ifdef H5 -->
@@ -37,7 +37,6 @@
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
 	var canvaColumn=null;
-   
 	export default {
 		data() {
 			return {
@@ -74,9 +73,9 @@
 						console.log(res.data.data)
 						let Column={categories:[],series:[]};
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
-						Column.categories=res.data.data.LineA.categories;
-						Column.series=res.data.data.LineA.series;
-						_self.textarea = JSON.stringify(res.data.data.LineA);
+						Column.categories=res.data.data.ColumnB.categories;
+						Column.series=res.data.data.ColumnB.series;
+						_self.textarea = JSON.stringify(res.data.data.ColumnB);
 						_self.showColumn("canvasColumn",Column);
 					},
 					fail: () => {
@@ -86,73 +85,62 @@
 			},
 			showColumn(canvasId,chartData){
 				canvaColumn=new uCharts({
-					$this:_self,
+          $this:_self,
 					canvasId: canvasId,
 					type: 'column',
-					fontSize:11,
-					padding:[5,15,15,15],
+					padding:[15,15,0,15],
 					legend:{
 						show:true,
-						position:'top',
-						float:'center',
-						itemGap:30,
 						padding:5,
-						margin:5,
-						//backgroundColor:'rgba(41,198,90,0.2)',
-						//borderColor :'rgba(41,198,90,0.5)',
-						borderWidth :1
+						lineHeight:11,
+						margin:0,
 					},
-					dataLabel:true,
-					dataPointShape:true,
+					fontSize:11,
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
+					animation: true,
+          dataLabel: true,
+          enableMarkLine: true,/***需要开启标记线***/
+          width: _self.cWidth*_self.pixelRatio,
+          height: _self.cHeight*_self.pixelRatio,
 					categories: chartData.categories,
 					series: chartData.series,
-					animation: true,
-					enableScroll: true,
 					xAxis: {
-						disableGrid:false,
-						type:'grid',
-						gridType:'dash',
-						itemCount:4,
-						scrollShow:true,
-						scrollAlign:'left',
+						disableGrid:true,
 					},
-					yAxis: {
-						//disabled:true
-						gridType:'dash',
-						splitNumber:4,
-						min:10,
-						max:180,
-						format:(val)=>{return val.toFixed(0)+'元'}//如不写此方法，Y轴刻度默认保留两位小数
-					},
-					width: _self.cWidth*_self.pixelRatio,
-					height: _self.cHeight*_self.pixelRatio,
 					extra: {
 						column: {
 							type:'group',
 							width: _self.cWidth*_self.pixelRatio*0.45/chartData.categories.length
-						}
-					},
+						},
+            markLine: {
+              type: 'dash',
+              dashLength: 5,
+              data: [{
+                value:38,
+                lineColor: '#f04864',
+                showLabel:true
+              },{
+                value:19,
+                lineColor: '#f04864',
+                showLabel:true
+              }]
+            }
+					}
 				});
 				
 			},
 			touchColumn(e){
-				canvaColumn.scrollStart(e);
-			},
-			moveColumn(e) {
-				canvaColumn.scroll(e);
-			},
-			touchEndColumn(e) {
-				canvaColumn.scrollEnd(e);
-				canvaColumn.touchLegend(e, {
-					animation:true,
-				});
 				canvaColumn.showToolTip(e, {
 					format: function (item, category) {
-						return category + ' ' + item.name + ':' + item.data 
+						if(typeof item.data === 'object'){
+							return category + ' ' + item.name + ':' + item.data.value 
+						}else{
+							return category + ' ' + item.name + ':' + item.data 
+						}
 					}
 				});
+        canvaColumn.touchLegend(e,{animation:true});
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){
@@ -160,8 +148,7 @@
 					canvaColumn.updateData({
 						series: newdata.series,
 						categories: newdata.categories,
-						scrollPosition:'right',
-						animation:false
+						animation:true
 					});
 				}else{
 					uni.showToast({
