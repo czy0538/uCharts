@@ -2219,16 +2219,12 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
 
 function drawAreaDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-  var areaOption = opts.extra.area || {
+  var areaOption = assign({},{
     type: 'straight',
-    opacity: 0.5,
+    opacity: 0.2,
     addLine: false,
     width: 2
-  };
-  areaOption.type = areaOption.type ? areaOption.type : 'straight';
-  areaOption.opacity = areaOption.opacity ? areaOption.opacity : 0.2;
-  areaOption.addLine = areaOption.addLine == true ? true : false;
-  areaOption.width = areaOption.width ? areaOption.width : 2;
+  },opts.extra.area);
 
   let ranges = [].concat(opts.chartData.yAxisData.ranges);
   let xAxisData = opts.chartData.xAxisData,
@@ -2508,8 +2504,7 @@ function drawMixDataPoints(series, opts, config, context) {
         // 绘制区域数据
         context.beginPath();
         context.setStrokeStyle(eachSeries.color);
-        context.setFillStyle(eachSeries.color);
-        context.setGlobalAlpha(0.2);
+        context.setFillStyle(hexToRgb(eachSeries.color, 0.2));
         context.setLineWidth(2 * opts.pixelRatio);
         if (points.length > 1) {
           var firstPoint = points[0];
@@ -2519,9 +2514,7 @@ function drawMixDataPoints(series, opts, config, context) {
             points.forEach(function(item, index) {
               if (index > 0) {
                 var ctrlPoint = createCurveControlPoints(points, index - 1);
-                context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,
-                  item.x,
-                  item.y);
+                context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y);
               }
             });
           } else {
@@ -2544,7 +2537,6 @@ function drawMixDataPoints(series, opts, config, context) {
         }
         context.closePath();
         context.fill();
-        context.setGlobalAlpha(1);
       }
     }
 
@@ -3346,9 +3338,14 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 
 function drawRadarDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-
-  var radarOption = opts.extra.radar || {};
+  var radarOption = assign({},{
+    gridColor: '#cccccc',
+    labelColor: '#666666',
+    opacity: 0.2
+  },opts.extra.radar);
+  
   var coordinateAngle = getRadarCoordinateSeries(opts.categories.length);
+  
   var centerPosition = {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
@@ -3362,7 +3359,7 @@ function drawRadarDataPoints(series, opts, config, context) {
   // draw grid
   context.beginPath();
   context.setLineWidth(1 * opts.pixelRatio);
-  context.setStrokeStyle(radarOption.gridColor || "#cccccc");
+  context.setStrokeStyle(radarOption.gridColor);
   coordinateAngle.forEach(function(angle) {
     var pos = convertCoordinateOrigin(radius * Math.cos(angle), radius * Math.sin(angle), centerPosition);
     context.moveTo(centerPosition.x, centerPosition.y);
@@ -3376,7 +3373,7 @@ function drawRadarDataPoints(series, opts, config, context) {
     var startPos = {};
     context.beginPath();
     context.setLineWidth(1 * opts.pixelRatio);
-    context.setStrokeStyle(radarOption.gridColor || "#cccccc");
+    context.setStrokeStyle(radarOption.gridColor);
     coordinateAngle.forEach(function(angle, index) {
       var pos = convertCoordinateOrigin(radius / config.radarGridCount * i * Math.cos(angle), radius / config.radarGridCount *
         i * Math.sin(angle), centerPosition);
@@ -3401,8 +3398,7 @@ function drawRadarDataPoints(series, opts, config, context) {
   radarDataPoints.forEach(function(eachSeries, seriesIndex) {
     // 绘制区域数据
     context.beginPath();
-    context.setFillStyle(eachSeries.color);
-    context.setGlobalAlpha(0.3);
+    context.setFillStyle(hexToRgb(eachSeries.color, radarOption.opacity));
     eachSeries.data.forEach(function(item, index) {
       if (index === 0) {
         context.moveTo(item.position.x, item.position.y);
@@ -3412,7 +3408,6 @@ function drawRadarDataPoints(series, opts, config, context) {
     });
     context.closePath();
     context.fill();
-    context.setGlobalAlpha(1);
 
     if (opts.dataPointShape !== false) {
       var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
