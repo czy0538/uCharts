@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.1.20190725
+ * uCharts v1.8.1.20190727
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -906,14 +906,11 @@ function calLegendData(series, opts, config, chartData) {
   return legendData;
 }
 
-function calCategoriesData(categories, opts, config) {
+function calCategoriesData(categories, opts, config, eachSpacing) {
   var result = {
     angle: 0,
     xAxisHeight: config.xAxisHeight
   };
-  var _getXAxisPoints = getXAxisPoints(categories, opts, config),
-    eachSpacing = _getXAxisPoints.eachSpacing;
-
   var categoriesTextLenth = categories.map(function(item) {
     return measureText(item);
   });
@@ -1876,14 +1873,12 @@ function drawYAxisTitle(title, opts, config, context) {
 }
 
 function drawColumnDataPoints(series, opts, config, context) {
-  var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-  var _calYAxisData = calYAxisData(series, opts, config),
-    ranges = _calYAxisData.ranges;
-
-  var _getXAxisPoints = getXAxisPoints(opts.categories, opts, config),
-    xAxisPoints = _getXAxisPoints.xAxisPoints,
-    eachSpacing = _getXAxisPoints.eachSpacing;
-  var columnOption = assign({}, {
+  let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    eachSpacing = xAxisData.eachSpacing;
+  let columnOption = assign({}, {
     type: 'group',
     width: eachSpacing / 2,
     meter: {
@@ -1891,9 +1886,9 @@ function drawColumnDataPoints(series, opts, config, context) {
       fillColor: '#FFFFFF'
     }
   }, opts.extra.column);
-  var minRange = ranges.pop();
-  var maxRange = ranges.shift();
-  var calPoints = [];
+  let minRange = ranges.pop();
+  let maxRange = ranges.shift();
+  let calPoints = [];
 
   context.save();
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
@@ -1908,8 +1903,7 @@ function drawColumnDataPoints(series, opts, config, context) {
     switch (columnOption.type) {
       case 'group':
         var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-        var tooltipPoints = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config,
-          seriesIndex, series, process);
+        var tooltipPoints = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex, series, process);
         calPoints.push(tooltipPoints);
         points = fixColumeData(points, eachSpacing, series.length, seriesIndex, config, opts);
         points.forEach(function(item, index) {
@@ -2051,16 +2045,14 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
   ];
   opts.extra.candle = candleOption;
 
-  var _calYAxisData5 = calYAxisData(series, opts, config),
-    ranges = _calYAxisData5.ranges;
+  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    eachSpacing = xAxisData.eachSpacing;
 
-  var _getXAxisPoints5 = getXAxisPoints(opts.categories, opts, config),
-    xAxisPoints = _getXAxisPoints5.xAxisPoints,
-    eachSpacing = _getXAxisPoints5.eachSpacing;
-
-  var minRange = ranges.pop();
-  var maxRange = ranges.shift();
-  var calPoints = [];
+  let minRange = ranges.pop();
+  let maxRange = ranges.shift();
+  let calPoints = [];
 
   context.save();
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
@@ -2167,17 +2159,16 @@ function drawAreaDataPoints(series, opts, config, context) {
   areaOption.opacity = areaOption.opacity ? areaOption.opacity : 0.2;
   areaOption.addLine = areaOption.addLine == true ? true : false;
   areaOption.width = areaOption.width ? areaOption.width : 2;
-  var _calYAxisData2 = calYAxisData(series, opts, config),
-    ranges = _calYAxisData2.ranges;
+  
+  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    eachSpacing = xAxisData.eachSpacing;
 
-  var _getXAxisPoints2 = getXAxisPoints(opts.categories, opts, config),
-    xAxisPoints = _getXAxisPoints2.xAxisPoints,
-    eachSpacing = _getXAxisPoints2.eachSpacing;
-
-  var minRange = ranges.pop();
-  var maxRange = ranges.shift();
-  var endY = opts.height - opts.area[2];
-  var calPoints = [];
+  let minRange = ranges.pop();
+  let maxRange = ranges.shift();
+  let endY = opts.height - opts.area[2];
+  let calPoints = [];
 
   context.save();
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
@@ -2303,12 +2294,11 @@ function drawLineDataPoints(series, opts, config, context) {
   };
   lineOption.type = lineOption.type ? lineOption.type : 'straight';
   lineOption.width = lineOption.width ? lineOption.width : 2;
-  var _calYAxisData3 = calYAxisData(series, opts, config),
-    ranges = _calYAxisData3.ranges;
-
-  var _getXAxisPoints3 = getXAxisPoints(opts.categories, opts, config),
-    xAxisPoints = _getXAxisPoints3.xAxisPoints,
-    eachSpacing = _getXAxisPoints3.eachSpacing;
+  
+  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    eachSpacing = xAxisData.eachSpacing;
 
   var minRange = ranges.pop();
   var maxRange = ranges.shift();
@@ -2383,19 +2373,16 @@ function drawLineDataPoints(series, opts, config, context) {
 }
 
 function drawMixDataPoints(series, opts, config, context) {
-  var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-
-  var _calYAxisData6 = calYAxisData(series, opts, config),
-    ranges = _calYAxisData6.ranges;
-
-  var _getXAxisPoints6 = getXAxisPoints(opts.categories, opts, config),
-    xAxisPoints = _getXAxisPoints6.xAxisPoints,
-    eachSpacing = _getXAxisPoints6.eachSpacing;
-
-  var minRange = ranges.pop();
-  var maxRange = ranges.shift();
-  var endY = opts.height - opts.area[2];
-  var calPoints = [];
+  let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let  ranges = [].concat(opts.chartData.yAxisData.ranges);
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    eachSpacing = xAxisData.eachSpacing;
+    
+  let minRange = ranges.pop();
+  let maxRange = ranges.shift();
+  let endY = opts.height - opts.area[2];
+  let calPoints = [];
 
   var columnIndex = 0;
   var columnLength = 0;
@@ -2586,11 +2573,11 @@ function drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoi
 
 function drawXAxis(categories, opts, config, context) {
 
-  var _getXAxisPoints4 = getXAxisPoints(categories, opts, config),
-    xAxisPoints = _getXAxisPoints4.xAxisPoints,
-    startX = _getXAxisPoints4.startX,
-    endX = _getXAxisPoints4.endX,
-    eachSpacing = _getXAxisPoints4.eachSpacing;
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    startX = xAxisData.startX,
+    endX = xAxisData.endX,
+    eachSpacing = xAxisData.eachSpacing;
 
   var startY = opts.height - opts.area[2];
   var endY = opts.area[0];
@@ -2732,17 +2719,16 @@ function drawYAxisGrid(categories, opts, config, context) {
   if (opts.yAxis.disableGrid === true) {
     return;
   }
-  var spacingValid = opts.height - opts.area[0] - opts.area[2];
-  var eachSpacing = spacingValid / config.yAxisSplit;
-  var startX = opts.area[3];
-  var _getXAxisPoints4 = getXAxisPoints(categories, opts, config),
-    xAxisPoints = _getXAxisPoints4.xAxisPoints,
-    xAxiseachSpacing = _getXAxisPoints4.eachSpacing;
-  var TotalWidth = xAxiseachSpacing * (xAxisPoints.length - 1);
-  var endX = startX + TotalWidth;
+  let spacingValid = opts.height - opts.area[0] - opts.area[2];
+  let eachSpacing = spacingValid / config.yAxisSplit;
+  let startX = opts.area[3];
+  let xAxisPoints = opts.chartData.xAxisData.xAxisPoints,
+    xAxiseachSpacing = opts.chartData.xAxisData.eachSpacing;
+  let TotalWidth = xAxiseachSpacing * (xAxisPoints.length - 1);
+  let endX = startX + TotalWidth;
 
-  var points = [];
-  for (var i = 0; i < config.yAxisSplit + 1; i++) {
+  let points = [];
+  for (let i = 0; i < config.yAxisSplit + 1; i++) {
     points.push(opts.height - opts.area[2] - eachSpacing * i);
   }
 
@@ -2771,8 +2757,7 @@ function drawYAxis(series, opts, config, context) {
   if (opts.yAxis.disabled === true) {
     return;
   }
-  var _calYAxisData4 = calYAxisData(series, opts, config),
-    rangesFormat = _calYAxisData4.rangesFormat;
+  let rangesFormat = opts.chartData.yAxisData.rangesFormat;
   var spacingValid = opts.height - opts.area[0] - opts.area[2];
   var eachSpacing = Math.floor(spacingValid / config.yAxisSplit);
   var startX = opts.area[3];
@@ -3469,6 +3454,13 @@ function drawCharts(type, opts, config, context) {
     seriesMA = series;
   }
 
+  /* 原始series数据 */
+  var _series_ = series;
+  opts._series_ = _series_;
+  /* 过滤掉show=false的series */
+  series = filterSeries(series);
+
+
   //重新计算图表区域
   
   opts.area = new Array(4);
@@ -3498,33 +3490,34 @@ function drawCharts(type, opts, config, context) {
       break;
   }
 
-  var _calYAxisData = calYAxisData(opts.series, opts, config),
+  let _calYAxisData = calYAxisData(series, opts, config),
     yAxisWidth = _calYAxisData.yAxisWidth;
   if (opts.type === 'line' || opts.type === 'column' || opts.type === 'area' || opts.type === 'mix' || opts.type === 'candle') {
     config.yAxisWidth = yAxisWidth;
     opts.area[3] += yAxisWidth;
-    opts.chartData.yAxisData = _calYAxisData;
   } else {
     config.yAxisWidth = yAxisWidth;
   }
+  opts.chartData.yAxisData = _calYAxisData;
+  
   if (opts.categories && opts.categories.length) {
-    var _calCategoriesData = calCategoriesData(opts.categories, opts, config),
+    opts.chartData.xAxisData = getXAxisPoints(opts.categories, opts, config);
+    let _calCategoriesData = calCategoriesData(opts.categories, opts, config, opts.chartData.xAxisData.eachSpacing),
       xAxisHeight = _calCategoriesData.xAxisHeight,
       angle = _calCategoriesData.angle;
     config.xAxisHeight = xAxisHeight;
     config._xAxisTextAngle_ = angle;
     opts.area[2] += xAxisHeight;
+    opts.chartData.categoriesData = _calCategoriesData;
   }
-  opts.chartData.categoriesData = _calCategoriesData;
-
+    
   //计算右对齐偏移距离
   if (opts.enableScroll && opts.xAxis.scrollAlign == 'right' && opts._scrollDistance_ === undefined) {
-    let offsetLeft = 0;
-    let _getXAxisPoints0 = getXAxisPoints(opts.categories, opts, config),
-      xAxisPoints = _getXAxisPoints0.xAxisPoints,
-      startX = _getXAxisPoints0.startX,
-      endX = _getXAxisPoints0.endX,
-      eachSpacing = _getXAxisPoints0.eachSpacing;
+    let offsetLeft = 0,
+      xAxisPoints = opts.chartData.xAxisData.xAxisPoints,
+      startX = opts.chartData.xAxisData.startX,
+      endX = opts.chartData.xAxisData.endX,
+      eachSpacing = opts.chartData.xAxisData.eachSpacing;
     let totalWidth = eachSpacing * (xAxisPoints.length - 1);
     let screenWidth = endX - startX;
     offsetLeft = screenWidth - totalWidth;
@@ -3536,12 +3529,6 @@ function drawCharts(type, opts, config, context) {
     };
     opts._scrollDistance_ = offsetLeft;
   }
-
-  /* 原始series数据 */
-  var _series_ = series;
-  opts._series_ = _series_;
-  /* 过滤掉show=false的series */
-  series = filterSeries(opts.series);
 
   if (type === 'pie' || type === 'ring' || type === 'rose') {
     config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(_series_);
