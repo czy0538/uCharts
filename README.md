@@ -85,6 +85,7 @@
 - K线图  `Candle`
 - 混合图 `Mix`（支持 Point、Line 直线曲线、Column、Area 直线曲线）
 - 玫瑰图 `Rose`（面积模式、半径模式）
+- 词云图 `Word`（横向、横纵混排）
 - 条状图 `Bar`（开发中）
 - 漏斗图 `Funnel`（开发中）
 
