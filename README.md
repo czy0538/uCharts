@@ -2,6 +2,8 @@
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
 ## 最近1个月更新
+* [x] 2019.08.02 增加`词云图`（体验版），图表类型`word`,支持横向`normal`横纵混排`vertical`，详见demo。
+* [x] 2019.08.02 修复圆弧进度图进度不正确的bug。感谢`jusn`[详见](https://gitee.com/uCharts/uCharts/issues/IZVC1?from=project-issue)。
 * [x] 2019.07.27 修复雷达图在IOS下不显示区域的bug。
 * [x] 2019.07.27 新增opts.extra.radar.opacity参数，雷达图区域背景颜色透明度。
 * [x] 2019.07.27 新增直角坐标系图表MarkLine标记线功能，详见文档扩展配置。
@@ -33,9 +35,6 @@
 * [x] 2019.07.09 修改 `module.exports` 方法，增加判断，兼容vue及H5方式普通引用。
 * [x] 2019.07.07 修复自定义数据标签在饼图无效的bug。
 * [x] 2019.07.04 新增 `opts.duration` 动画展示时长单位毫秒。
-* [x] 2019.07.01 新增 `opts.yAxis.fontSize` 参数，用于控制 `Y` 轴标签的字体大小。
-* [x] 2019.07.01 新增 `opts.xAxis.fontSize` 参数，用于控制 `X` 轴标签的字体大小。
-* [x] 2019.07.01 新增 `opts.series.textSize` 参数，用于控制数据标签的字体大小。
 
 # [uCharts 官方网站](https://www.ucharts.cn)
 # <https://www.ucharts.cn>
