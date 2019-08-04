@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.1.20190727
+ * uCharts v1.8.1.20190804
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )

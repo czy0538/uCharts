@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.1.20190727
+ * uCharts v1.8.1.20190804
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1026,7 +1026,11 @@ function getArcbarDataPoints(series, arcbarOption) {
     item.data = item.data === null ? 0 : item.data;
     let totalAngle;
     if (arcbarOption.type == 'default') {
-      totalAngle = arcbarOption.startAngle - arcbarOption.endAngle + 1;
+      if (arcbarOption.endAngle < arcbarOption.startAngle) {
+        totalAngle = 2 + arcbarOption.endAngle - arcbarOption.startAngle;
+      } else{
+        totalAngle = arcbarOption.startAngle - arcbarOption.endAngle;
+      }
     } else {
       totalAngle = 2;
     }
@@ -2268,9 +2272,7 @@ function drawAreaDataPoints(series, opts, config, context) {
           points.forEach(function(item, index) {
             if (index > 0) {
               let ctrlPoint = createCurveControlPoints(points, index - 1);
-              context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,
-                item.x, item
-                .y);
+              context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,item.x, item.y);
             }
           });
         } else {
@@ -2309,9 +2311,7 @@ function drawAreaDataPoints(series, opts, config, context) {
             points.forEach(function(item, index) {
               if (index > 0) {
                 let ctrlPoint = createCurveControlPoints(points, index - 1);
-                context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,
-                  item.x,
-                  item.y);
+                context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,item.x,item.y);
               }
             });
           } else {
@@ -3427,6 +3427,149 @@ function drawRadarDataPoints(series, opts, config, context) {
   };
 }
 
+function normalInt(min, max, iter) {
+    iter = iter==0?1:iter;
+    var arr = [];
+    for (var i = 0; i < iter; i++) {
+        arr[i] = Math.random();
+    };
+    return  Math.floor(arr.reduce(function(i,j){return i+j})/iter*(max-min))+min;  
+};
+
+function collisionNew(area,points,width,height){
+    var isIn=false;
+    for(let i=0;i<points.length;i++){
+      if(points[i].area){
+        if(area[3]<points[i].area[1]||area[0]>points[i].area[2]||area[1]>points[i].area[3]||area[2]<points[i].area[0]){
+          if(area[0]<0 || area[1]<0 || area[2]>width || area[3]>height){
+            isIn=true;
+            break;
+          }else{
+            isIn=false;
+          }
+        }else{
+          isIn=true;
+          break;
+        }
+      }
+    }
+    return isIn;
+};
+
+function drawWordCloudDataPoints(series, opts, config, context) {
+  let wordOption = assign({},{
+    type: 'normal',
+    autoColors: true
+  },opts.extra.word);
+  
+  context.beginPath();
+  context.clearRect(0, 0, opts.width, opts.height);
+  context.setFillStyle(opts.background||'#FFFFFF');
+  context.rect(0,0,opts.width,opts.height);
+  context.fill();
+  context.save();
+  let points = series.sort(function(a,b){return parseInt(b.textSize)-parseInt(a.textSize);});
+  switch (wordOption.type) {
+    case 'normal':
+      context.translate(opts.width/2,opts.height/2);
+      for (let i = 0; i < points.length; i++) { 
+        context.save(); 
+        let text = points[i].name;
+        let tHeight = points[i].textSize;
+        let tWidth = measureText(text,tHeight);
+        let x,y;
+        let area;
+        let breaknum=0;
+        while(true) {
+            breaknum++;
+            x = normalInt(-opts.width/2, opts.width/2,5) - tWidth/2;
+            y = normalInt(-opts.height/2, opts.height/2,5) + tHeight/2;
+            area=[x-5+opts.width/2,y-5-tHeight+opts.height/2,x+tWidth+5+opts.width/2,y+5+opts.height/2];
+            let isCollision = collisionNew(area,points,opts.width,opts.height);
+            if (!isCollision) break;
+            if (breaknum==1000){
+              area=[-100,-100,-100,-100];
+              break;
+            }
+        };
+        points[i].area=area;
+        //console.log(points[i].color);
+        context.beginPath();
+        context.setFillStyle(points[i].color);
+        context.setFontSize(tHeight);
+        context.fillText(text,area[0]+5-opts.width/2,area[1]+5+tHeight-opts.height/2);
+        //context.rect(area[0]+5-opts.width/2,area[1]+5-opts.height/2,area[2]-area[0],area[3]-area[1]);
+        context.stroke();
+        context.draw(true);
+        context.restore();
+      }
+    break;
+    case 'vertical':
+      context.translate(opts.width/2,opts.height/2);
+      function Spin(){
+        //获取均匀随机值，是否旋转，旋转的概率为（1-0.5）
+        if (Math.random()>0.7) {
+            context.rotate(90 * Math.PI / 180); 
+            return true;
+        }else {return false};
+      };
+      
+      for (let i = 0; i < points.length; i++) { 
+        context.save(); 
+        let text = points[i].name;
+        let tHeight = points[i].textSize;
+        let tWidth = measureText(text,tHeight);
+        let isSpin = Spin(); 
+        let x,y,area,areav;
+        let breaknum=0;
+        while(true) {
+          breaknum++;
+          let isCollision;
+          if (isSpin) {
+              x = normalInt(-opts.width/2, opts.width/2,5) - tWidth/2;
+              y = normalInt(-opts.height/2, opts.height/2,5)+tHeight/2;
+              area=[y-5-tWidth+opts.width/2,(-x-5+opts.height/2),y+5+opts.width/2,(-x+tHeight+5+opts.height/2)];
+              areav=[opts.width-(opts.width/2-opts.height/2)-(-x+tHeight+5+opts.height/2)-5,(opts.height/2-opts.width/2)+(y-5-tWidth+opts.width/2)-5,opts.width-(opts.width/2-opts.height/2)-(-x+tHeight+5+opts.height/2)+tHeight,(opts.height/2-opts.width/2)+(y-5-tWidth+opts.width/2)+tWidth+5];
+              isCollision = collisionNew(areav,points,opts.height,opts.width);
+          }else{
+            x = normalInt(-opts.width/2, opts.width/2,5) - tWidth/2;
+            y = normalInt(-opts.height/2, opts.height/2,5)+tHeight/2;
+            area=[x-5+opts.width/2,y-5-tHeight+opts.height/2,x+tWidth+5+opts.width/2,y+5+opts.height/2];
+            isCollision = collisionNew(area,points,opts.width,opts.height);
+          } 
+          if (!isCollision) break;
+          if (breaknum==1000){
+            area=[-100,-100,-100,-100];
+            break;
+          }
+        };
+        if (isSpin) {
+          points[i].area=areav;
+        }else{
+          points[i].area=area;
+        }
+        //console.log(points[i].color);
+        context.beginPath();
+        context.setFillStyle(points[i].color);
+        context.setFontSize(tHeight);
+        context.fillText(text,area[0]+5-opts.width/2,area[1]+5+tHeight-opts.height/2);
+        context.stroke();
+        context.draw(true);
+        context.restore();
+      };
+    break;
+    //45度旋转
+    case 'tilt':
+      
+    break;
+    //随机旋转
+    case 'random':
+      
+    break;
+  }
+  context.restore();
+  //drawCanvas(opts, context);
+}
 function drawCanvas(opts, context) {
   context.draw();
 }
@@ -3528,11 +3671,8 @@ function drawCharts(type, opts, config, context) {
     seriesMA = series;
   }
 
-  /* 原始series数据 */
-  var _series_ = series;
-  opts._series_ = _series_;
   /* 过滤掉show=false的series */
-  series = filterSeries(series);
+  opts._series_ = series = filterSeries(series);
 
   //重新计算图表区域
 
@@ -3563,9 +3703,10 @@ function drawCharts(type, opts, config, context) {
       break;
   }
 
-  let _calYAxisData = calYAxisData(series, opts, config),
-    yAxisWidth = _calYAxisData.yAxisWidth;
+  let _calYAxisData = {},yAxisWidth = 0;
   if (opts.type === 'line' || opts.type === 'column' || opts.type === 'area' || opts.type === 'mix' || opts.type === 'candle') {
+    _calYAxisData = calYAxisData(series, opts, config);
+    yAxisWidth = _calYAxisData.yAxisWidth;
     config.yAxisWidth = yAxisWidth;
     opts.area[3] += yAxisWidth;
   } else {
@@ -3604,10 +3745,14 @@ function drawCharts(type, opts, config, context) {
   }
 
   if (type === 'pie' || type === 'ring' || type === 'rose') {
-    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(_series_);
+    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(seriesMA);
   }
 
   switch (type) {
+    case 'word':
+      context.clearRect(0, 0, opts.width, opts.height);
+      drawWordCloudDataPoints(series, opts, config, context);
+    break;
     case 'line':
       this.animationInstance = new Animation({
         timing: 'easeIn',
@@ -3943,7 +4088,7 @@ var Charts = function Charts(opts) {
   opts.rotate = opts.rotate ? true : false;
   opts.animation = opts.animation ? true : false;
 
-  let config$$1 = assign({}, config);
+  let config$$1 = JSON.parse(JSON.stringify(config));
   config$$1.colors = opts.colors ? opts.colors : config$$1.colors;
   config$$1.yAxisTitleWidth = opts.yAxis.disabled !== true && opts.yAxis.title ? config$$1.yAxisTitleWidth : 0;
   if (opts.type == 'pie' || opts.type == 'ring') {
@@ -3983,6 +4128,7 @@ var Charts = function Charts(opts) {
   config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pixelRatio;
   config$$1.columePadding = config.columePadding * opts.pixelRatio;
   opts.$this = opts.$this ? opts.$this : this;
+  
   this.context = wx.createCanvasContext(opts.canvasId, opts.$this);
   /* 兼容原生H5
   this.context = document.getElementById(opts.canvasId).getContext("2d");
@@ -3993,6 +4139,7 @@ var Charts = function Charts(opts) {
   this.context.setFillStyle = function(e){ return this.fillStyle=e; }
   this.context.draw = function(){ }
   */
+
   opts.chartData = {};
   this.event = new Event();
   this.scrollOption = {
@@ -4260,7 +4407,7 @@ Charts.prototype.showToolTip = function(e) {
         _scrollDistance_: currentOffset,
         animation: false
       });
-      var seriesData = this.opts.series[index];
+      var seriesData = this.opts._series_[index];
       var textList = [{
         text: option.format ? option.format(seriesData) : seriesData.name + ': ' + seriesData.data,
         color: seriesData.color

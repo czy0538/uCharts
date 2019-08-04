@@ -148,6 +148,13 @@
 			}
 		},
 		{
+			"path": "pages/basic/word/word",
+			"style": {
+				"navigationBarTitleText": "词云图",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/basic/arcbar/arcbar",
 			"style": {
 				"navigationBarTitleText": "基本圆弧进度条",

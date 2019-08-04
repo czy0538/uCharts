@@ -55,7 +55,8 @@ export default {
 			{image:'/static/images/charts/mix.png',text:'混合图',url:'mix/mix'},
 			{image:'/static/images/charts/candle.png',text:'K线图',url:'candle/candle'},
 			{image:'/static/images/charts/gauge.png',text:'仪表盘',url:'gauge/gauge'},
-			{image:'/static/images/charts/radar.png',text:'雷达图',url:'radar/radar'}]
+			{image:'/static/images/charts/radar.png',text:'雷达图',url:'radar/radar'},
+			{image:'/static/images/charts/cloud.png',text:'词云图',url:'word/word'}]
 		};
 	},
 	methods: {
