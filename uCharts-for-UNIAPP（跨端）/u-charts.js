@@ -981,6 +981,15 @@ function getPieDataPoints(series, radius) {
   return series;
 }
 
+function getFunnelDataPoints(series, radius) {
+  var process = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+  series = series.sort(function(a,b){return parseInt(b.data)-parseInt(a.data);});
+  for (let i = 0; i < series.length; i++) {
+    series[i].radius = series[i].data/series[0].data*radius*process;
+  }
+  return series.reverse();
+}
+
 function getRoseDataPoints(series, type, minRadius, radius) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
   var count = 0;
@@ -2995,8 +3004,7 @@ function drawPieDataPoints(series, opts, config, context) {
     config.pieChartLinePadding = pieOption.activeRadius;
   }
 
-  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[
-    0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
+  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
 
   series = getPieDataPoints(series, radius, process);
 
@@ -3570,6 +3578,78 @@ function drawWordCloudDataPoints(series, opts, config, context) {
   context.restore();
   //drawCanvas(opts, context);
 }
+
+function drawFunnelDataPoints(series, opts, config, context) {
+  let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let funnelOption = assign({},{
+    activeWidth:10,
+    activeOpacity:0.5
+  },opts.extra.funnel);
+  let eachSpacing = (opts.height - opts.area[0] - opts.area[2])/series.length;
+  
+  let centerPosition = {
+    x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
+    y: opts.height-opts.area[2]
+  };
+  let activeWidth = funnelOption.activeWidth;
+  let radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - activeWidth, (opts.height - opts.area[0] - opts.area[2]) / 2 - activeWidth);
+  
+  series = getFunnelDataPoints(series, radius, process);
+  
+  context.save();
+  context.translate(centerPosition.x,centerPosition.y);
+  
+  for(let i=0;i<series.length;i++){
+    
+    if(i==0){
+      if (opts.tooltip) {
+        if (opts.tooltip.index == i) {
+          context.beginPath();
+          context.setFillStyle(hexToRgb(series[i].color, funnelOption.activeOpacity || 0.5));
+          context.moveTo(centerPosition.x, centerPosition.y);
+          context.closePath();
+          context.fill();
+        }
+      }
+      context.beginPath();
+      context.setLineWidth(1 * opts.pixelRatio);
+      context.setStrokeStyle('#ffffff');
+      context.setFillStyle(series[i].color);
+      context.moveTo(0, 0);
+      context.lineTo(-series[i].radius, -eachSpacing);
+      context.lineTo(series[i].radius, -eachSpacing);
+      context.lineTo(0, 0);
+      context.closePath();
+      context.fill();
+    }else{
+      if (opts.tooltip) {
+        if (opts.tooltip.index == i) {
+          context.beginPath();
+          context.setFillStyle(hexToRgb(series[i].color, funnelOption.activeOpacity || 0.5));
+          context.moveTo(centerPosition.x, centerPosition.y);
+          context.closePath();
+          context.fill();
+        }
+      }
+      context.beginPath();
+      context.setLineWidth(1 * opts.pixelRatio);
+      context.setStrokeStyle('#ffffff');
+      context.setFillStyle(series[i].color);
+      context.moveTo(0, 0);
+      context.lineTo(-series[i-1].radius, 0);
+      context.lineTo(-series[i].radius, -eachSpacing);
+      context.lineTo(series[i].radius, -eachSpacing);
+      context.lineTo(series[i-1].radius, 0);
+      context.lineTo(0, 0);
+      context.closePath();
+      context.fill();
+    }
+    context.translate(0,-eachSpacing)
+  }
+  context.restore();
+
+}
+
 function drawCanvas(opts, context) {
   context.draw();
 }
@@ -3752,6 +3832,25 @@ function drawCharts(type, opts, config, context) {
     case 'word':
       context.clearRect(0, 0, opts.width, opts.height);
       drawWordCloudDataPoints(series, opts, config, context);
+    break;
+    case 'funnel':
+      this.animationInstance = new Animation({
+        timing: 'easeInOut',
+        duration: duration,
+        onProcess: function onProcess(process) {
+          context.clearRect(0, 0, opts.width, opts.height);
+          if (opts.rotate) {
+            contextRotate(context, opts);
+          }
+          opts.chartData.pieData = drawFunnelDataPoints(series, opts, config, context, process);
+          drawLegend(opts.series, opts, config, context, opts.chartData);
+          drawToolTipBridge(opts, config, context, process);
+          drawCanvas(opts, context);
+        },
+        onAnimationFinish: function onAnimationFinish() {
+          _this.event.trigger('renderComplete');
+        }
+      });
     break;
     case 'line':
       this.animationInstance = new Animation({

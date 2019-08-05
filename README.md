@@ -2,6 +2,7 @@
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
 ## 最近1个月更新
+* [x] 2019.08.05 增加`漏斗图`（体验版），图表类型`funnel`。
 * [x] 2019.08.02 增加`词云图`（体验版），图表类型`word`,支持横向`normal`横纵混排`vertical`，详见demo。
 * [x] 2019.08.02 修复圆弧进度图进度不正确的bug。感谢`jusn`[详见](https://gitee.com/uCharts/uCharts/issues/IZVC1?from=project-issue)。
 * [x] 2019.07.27 修复雷达图在IOS下不显示区域的bug。
