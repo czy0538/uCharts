@@ -56,7 +56,8 @@ export default {
 			{image:'/static/images/charts/candle.png',text:'K线图',url:'candle/candle'},
 			{image:'/static/images/charts/gauge.png',text:'仪表盘',url:'gauge/gauge'},
 			{image:'/static/images/charts/radar.png',text:'雷达图',url:'radar/radar'},
-			{image:'/static/images/charts/cloud.png',text:'词云图',url:'word/word'}]
+			{image:'/static/images/charts/cloud.png',text:'词云图',url:'word/word'},
+			{image:'/static/images/charts/funnel.png',text:'漏斗图',url:'funnel/funnel'}]
 		};
 	},
 	methods: {

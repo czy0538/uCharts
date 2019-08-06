@@ -154,6 +154,13 @@
 				"navigationBarTextStyle":"black"
 			}
 		},
+    {
+    	"path": "pages/basic/funnel/funnel",
+    	"style": {
+    		"navigationBarTitleText": "漏斗图",
+    		"navigationBarTextStyle":"black"
+    	}
+    },
 		{
 			"path": "pages/basic/arcbar/arcbar",
 			"style": {

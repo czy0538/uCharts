@@ -5,18 +5,18 @@
 			<view class="qiun-title-dot-light">页面地址</view>
 		</view>
 		<view class="qiun-bg-white qiun-padding">
-		    <text>pages/basic/pie/pie</text>
+		    <text>pages/basic/funnel/funnel</text>
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">饼状图</view>
+			<view class="qiun-title-dot-light">漏斗图</view>
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasPie" id="canvasPie" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchPie"></canvas>
+			<canvas canvas-id="canvasFunnel" id="canvasFunnel" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchFunnel"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasPie" id="canvasPie" class="charts" @touchstart="touchPie"></canvas>
+			<canvas canvas-id="canvasFunnel" id="canvasFunnel" class="charts" @touchstart="touchFunnel"></canvas>
 			<!--#endif-->
 		</view>
 		<!--#ifdef H5 -->
@@ -36,7 +36,7 @@
 	import uCharts from '@/components/u-charts/u-charts.js';
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
-	var canvaPie=null;
+	var canvaFunnel=null;
    
 	export default {
 		data() {
@@ -72,22 +72,22 @@
 					},
 					success: function(res) {
 						console.log(res.data.data)
-						let Pie={series:[]};
+						let Funnel={series:[]};
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
-						Pie.series=res.data.data.Pie.series;
+						Funnel.series=res.data.data.Pie.series;
 						_self.textarea = JSON.stringify(res.data.data.Pie);
-						_self.showPie("canvasPie",Pie);
+						_self.showFunnel("canvasFunnel",Funnel);
 					},
 					fail: () => {
 						_self.tips="网络错误，小程序端请检查合法域名";
 					},
 				});
 			},
-			showPie(canvasId,chartData){
-				canvaPie=new uCharts({
+			showFunnel(canvasId,chartData){
+				canvaFunnel=new uCharts({
 					$this:_self,
 					canvasId: canvasId,
-					type: 'pie',
+					type: 'funnel',
 					fontSize:11,
 					padding:[15,15,0,15],
 					legend:{
@@ -104,26 +104,26 @@
 					height: _self.cHeight*_self.pixelRatio,
 					dataLabel: true,
 					extra: {
-						pie: {
+						funnel: {
               border:true,
-              borderColor:'#FFFFFF',
-              borderWidth:3
+              borderWidth:2,
+              borderColor:'#FFFFFF'
 						}
 					},
 				});
 			},
-			touchPie(e){
-				canvaPie.showToolTip(e, {
+			touchFunnel(e){
+				canvaFunnel.showToolTip(e, {
 					format: function (item) {
 						return item.name + ':' + item.data 
 					}
 				});
-				canvaPie.touchLegend(e,{animation:true});
+				canvaFunnel.touchLegend(e,{animation:true});
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){
 					let newdata=JSON.parse(_self.textarea);
-					canvaPie.updateData({
+					canvaFunnel.updateData({
 						series: newdata.series,
 						categories: newdata.categories
 					});
