@@ -125,6 +125,7 @@
 
 
 ## 图表示例
+![](https://img.kancloud.cn/b4/df/b4dfcc01461fc6b918932f1e15c06172_446x337.gif)
 ![](https://img.kancloud.cn/0f/8e/0f8e525821ab2fe671095ece89ff6a1a_460x342.gif)
 ![](https://box.kancloud.cn/1d5e2c60898de86f5f33f93020ff029e_468x342.gif)
 ![](https://box.kancloud.cn/63e5833a7ccd8308b0f8ab59522c36c1_468x349.gif)
