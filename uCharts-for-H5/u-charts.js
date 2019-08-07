@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.1.20190804
+ * uCharts v1.8.2.20190806
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -720,6 +720,18 @@ function findRadarChartCurrentIndex(currentPoints, radarData, count) {
   return currentIndex;
 }
 
+function findFunnelChartCurrentIndex(currentPoints, funnelData) {
+  var currentIndex = -1;
+  for (var i = 0, len = funnelData.series.length; i < len; i++) {
+    var item = funnelData.series[i];
+    if (currentPoints.x > item.funnelArea[0] && currentPoints.x < item.funnelArea[2] && currentPoints.y > item.funnelArea[1] && currentPoints.y < item.funnelArea[3]) {
+      currentIndex = i;
+      break;
+    }
+  }
+  return currentIndex;
+}
+
 function findPieChartCurrentIndex(currentPoints, pieData) {
   var currentIndex = -1;
   if (isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
@@ -979,6 +991,16 @@ function getPieDataPoints(series, radius) {
   }
 
   return series;
+}
+
+function getFunnelDataPoints(series, radius) {
+  var process = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+  series = series.sort(function(a,b){return parseInt(b.data)-parseInt(a.data);});
+  for (let i = 0; i < series.length; i++) {
+    series[i].radius = series[i].data/series[0].data*radius*process;
+    series[i]._proportion_ = series[i].data/series[0].data;
+  }
+  return series.reverse();
 }
 
 function getRoseDataPoints(series, type, minRadius, radius) {
@@ -1568,8 +1590,7 @@ function drawPieText(series, opts, config, context, radius, center) {
 
   var seriesConvert = series.map(function(item) {
     var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
-    var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) +
-      '%';
+    var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) +'%';
     var color = item.color;
     var radius = item._radius_;
     return {
@@ -2626,8 +2647,7 @@ function drawMixDataPoints(series, opts, config, context) {
 
 function drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints) {
   var toolTipOption = opts.extra.tooltip || {};
-  if (toolTipOption.horizentalLine && opts.tooltip && process === 1 && (opts.type == 'line' || opts.type == 'area' || opts.type == 'column' || opts.type == 'candle' || opts.type ==
-      'mix')) {
+  if (toolTipOption.horizentalLine && opts.tooltip && process === 1 && (opts.type == 'line' || opts.type == 'area' || opts.type == 'column' || opts.type == 'candle' || opts.type == 'mix')) {
     drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoints)
   }
   context.save();
@@ -2985,7 +3005,10 @@ function drawPieDataPoints(series, opts, config, context) {
     activeRadius: 10 * opts.pixelRatio,
     offsetAngle: 0,
     labelWidth: 15 * opts.pixelRatio,
-    ringWidth: 0
+    ringWidth: 0,
+    border:false,
+    borderWidth:2,
+    borderColor:'#FFFFFF'
   }, opts.extra.pie);
   var centerPosition = {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
@@ -2995,8 +3018,7 @@ function drawPieDataPoints(series, opts, config, context) {
     config.pieChartLinePadding = pieOption.activeRadius;
   }
 
-  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[
-    0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
+  var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
 
   series = getPieDataPoints(series, radius, process);
 
@@ -3020,15 +3042,15 @@ function drawPieDataPoints(series, opts, config, context) {
       }
     }
     context.beginPath();
-    context.setLineWidth(2 * opts.pixelRatio);
+    context.setLineWidth(pieOption.borderWidth * opts.pixelRatio);
     context.lineJoin = "round";
-    context.setStrokeStyle('#ffffff');
+    context.setStrokeStyle(pieOption.borderColor);
     context.setFillStyle(eachSeries.color);
     context.moveTo(centerPosition.x, centerPosition.y);
     context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 * eachSeries._proportion_ * Math.PI);
     context.closePath();
     context.fill();
-    if (opts.disablePieStroke !== true) {
+    if (pieOption.border == true) {
       context.stroke();
     }
   });
@@ -3078,7 +3100,10 @@ function drawRoseDataPoints(series, opts, config, context) {
     activeOpacity: 0.5,
     activeRadius: 10 * opts.pixelRatio,
     offsetAngle: 0,
-    labelWidth: 15 * opts.pixelRatio
+    labelWidth: 15 * opts.pixelRatio,
+    border:false,
+    borderWidth:2,
+    borderColor:'#FFFFFF'
   }, opts.extra.rose);
   if (config.pieChartLinePadding == 0) {
     config.pieChartLinePadding = roseOption.activeRadius;
@@ -3119,16 +3144,16 @@ function drawRoseDataPoints(series, opts, config, context) {
       }
     }
     context.beginPath();
-    context.setLineWidth(2 * opts.pixelRatio);
+    context.setLineWidth(roseOption.borderWidth * opts.pixelRatio);
     context.lineJoin = "round";
-    context.setStrokeStyle('#ffffff');
+    context.setStrokeStyle(roseOption.borderColor);
     context.setFillStyle(eachSeries.color);
     context.moveTo(centerPosition.x, centerPosition.y);
     context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 *
       eachSeries._proportion_ * Math.PI);
     context.closePath();
     context.fill();
-    if (opts.disablePieStroke !== true) {
+    if (roseOption.border == true) {
       context.stroke();
     }
   });
@@ -3570,6 +3595,175 @@ function drawWordCloudDataPoints(series, opts, config, context) {
   context.restore();
   //drawCanvas(opts, context);
 }
+
+function drawFunnelDataPoints(series, opts, config, context) {
+  let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let funnelOption = assign({},{
+    activeWidth:10,
+    activeOpacity:0.3,
+    border:false,
+    borderWidth:2,
+    borderColor:'#FFFFFF',
+    fillOpacity:1,
+    labelAlign:'right'
+  },opts.extra.funnel);
+  let eachSpacing = (opts.height - opts.area[0] - opts.area[2])/series.length;
+  let centerPosition = {
+    x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
+    y: opts.height-opts.area[2]
+  };
+  let activeWidth = funnelOption.activeWidth;
+  let radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - activeWidth, (opts.height - opts.area[0] - opts.area[2]) / 2 - activeWidth);
+  series = getFunnelDataPoints(series, radius, process);
+  context.save();
+  context.translate(centerPosition.x,centerPosition.y);
+  for(let i=0;i<series.length;i++){
+    if(i==0){
+      if (opts.tooltip) {
+        if (opts.tooltip.index == i) {
+          context.beginPath();
+          context.setFillStyle(hexToRgb(series[i].color, funnelOption.activeOpacity));
+          context.moveTo(-activeWidth, 0);
+          context.lineTo(-series[i].radius-activeWidth, -eachSpacing);
+          context.lineTo(series[i].radius+activeWidth, -eachSpacing);
+          context.lineTo(activeWidth, 0);
+          context.lineTo(-activeWidth, 0);
+          context.closePath();
+          context.fill();
+        }
+      }
+      series[i].funnelArea=[centerPosition.x-series[i].radius,centerPosition.y-eachSpacing,centerPosition.x+series[i].radius,centerPosition.y];
+      context.beginPath();
+      context.setLineWidth(funnelOption.borderWidth * opts.pixelRatio);
+      context.setStrokeStyle(funnelOption.borderColor);
+      context.setFillStyle(hexToRgb(series[i].color, funnelOption.fillOpacity));
+      context.moveTo(0, 0);
+      context.lineTo(-series[i].radius, -eachSpacing);
+      context.lineTo(series[i].radius, -eachSpacing);
+      context.lineTo(0, 0);
+      context.closePath();
+      context.fill();
+      if(funnelOption.border == true){
+        context.stroke();
+      }
+    }else{
+      if (opts.tooltip) {
+        if (opts.tooltip.index == i) {
+          context.beginPath();
+          context.setFillStyle(hexToRgb(series[i].color, funnelOption.activeOpacity));
+          context.moveTo(0, 0);
+          context.lineTo(-series[i-1].radius-activeWidth, 0);
+          context.lineTo(-series[i].radius-activeWidth, -eachSpacing);
+          context.lineTo(series[i].radius+activeWidth, -eachSpacing);
+          context.lineTo(series[i-1].radius+activeWidth, 0);
+          context.lineTo(0, 0);
+          context.closePath();
+          context.fill();
+          context.closePath();
+          context.fill();
+        }
+      }
+      series[i].funnelArea=[centerPosition.x-series[i].radius,centerPosition.y-eachSpacing*(i+1),centerPosition.x+series[i].radius,centerPosition.y-eachSpacing*i];
+      context.beginPath();
+      context.setLineWidth(funnelOption.borderWidth * opts.pixelRatio);
+      context.setStrokeStyle(funnelOption.borderColor);
+      context.setFillStyle(hexToRgb(series[i].color, funnelOption.fillOpacity));
+      context.moveTo(0, 0);
+      context.lineTo(-series[i-1].radius, 0);
+      context.lineTo(-series[i].radius, -eachSpacing);
+      context.lineTo(series[i].radius, -eachSpacing);
+      context.lineTo(series[i-1].radius, 0);
+      context.lineTo(0, 0);
+      context.closePath();
+      context.fill();
+      if(funnelOption.border == true){
+        context.stroke();
+      }
+    }
+    context.translate(0,-eachSpacing)
+  }
+  context.restore();
+  
+  if (opts.dataLabel !== false && process === 1) {
+    drawFunnelText(series, opts, context, eachSpacing, funnelOption.labelAlign, activeWidth, centerPosition);
+  }
+  
+  return {
+    center: centerPosition,
+    radius: radius,
+    series: series
+  };
+}
+
+function drawFunnelText(series, opts, context, eachSpacing, labelAlign,activeWidth, centerPosition){
+  for(let i=0;i<series.length;i++){
+    let item = series[i];
+    let startX,endX,startY,fontSize;
+    let text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) +'%';
+    if(labelAlign == 'right'){
+      if(i==0){
+        startX=(item.funnelArea[2]+centerPosition.x)/2;
+      }else{
+        startX=(item.funnelArea[2]+series[i-1].funnelArea[2])/2;
+      }
+      endX=startX+activeWidth*2;
+      startY=item.funnelArea[1]+eachSpacing/2;
+      fontSize = item.textSize || opts.fontSize;
+      context.setLineWidth(1 * opts.pixelRatio);
+      context.setStrokeStyle(item.color);
+      context.setFillStyle(item.color);
+      context.beginPath();
+      context.moveTo(startX,startY );
+      context.lineTo(endX,startY);
+      context.stroke();
+      context.closePath();
+      context.beginPath();
+      context.moveTo(endX, startY);
+      context.arc(endX, startY, 2, 0, 2 * Math.PI);
+      context.closePath();
+      context.fill();
+      context.beginPath();
+      context.setFontSize(fontSize);
+      context.setFillStyle(item.textColor || '#666666');
+      context.fillText(text, endX+5, startY + fontSize/2 -2);
+      context.closePath();
+      context.stroke();
+      context.closePath();
+    }else{
+      if(i==0){
+        startX=(item.funnelArea[0]+centerPosition.x)/2;
+      }else{
+        startX=(item.funnelArea[0]+series[i-1].funnelArea[0])/2;
+      }
+      endX=startX-activeWidth*2;
+      startY=item.funnelArea[1]+eachSpacing/2;
+      fontSize = item.textSize || opts.fontSize;
+      context.setLineWidth(1 * opts.pixelRatio);
+      context.setStrokeStyle(item.color);
+      context.setFillStyle(item.color);
+      context.beginPath();
+      context.moveTo(startX,startY );
+      context.lineTo(endX,startY);
+      context.stroke();
+      context.closePath();
+      context.beginPath();
+      context.moveTo(endX, startY);
+      context.arc(endX, startY, 2, 0, 2 * Math.PI);
+      context.closePath();
+      context.fill();
+      context.beginPath();
+      context.setFontSize(fontSize);
+      context.setFillStyle(item.textColor || '#666666');
+      context.fillText(text, endX-5-measureText(text), startY + fontSize/2 -2);
+      context.closePath();
+      context.stroke();
+      context.closePath();
+    }
+    
+  }
+}
+
+
 function drawCanvas(opts, context) {
   context.draw();
 }
@@ -3752,6 +3946,25 @@ function drawCharts(type, opts, config, context) {
     case 'word':
       context.clearRect(0, 0, opts.width, opts.height);
       drawWordCloudDataPoints(series, opts, config, context);
+    break;
+    case 'funnel':
+      this.animationInstance = new Animation({
+        timing: 'easeInOut',
+        duration: duration,
+        onProcess: function onProcess(process) {
+          context.clearRect(0, 0, opts.width, opts.height);
+          if (opts.rotate) {
+            contextRotate(context, opts);
+          }
+          opts.chartData.funnelData = drawFunnelDataPoints(series, opts, config, context, process);
+          drawLegend(opts.series, opts, config, context, opts.chartData);
+          drawToolTipBridge(opts, config, context, process);
+          drawCanvas(opts, context);
+        },
+        onAnimationFinish: function onAnimationFinish() {
+          _this.event.trigger('renderComplete');
+        }
+      });
     break;
     case 'line':
       this.animationInstance = new Animation({
@@ -4262,6 +4475,11 @@ Charts.prototype.getCurrentDataIndex = function(e) {
         x: _touches$.x,
         y: _touches$.y
       }, this.opts.chartData.radarData, this.opts.categories.length);
+    } else if (this.opts.type === 'funnel') {
+      return findFunnelChartCurrentIndex({
+        x: _touches$.x,
+        y: _touches$.y
+      }, this.opts.chartData.funnelData);
     } else {
       return findCurrentIndex({
         x: _touches$.x,
@@ -4409,6 +4627,30 @@ Charts.prototype.showToolTip = function(e) {
         text: option.format ? option.format(seriesData) : seriesData.name + ': ' + seriesData.data,
         color: seriesData.color
       }];
+      var offset = {
+        x: _touches$.x,
+        y: _touches$.y
+      };
+      opts.tooltip = {
+        textList: textList,
+        offset: offset,
+        option: option,
+        index: index
+      };
+    }
+    drawCharts.call(this, opts.type, opts, this.config, this.context);
+  }
+  if (this.opts.type === 'funnel') {
+    var index = this.getCurrentDataIndex(e);
+    if (index > -1) {
+      var currentOffset = this.scrollOption.currentOffset;
+      var opts = assign({}, this.opts, {
+        _scrollDistance_: currentOffset,
+        animation: false
+      });
+      var seriesData = this.opts._series_[index];
+      var textList = [{
+        text: option.format ? option.format(seriesData) : seriesData.name + ': ' + seriesData.data, color: seriesData.color }];
       var offset = {
         x: _touches$.x,
         y: _touches$.y
