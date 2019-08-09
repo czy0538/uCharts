@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.3.20190808
+ * uCharts v1.8.3.20190809
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1512,7 +1512,7 @@ function drawPointText(points, series, config, context) {
         value = data[index].value
       }
       var formatVal = series.format ? series.format(value) : value;
-      context.fillText(formatVal, item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -
+      context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -
         2);
       context.closePath();
       context.stroke();
@@ -1730,7 +1730,7 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
     context.beginPath();
     context.setFontSize(config.fontSize);
     context.setFillStyle(toolTipOption.labelFontColor || config.fontColor);
-    context.fillText(labelText, textX, textY + config.toolTipPadding + config.fontSize);
+    context.fillText(String(labelText), textX, textY + config.toolTipPadding + config.fontSize);
     context.closePath();
     context.stroke();
   }
@@ -1788,7 +1788,7 @@ function drawMarkLine(minRange, maxRange, opts, config, context) {
       context.beginPath();
       context.setFontSize(config.fontSize);
       context.setFillStyle(item.labelFontColor);
-      context.fillText(labelText, textX, textY + 0.5 * config.fontSize);
+      context.fillText(String(labelText), textX, textY + 0.5 * config.fontSize);
       context.stroke();
     }
   }
@@ -2266,10 +2266,6 @@ function drawAreaDataPoints(series, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
   }
 
-  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
-    drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
-  }
-
   series.forEach(function(eachSeries, seriesIndex) {
     let data = eachSeries.data;
     let points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -2399,10 +2395,6 @@ function drawLineDataPoints(series, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
   }
 
-  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
-    drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
-  }
-
   series.forEach(function(eachSeries, seriesIndex) {
     var data = eachSeries.data;
     var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -2487,10 +2479,6 @@ function drawMixDataPoints(series, opts, config, context) {
   context.save();
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
     context.translate(opts._scrollDistance_, 0);
-  }
-
-  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
-    drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
   }
 
   series.forEach(function(eachSeries, seriesIndex) {
@@ -2697,8 +2685,8 @@ function drawXAxis(categories, opts, config, context) {
     context.moveTo(startX + scrollLeft, scrollY);
     context.lineTo(startX + scrollLeft + scrollWidth, scrollY);
     context.stroke();
-    context.setLineCap('butt');
     context.closePath();
+    context.setLineCap('butt');
   }
 
   context.save();
@@ -2707,33 +2695,38 @@ function drawXAxis(categories, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
   }
 
-  context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
-  context.setLineCap('butt');
-  context.setLineWidth(1 * opts.pixelRatio);
-  if (opts.xAxis.gridType == 'dash') {
-    context.setLineDash([opts.xAxis.dashLength, opts.xAxis.dashLength]);
-  }
-  context.beginPath();
+
   if (opts.xAxis.disableGrid !== true) {
+    context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
+    context.setLineCap('butt');
+    context.setLineWidth(1 * opts.pixelRatio);
+    if (opts.xAxis.gridType == 'dash') {
+      context.setLineDash([opts.xAxis.dashLength, opts.xAxis.dashLength]);
+    }
     if (opts.xAxis.type === 'calibration') {
       xAxisPoints.forEach(function(item, index) {
         if (index > 0) {
+          context.beginPath();
           context.moveTo(item - eachSpacing / 2, startY);
           context.lineTo(item - eachSpacing / 2, startY + 4 * opts.pixelRatio);
+          context.closePath();
+          context.stroke();
         }
       });
     } else {
       opts.xAxis.gridEval = opts.xAxis.gridEval || 1;
       xAxisPoints.forEach(function(item, index) {
         if (index % opts.xAxis.gridEval == 0) {
+          context.beginPath();
           context.moveTo(item, startY);
           context.lineTo(item, endY);
+          context.stroke();
         }
       });
     }
+    context.setLineDash([]);
   }
-  context.stroke();
-  context.setLineDash([]);
+  
 
   //不绘制X轴
   if (opts.xAxis.disabled !== true) {
@@ -2772,8 +2765,7 @@ function drawXAxis(categories, opts, config, context) {
         context.beginPath();
         context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight -
-          xAxisFontSize) / 2);
+        context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight - xAxisFontSize) / 2);
         context.closePath();
         context.stroke();
       });
@@ -2787,8 +2779,7 @@ function drawXAxis(categories, opts, config, context) {
         var textWidth = measureText(item);
         var offset = eachSpacing / 2 - textWidth;
 
-        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize /
-            2 + 5, opts.height),
+        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
           transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
@@ -2832,12 +2823,12 @@ function drawYAxisGrid(categories, opts, config, context) {
   }
   context.setStrokeStyle(opts.yAxis.gridColor || "#cccccc");
   context.setLineWidth(1 * opts.pixelRatio);
-  context.beginPath();
   points.forEach(function(item, index) {
+    context.beginPath();
     context.moveTo(startX, item);
     context.lineTo(endX, item);
+    context.stroke();
   });
-  context.stroke();
   context.setLineDash([]);
 
   context.restore();
@@ -2878,7 +2869,7 @@ function drawYAxis(series, opts, config, context) {
     context.beginPath();
     context.setFontSize(yAxisFontSize);
     context.setFillStyle(opts.yAxis.fontColor || '#666666');
-    context.fillText(item, opts.area[3] - config.yAxisWidth, pos + yAxisFontSize / 2);
+    context.fillText(String(item), opts.area[3] - config.yAxisWidth, pos + yAxisFontSize / 2);
     context.closePath();
     context.stroke();
   });
