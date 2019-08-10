@@ -2,45 +2,47 @@
 ## 感谢 DCloud 以及 MPvue 团队的鼓励和认可！感谢各位开发者的问题反馈和赞赏！uCharts 团队一定不负众望，为大家打造完美、易用、高性能的图表而奋斗！再次感谢！
 
 ## 最近1个月更新
-* [x] 2019.08.09 修复 百度小程序折线图混合图中的折线偶尔为线段的bug。
-* [x] 2019.08.09 修复 百度小程序Y轴及数据标签不显示的bug，修复百度小程序折线图偶尔为线段的bug。
-* [x] 2019.08.08 修复 支付宝小程序IDE不显示图表的bug，终于可以在支付宝IDE看到图表了哈。
-* [x] 2019.08.06 升级为v1.8.2，更改饼图类图表opts.disablePieStroke位置为各类型的扩展配置中，增加extra.pie.border、extra.pie.borderWidth、extra.pie.borderColor参数（v1.8.1前版本升级后需修改此类参数）。
-* [x] 2019.08.06 完善漏斗图，增加漏斗图tooltip及数据标签。
-* [x] 2019.08.05 增加`漏斗图`（体验版），图表类型`funnel`。
-* [x] 2019.08.02 增加`词云图`（体验版），图表类型`word`,支持横向`normal`横纵混排`vertical`，详见demo。
-* [x] 2019.08.02 修复圆弧进度图进度不正确的bug。感谢`jusn`[详见](https://gitee.com/uCharts/uCharts/issues/IZVC1?from=project-issue)。
-* [x] 2019.07.27 修复雷达图在IOS下不显示区域的bug。
-* [x] 2019.07.27 新增opts.extra.radar.opacity参数，雷达图区域背景颜色透明度。
-* [x] 2019.07.27 新增直角坐标系图表MarkLine标记线功能，详见文档扩展配置。
-* [x] 2019.07.27 优化多处基本数据重复计算，提升整体性能。
-* [x] 2019.07.26 修复K线图average.show为false报错的bug。
-* [x] 2019.07.26 修复支付宝小程序平台单页多次调用图表，填充边距倍增的bug。
-* [x] 2019.07.26 修复饼图、圆环图、玫瑰图在dataLabel为false时，tooltip事件无法显示的bug。
-* [x] 2019.07.26 增加饼图、圆环图、玫瑰图的 activeRadius 属性。
-* [x] 2019.07.25 修复ToolTip在点击相对画布底部的情况下超出画布显示不完整的bug。
-* [x] 2019.07.25 修复多行图例点击获取索引错误的bug。
-* [x] 2019.07.25 修复更新图表数据时padding、Y轴标签、图例等其他基础数据未同步更新的bug。
-* [x] 2019.07.25 调整了padding及chartData挂载到opts，为后续性能提升做准备，格式化整体代码格式。
-* [x] 2019.07.23 修复X轴Y轴网格、辅助线为线段时，线段偶尔重叠的bug。
-* [x] 2019.07.23 增加opts.seriesMA，数据格式同opts.series, K线图自定义折线数据列表，内容同series，仅在opts.extra.candle.average.show为false时调用此数据，（默认调用此数据）。
-* [x] 2019.07.22 修改tooltip水平标签逻辑。
-* [x] 2019.07.22 修复K线图X轴Y轴标签在IOS下背景框显示不完整的bug。
-* [x] 2019.07.21 【重要】升级为1.8.0Beta版本，增加图例位置自定义及图例点击事件，修复直角坐标系中绘图不精确的问题，修复饼图类半径计算问题，修复一些已知bug。如需稳定版，请用码云地址[uCharts v1.7.0](https://gitee.com/uCharts/uCharts/repository/archive/v1.7.0)
-* [x] 2019.07.19 增加 `opts.colors` 图表配色方案，不传则使用系统默认配置。
-* [x] 2019.07.14 增加 `opts.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
-* [x] 2019.07.14 增加 `opts.legend` 图例设置，未来将支持上下左右布局图例，目前仍为底部图例。
-* [x] 2019.07.14 增加 `opts.padding` Array 默认 [10, 10, 10, 10] 画布填充边距，顺序为上右下左，同css，但必须4位 。
-* [x] 2019.07.13 修改updateData方法，不仅仅限于`categories`及`series`更新，支持全部opts参数更新，支持变更图表类型，等同于new uCharts({})。
-* [x] 2019.07.13 更正 `饼图、圆环图、玫瑰图` 的扩展配置`labelWidth`，之前的`lableWidth`拼写错误，更新版本后请注意替换，给您带来的不便请谅解。
-* [x] 2019.07.12 增加 `opts.extra.gauge.labelFormat` 仪表盘数据标签格式化。示例：opts.extra.gauge.labelFormat:function(val){return val.toFixed(2)}。
-* [x] 2019.07.12 修复温度计图表个别情况下边框留空问题。
+* [x] 2019.08.10 【v1.8.4】
+* [x] 2019.08.10 新增 `opts.xAxis.boundaryGap` 折线图、区域图起画点结束点方法：center为单元格中间起画，justify为0点起画即两端对齐
+* [x] 2019.08.09 修复 百度小程序折线图混合图中的折线偶尔为线段的bug
+* [x] 2019.08.09 修复 百度小程序Y轴及数据标签不显示的bug，修复百度小程序折线图偶尔为线段的bug
+* [x] 2019.08.08 修复 支付宝小程序IDE不显示图表的bug，终于可以在支付宝IDE看到图表了哈
+* [x] 2019.08.06 【v1.8.2】
+* [x] 2019.08.06 调整 饼图类图表opts.disablePieStroke位置为各类型的扩展配置中，增加extra.pie.border、extra.pie.borderWidth、extra.pie.borderColor参数（v1.8.1前版本升级后需修改此类参数）
+* [x] 2019.08.06 优化 漏斗图，增加漏斗图tooltip及数据标签。
+* [x] 2019.08.05 新增 `漏斗图`（体验版），图表类型`funnel`。
+* [x] 2019.08.02 新增 `词云图`（体验版），图表类型`word`,支持横向`normal`横纵混排`vertical`，详见demo。
+* [x] 2019.08.02 修复 圆弧进度图进度不正确的bug。感谢`jusn`[详见](https://gitee.com/uCharts/uCharts/issues/IZVC1?from=project-issue)。
+* [x] 2019.07.27 修复 雷达图在IOS下不显示区域的bug。
+* [x] 2019.07.27 新增 opts.extra.radar.opacity参数，雷达图区域背景颜色透明度。
+* [x] 2019.07.27 新增 直角坐标系图表MarkLine标记线功能，详见文档扩展配置。
+* [x] 2019.07.27 优化 多处基本数据重复计算，提升整体性能。
+* [x] 2019.07.26 修复 K线图average.show为false报错的bug。
+* [x] 2019.07.26 修复 支付宝小程序平台单页多次调用图表，填充边距倍增的bug。
+* [x] 2019.07.26 修复 饼图、圆环图、玫瑰图在dataLabel为false时，tooltip事件无法显示的bug。
+* [x] 2019.07.26 增加 饼图、圆环图、玫瑰图的 activeRadius 属性。
+* [x] 2019.07.25 修复 ToolTip在点击相对画布底部的情况下超出画布显示不完整的bug。
+* [x] 2019.07.25 修复 多行图例点击获取索引错误的bug。
+* [x] 2019.07.25 修复 更新图表数据时padding、Y轴标签、图例等其他基础数据未同步更新的bug。
+* [x] 2019.07.25 调整 padding及chartData挂载到opts，为后续性能提升做准备，格式化整体代码格式。
+* [x] 2019.07.23 修复 X轴Y轴网格、辅助线为线段时，线段偶尔重叠的bug。
+* [x] 2019.07.23 新增 opts.seriesMA，数据格式同opts.series, K线图自定义折线数据列表，内容同series，仅在opts.extra.candle.average.show为false时调用此数据，（默认调用此数据）。
+* [x] 2019.07.22 修改 tooltip水平标签逻辑。
+* [x] 2019.07.22 修复 K线图X轴Y轴标签在IOS下背景框显示不完整的bug。
+* [x] 2019.07.21 【v1.8.0】
+* [x] 2019.07.21 新增 【重要】图例位置自定义及图例点击事件，修复直角坐标系中绘图不精确的问题，修复饼图类半径计算问题，修复一些已知bug。如需稳定版，请用码云地址[uCharts v1.7.0](https://gitee.com/uCharts/uCharts/repository/archive/v1.7.0)
+* [x] 2019.07.19 新增 `opts.colors` 图表配色方案，不传则使用系统默认配置。
+* [x] 2019.07.14 新增 `opts.area` 图表主区域配置，为将来多Y轴、图例位置自定义做准备。
+* [x] 2019.07.14 新增 `opts.legend` 图例设置，未来将支持上下左右布局图例，目前仍为底部图例。
+* [x] 2019.07.14 新增 `opts.padding` Array 默认 [10, 10, 10, 10] 画布填充边距，顺序为上右下左，同css，但必须4位 。
+* [x] 2019.07.13 修改 updateData方法，不仅仅限于`categories`及`series`更新，支持全部opts参数更新，支持变更图表类型，等同于new uCharts({})。
+* [x] 2019.07.13 修改 `饼图、圆环图、玫瑰图` 的扩展配置`labelWidth`，之前的`lableWidth`拼写错误，更新版本后请注意替换，给您带来的不便请谅解。
+* [x] 2019.07.12 新增 `opts.extra.gauge.labelFormat` 仪表盘数据标签格式化。示例：opts.extra.gauge.labelFormat:function(val){return val.toFixed(2)}。
+* [x] 2019.07.12 修复 温度计图表个别情况下边框留空问题。
 * [x] 2019.07.09 新增 `opts.xAxis.gridEval` X轴网格线显示间隔，即假设为2时，是隔一个刻度显示间隔 |
 * [x] 2019.07.09 新增 `opts.series.addPoint` 参数，混合图中是否增加折线或区域图上的标记点，仅针对 `line` , `area` 有效。
-* [x] 2019.07.09 修复混合图中类型为`point`的时候，如设置 `opts.dataPointShape` 为false的情况下不显示标记点的bug。
+* [x] 2019.07.09 修复 混合图中类型为`point`的时候，如设置 `opts.dataPointShape` 为false的情况下不显示标记点的bug。
 * [x] 2019.07.09 修改 `module.exports` 方法，增加判断，兼容vue及H5方式普通引用。
-* [x] 2019.07.07 修复自定义数据标签在饼图无效的bug。
-* [x] 2019.07.04 新增 `opts.duration` 动画展示时长单位毫秒。
 
 # [uCharts 官方网站](https://www.ucharts.cn)
 # <https://www.ucharts.cn>

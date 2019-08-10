@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.3.20190808
+ * uCharts v1.8.4.20190810
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -181,7 +181,7 @@ function calCandleMA(dayArr, nameArr, colorArr, kdata) {
 
 function calValidDistance(distance, chartData, config, opts) {
   var dataChartAreaWidth = opts.width - opts.area[1] - opts.area[3];
-  var dataChartWidth = chartData.eachSpacing * opts.categories.length;
+  var dataChartWidth = chartData.eachSpacing * (opts.chartData.xAxisData.xAxisPoints.length-1);
   var validDistance = distance;
   if (distance >= 0) {
     validDistance = 0;
@@ -637,9 +637,13 @@ function filterSeries(series) {
 function findCurrentIndex(currentPoints, xAxisPoints, opts, config) {
   var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
   var currentIndex = -1;
+  var spacing = 0;
+  if((opts.type=='line' || opts.type=='area') && opts.xAxis.boundaryGap=='justify'){
+    spacing = opts.chartData.eachSpacing/2;
+  }
   if (isInExactChartArea(currentPoints, opts, config)) {
     xAxisPoints.forEach(function(item, index) {
-      if (currentPoints.x + offset > item) {
+      if (currentPoints.x + offset + spacing > item) {
         currentIndex = index;
       }
     });
@@ -674,8 +678,7 @@ function isInExactLegendArea(currentPoints, area) {
 }
 
 function isInExactChartArea(currentPoints, opts, config) {
-  return currentPoints.x < opts.width - opts.area[1] && currentPoints.x > opts.area[3] && currentPoints.y > opts.area[0] &&
-    currentPoints.y < opts.height - opts.area[2];
+  return currentPoints.x < opts.width - opts.area[1] + 10 && currentPoints.x > opts.area[3] -10 && currentPoints.y > opts.area[0] && currentPoints.y < opts.height - opts.area[2];
 }
 
 function findRadarChartCurrentIndex(currentPoints, radarData, count) {
@@ -1180,6 +1183,9 @@ function getXAxisPoints(categories, opts, config) {
   var yAxisTotalWidth = config.yAxisWidth + config.yAxisTitleWidth;
   var spacingValid = opts.width - opts.area[1] - opts.area[3];
   var dataCount = opts.enableScroll ? Math.min(opts.xAxis.itemCount, categories.length) : categories.length;
+  if((opts.type=='line' || opts.type=='area') && dataCount>1 && opts.xAxis.boundaryGap=='justify'){
+    dataCount -=1;
+  }
   var eachSpacing = spacingValid / dataCount;
 
   var xAxisPoints = [];
@@ -1188,12 +1194,13 @@ function getXAxisPoints(categories, opts, config) {
   categories.forEach(function(item, index) {
     xAxisPoints.push(startX + index * eachSpacing);
   });
-  if (opts.enableScroll === true) {
-    xAxisPoints.push(startX + categories.length * eachSpacing);
-  } else {
-    xAxisPoints.push(endX);
+  if(opts.xAxis.boundaryGap !=='justify'){
+    if (opts.enableScroll === true) {
+      xAxisPoints.push(startX + categories.length * eachSpacing);
+    } else {
+      xAxisPoints.push(endX);
+    }
   }
-
   return {
     xAxisPoints: xAxisPoints,
     startX: startX,
@@ -1229,7 +1236,10 @@ function getCandleDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing,
 
 function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config) {
   var process = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 1;
-
+  var boundaryGap='center';
+  if (opts.type == 'line'||opts.type == 'area'){
+    boundaryGap=opts.xAxis.boundaryGap;
+  }
   var points = [];
   var validHeight = opts.height - opts.area[0] - opts.area[2];
   data.forEach(function(item, index) {
@@ -1238,7 +1248,10 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
     } else {
       var point = {};
       point.color = item.color;
-      point.x = xAxisPoints[index] + Math.round(eachSpacing / 2);
+      point.x = xAxisPoints[index];
+      if(boundaryGap=='center'){
+        point.x += Math.round(eachSpacing / 2);
+      }
       var value = item;
       if (typeof item === 'object' && item !== null) {
         value = item.value
@@ -1512,7 +1525,7 @@ function drawPointText(points, series, config, context) {
         value = data[index].value
       }
       var formatVal = series.format ? series.format(value) : value;
-      context.fillText(formatVal, item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -
+      context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -
         2);
       context.closePath();
       context.stroke();
@@ -1730,7 +1743,7 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
     context.beginPath();
     context.setFontSize(config.fontSize);
     context.setFillStyle(toolTipOption.labelFontColor || config.fontColor);
-    context.fillText(labelText, textX, textY + config.toolTipPadding + config.fontSize);
+    context.fillText(String(labelText), textX, textY + config.toolTipPadding + config.fontSize);
     context.closePath();
     context.stroke();
   }
@@ -1788,7 +1801,7 @@ function drawMarkLine(minRange, maxRange, opts, config, context) {
       context.beginPath();
       context.setFontSize(config.fontSize);
       context.setFillStyle(item.labelFontColor);
-      context.fillText(labelText, textX, textY + 0.5 * config.fontSize);
+      context.fillText(String(labelText), textX, textY + 0.5 * config.fontSize);
       context.stroke();
     }
   }
@@ -2266,10 +2279,6 @@ function drawAreaDataPoints(series, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
   }
 
-  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
-    drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
-  }
-
   series.forEach(function(eachSeries, seriesIndex) {
     let data = eachSeries.data;
     let points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -2399,10 +2408,6 @@ function drawLineDataPoints(series, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
   }
 
-  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
-    drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
-  }
-
   series.forEach(function(eachSeries, seriesIndex) {
     var data = eachSeries.data;
     var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -2487,10 +2492,6 @@ function drawMixDataPoints(series, opts, config, context) {
   context.save();
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
     context.translate(opts._scrollDistance_, 0);
-  }
-
-  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
-    drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
   }
 
   series.forEach(function(eachSeries, seriesIndex) {
@@ -2668,7 +2669,10 @@ function drawXAxis(categories, opts, config, context) {
     startX = xAxisData.startX,
     endX = xAxisData.endX,
     eachSpacing = xAxisData.eachSpacing;
-
+  var boundaryGap='center';
+  if (opts.type == 'line'||opts.type == 'area'){
+    boundaryGap=opts.xAxis.boundaryGap;
+  }
   var startY = opts.height - opts.area[2];
   var endY = opts.area[0];
 
@@ -2697,8 +2701,8 @@ function drawXAxis(categories, opts, config, context) {
     context.moveTo(startX + scrollLeft, scrollY);
     context.lineTo(startX + scrollLeft + scrollWidth, scrollY);
     context.stroke();
-    context.setLineCap('butt');
     context.closePath();
+    context.setLineCap('butt');
   }
 
   context.save();
@@ -2707,33 +2711,38 @@ function drawXAxis(categories, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
   }
 
-  context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
-  context.setLineCap('butt');
-  context.setLineWidth(1 * opts.pixelRatio);
-  if (opts.xAxis.gridType == 'dash') {
-    context.setLineDash([opts.xAxis.dashLength, opts.xAxis.dashLength]);
-  }
-  context.beginPath();
+
   if (opts.xAxis.disableGrid !== true) {
+    context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
+    context.setLineCap('butt');
+    context.setLineWidth(1 * opts.pixelRatio);
+    if (opts.xAxis.gridType == 'dash') {
+      context.setLineDash([opts.xAxis.dashLength, opts.xAxis.dashLength]);
+    }
     if (opts.xAxis.type === 'calibration') {
       xAxisPoints.forEach(function(item, index) {
         if (index > 0) {
+          context.beginPath();
           context.moveTo(item - eachSpacing / 2, startY);
           context.lineTo(item - eachSpacing / 2, startY + 4 * opts.pixelRatio);
+          context.closePath();
+          context.stroke();
         }
       });
     } else {
       opts.xAxis.gridEval = opts.xAxis.gridEval || 1;
       xAxisPoints.forEach(function(item, index) {
         if (index % opts.xAxis.gridEval == 0) {
+          context.beginPath();
           context.moveTo(item, startY);
           context.lineTo(item, endY);
+          context.stroke();
         }
       });
     }
+    context.setLineDash([]);
   }
-  context.stroke();
-  context.setLineDash([]);
+  
 
   //不绘制X轴
   if (opts.xAxis.disabled !== true) {
@@ -2768,12 +2777,14 @@ function drawXAxis(categories, opts, config, context) {
     var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
-        var offset = eachSpacing / 2 - measureText(item, xAxisFontSize) / 2;
+        var offset = - measureText(item, xAxisFontSize) / 2;
+        if(boundaryGap == 'center'){
+          offset+=eachSpacing / 2;
+        }
         context.beginPath();
         context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight -
-          xAxisFontSize) / 2);
+        context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight - xAxisFontSize) / 2);
         context.closePath();
         context.stroke();
       });
@@ -2785,10 +2796,11 @@ function drawXAxis(categories, opts, config, context) {
         context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || '#666666');
         var textWidth = measureText(item);
-        var offset = eachSpacing / 2 - textWidth;
-
-        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize /
-            2 + 5, opts.height),
+        var offset = - textWidth;
+        if(boundaryGap == 'center'){
+          offset+=eachSpacing / 2;
+        }
+        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
           transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
@@ -2832,12 +2844,12 @@ function drawYAxisGrid(categories, opts, config, context) {
   }
   context.setStrokeStyle(opts.yAxis.gridColor || "#cccccc");
   context.setLineWidth(1 * opts.pixelRatio);
-  context.beginPath();
   points.forEach(function(item, index) {
+    context.beginPath();
     context.moveTo(startX, item);
     context.lineTo(endX, item);
+    context.stroke();
   });
-  context.stroke();
   context.setLineDash([]);
 
   context.restore();
@@ -2863,7 +2875,9 @@ function drawYAxis(series, opts, config, context) {
   if (opts._scrollDistance_ < 0) {
     context.fillRect(0, 0, startX, fillEndY);
   }
-  context.fillRect(endX, 0, opts.width, fillEndY);
+  if(opts.enableScroll == true){
+    context.fillRect(endX, 0, opts.width, fillEndY);
+  }
   context.closePath();
   context.stroke();
 
@@ -2878,7 +2892,7 @@ function drawYAxis(series, opts, config, context) {
     context.beginPath();
     context.setFontSize(yAxisFontSize);
     context.setFillStyle(opts.yAxis.fontColor || '#666666');
-    context.fillText(item, opts.area[3] - config.yAxisWidth, pos + yAxisFontSize / 2);
+    context.fillText(String(item), opts.area[3] - config.yAxisWidth, pos + yAxisFontSize / 2);
     context.closePath();
     context.stroke();
   });
@@ -4275,7 +4289,8 @@ var Charts = function Charts(opts) {
     type: 'calibration',
     gridType: 'solid',
     dashLength: 4 * opts.pixelRatio,
-    scrollAlign: 'left'
+    scrollAlign: 'left',
+    boundaryGap:'center'
   }, opts.xAxis);
   opts.legend = assign({}, {
     show: true,
