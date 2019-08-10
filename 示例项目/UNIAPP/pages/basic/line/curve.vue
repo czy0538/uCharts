@@ -90,7 +90,7 @@
 					canvasId: canvasId,
 					type: 'line',
 					fontSize:11,
-					padding:[15,15,0,15],
+					padding:[15,20,0,15],
 					legend:{
 						show:true,
 						padding:5,
@@ -108,7 +108,8 @@
 						type:'grid',
 						gridColor:'#CCCCCC',
 						gridType:'dash',
-						dashLength:8
+						dashLength:8,
+            boundaryGap:'justify'
 					},
 					yAxis: {
 						gridType:'dash',

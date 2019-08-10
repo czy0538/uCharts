@@ -113,10 +113,6 @@
 						gridType:'dash',
 						gridColor:'#CCCCCC',
 						dashLength:8,
-						splitNumber:5,
-						min:10,
-						max:180,
-						format:(val)=>{return val.toFixed(0)+'元'}
 					},
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
