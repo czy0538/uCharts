@@ -3495,6 +3495,92 @@ function collisionNew(area,points,width,height){
     return isIn;
 };
 
+function getBoundingBox(data) {
+  var bounds = {}, coords;
+  bounds.xMin = 180;
+  bounds.xMax = 0;
+  bounds.yMin = 90;
+  bounds.yMax = 0
+  for (var i = 0; i < data.length; i++) {
+      var coorda = data[i].geometry.coordinates
+      for (var k = 0; k < coorda.length; k++) {
+          coords = coorda[k];
+          if (coords.length == 1) {
+              coords = coords[0]
+          }
+          for (var j = 0; j < coords.length; j++) {
+              var longitude = coords[j][0];
+              var latitude = coords[j][1];
+              var point = {
+                  x: longitude, 
+                  y: latitude 
+              }
+              bounds.xMin = bounds.xMin < point.x ? bounds.xMin : point.x;
+              bounds.xMax = bounds.xMax > point.x ? bounds.xMax : point.x;
+              bounds.yMin = bounds.yMin < point.y ? bounds.yMin : point.y;
+              bounds.yMax = bounds.yMax > point.y ? bounds.yMax : point.y;
+          }
+      }
+  }
+  return bounds;
+}
+
+function coordinateToPoint(latitude, longitude,bounds,scale,xoffset,yoffset) {
+  return {
+      x: (longitude - bounds.xMin) * scale+xoffset,
+      y: (bounds.yMax - latitude) * scale+yoffset
+  };
+}
+
+function drawMapDataPoints(series, opts, config, context) {
+  var mapOption=assign({},{
+    border:true,
+    borderWidth:1,
+    borderColor:'#666666',
+    fillOpacity:0.6
+  },opts.extra.map);
+  var coords, point;
+  var data = series;
+  var bounds= getBoundingBox(data);
+  var xScale = opts.width / Math.abs(bounds.xMax - bounds.xMin);
+  var yScale = opts.height / Math.abs(bounds.yMax - bounds.yMin);
+  var scale = xScale < yScale ? xScale : yScale;
+  var xoffset=opts.width/2-Math.abs(bounds.xMax - bounds.xMin)/2*scale;
+  var yoffset=opts.height/2-Math.abs(bounds.yMax - bounds.yMin)/2*scale;
+  context.beginPath();
+  context.clearRect(0, 0, opts.width, opts.height);
+  context.setFillStyle(opts.background||'#FFFFFF');
+  context.rect(0,0,opts.width,opts.height);
+  context.fill();
+  for (var i = 0; i < data.length; i++) {
+    context.beginPath();
+    context.setLineWidth(mapOption.borderWidth * opts.pixelRatio);
+    context.setStrokeStyle(mapOption.borderColor);
+    context.setFillStyle(hexToRgb(series[i].color, mapOption.fillOpacity));
+    var coorda = data[i].geometry.coordinates
+    for (var k = 0; k < coorda.length; k++) {
+      coords = coorda[k];
+      if (coords.length == 1) {
+        coords = coords[0]
+      }
+      for (var j = 0; j < coords.length; j++) {
+        point = coordinateToPoint(coords[j][1], coords[j][0],bounds,scale,xoffset,yoffset)
+        if (j === 0) {
+          context.beginPath();
+          context.moveTo(point.x, point.y);
+        } else {
+          context.lineTo(point.x, point.y);
+        }
+      }
+      context.fill();
+      if(mapOption.border == true){
+        context.stroke();
+      }
+    }
+  }
+  context.draw();
+}
+
 function drawWordCloudDataPoints(series, opts, config, context) {
   let wordOption = assign({},{
     type: 'normal',
@@ -3960,6 +4046,10 @@ function drawCharts(type, opts, config, context) {
     case 'word':
       context.clearRect(0, 0, opts.width, opts.height);
       drawWordCloudDataPoints(series, opts, config, context);
+    break;
+    case 'map':
+      context.clearRect(0, 0, opts.width, opts.height);
+      drawMapDataPoints(series, opts, config, context);
     break;
     case 'funnel':
       this.animationInstance = new Animation({

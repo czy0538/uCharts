@@ -105,7 +105,7 @@
 						disableGrid:true,
 					},
 					yAxis: {
-						//disabled:true
+						format:(val)=>{return val.toFixed(0)+'元'}
 					},
 					dataLabel: true,
 					width: _self.cWidth*_self.pixelRatio,

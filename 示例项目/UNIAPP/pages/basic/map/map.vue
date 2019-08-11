@@ -5,30 +5,20 @@
 			<view class="qiun-title-dot-light">页面地址</view>
 		</view>
 		<view class="qiun-bg-white qiun-padding">
-		    <text>pages/basic/area/area</text>
+		    <text>pages/basic/map/map</text>
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">基本区域图</view>
+			<view class="qiun-title-dot-light">地图</view>
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasArea" id="canvasArea" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchArea"></canvas>
+			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" ></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasArea" id="canvasArea" class="charts" @touchstart="touchArea"></canvas>
+			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" ></canvas>
 			<!--#endif-->
 		</view>
-		<!--#ifdef H5 -->
-		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">标准数据格式</view>
-		</view>
-		<view class="qiun-bg-white qiun-padding">
-		    <textarea class="qiun-textarea" auto-height="true" maxlength="-1" v-model="textarea"/>
-		</view>
-		<view class="qiun-text-tips">Tips：修改后点击更新图表</view>
-		<button class="qiun-button" @tap="changeData()">更新图表</button>
-		<!--#endif-->
 	</view>
 </template>
 
@@ -36,7 +26,7 @@
 	import uCharts from '@/components/u-charts/u-charts.js';
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
-	var canvaArea=null;
+	var canvaMap=null;
    
 	export default {
 		data() {
@@ -61,89 +51,64 @@
 			});
 			//#endif
 			this.cWidth=uni.upx2px(750);
-			this.cHeight=uni.upx2px(500);
+			this.cHeight=uni.upx2px(750);
 			this.getServerData();
 		},
 		methods: {
 			getServerData(){
 				uni.request({
-					url: 'https://www.ucharts.cn/data.json',
+					url: 'https://geo.datav.aliyun.com/areas/bound/100000_full.json',
 					data:{
 					},
 					success: function(res) {
-						console.log(res.data.data)
-						let Area={categories:[],series:[]};
+						console.log(res.data.features)
+						let cMap={series:[]};
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
-						Area.categories=res.data.data.Area.categories;
-						Area.series=res.data.data.Area.series;
-						_self.textarea = JSON.stringify(res.data.data.Area);
-						_self.showArea("canvasArea",Area);
+						cMap.series=res.data.features;
+						_self.showMap("canvasMap",cMap);
 					},
 					fail: () => {
 						_self.tips="网络错误，小程序端请检查合法域名";
 					},
 				});
 			},
-			showArea(canvasId,chartData){
-				canvaArea=new uCharts({
+			showMap(canvasId,chartData){
+				canvaMap=new uCharts({
 					$this:_self,
 					canvasId: canvasId,
-					type: 'area',
+					type: 'map',
 					fontSize:11,
-					padding:[0,15,10,15],
+					padding:[0,0,0,0],
 					legend:{
-						show:true,
-						position:'top',
-						float:'center',
-						itemGap:30,
-						padding:5,
-						lineHeight:18,
-						margin:0,
+						show:false
 					},
-					dataLabel:false,
-					dataPointShape:true,
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
-					categories: chartData.categories,
 					series: chartData.series,
-					animation: true,
-					xAxis: {
-						type:'grid',
-						gridColor:'#CCCCCC',
-						gridType:'dash',
-						dashLength:8,
-					},
-					yAxis: {
-						gridType:'dash',
-						gridColor:'#CCCCCC',
-						dashLength:8,
-						splitNumber:5,
-					},
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
 					extra: {
-						area:{
-							type: 'curve',
-							opacity:0.2,
-							addLine:true,
-							width:2
+						map: {
+              border:true,
+              borderWidth:1,
+              borderColor:'#666666',
+              fillOpacity:0.6
 						}
 					}
 				});
-				
 			},
-			touchArea(e) {
-				canvaArea.touchLegend(e);
-				canvaArea.showToolTip(e, {
-					format: function (item, category) {
-						return category + ' ' + item.name + ':' + item.data 
+			touchMap(e){
+				canvaMap.showToolTip(e, {
+					format: function (item) {
+						return item.name + ':' + item.data 
 					}
 				});
+				canvaMap.touchLegend(e,{animation:true});
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){
 					let newdata=JSON.parse(_self.textarea);
-					canvaArea.updateData({
+					canvaMap.updateData({
 						series: newdata.series,
 						categories: newdata.categories
 					});
@@ -162,13 +127,13 @@
 	/*样式的width和height一定要与定义的cWidth和cHeight相对应*/
 	.qiun-charts {
 		width: 750upx;
-		height: 500upx;
+		height: 750upx;
 		background-color: #FFFFFF;
 	}
 	
 	.charts {
 		width: 750upx;
-		height: 500upx;
+		height: 750upx;
 		background-color: #FFFFFF;
 	}
 </style>

@@ -29,7 +29,7 @@
 - [ ] 2019.08.xx 推迟计划加入 `第二种仪表盘样式`，增加[《亲手教您如何改造 uCharts，打造您的专属图表》]()教程。
 - [ ] 2019.08.xx 计划加入 `渐变颜色填充` 功能，支持`柱状图、区域图、混合图、圆弧进度条`。
 - [ ] 2019.08.xx 计划修复折线图样式为曲线时，个别情况下曲线超出 `X` 轴的问题。
-- [ ] 2019.08.xx 增加XY轴线配置，增加图表起始点为X轴0点开始的配置。
+- [ ] 2019.08.xx 增加XY轴线配置。
 - [ ] 2019.08.xx 计划加入多 `Y` 轴功能，支持 `Y` 轴多坐标系。
 
 ## 未来计划(全新V2.0版本)
@@ -49,8 +49,8 @@
 - 玫瑰图 `rose`
 - 词云图 `word`
 - 漏斗图 `funnel`
+- 地图 `map`
 - 条状图 `bar`(开发中)
-
 
 
 ## 插件特点
@@ -85,6 +85,8 @@
 
 
 ## 图表示例
+![](https://img.kancloud.cn/ac/ef/acef49105d33936d872f8eb9d3526af1_468x453.gif)
+![](https://img.kancloud.cn/b4/df/b4dfcc01461fc6b918932f1e15c06172_446x337.gif)
 ![](https://img.kancloud.cn/0f/8e/0f8e525821ab2fe671095ece89ff6a1a_460x342.gif)
 ![](https://box.kancloud.cn/1d5e2c60898de86f5f33f93020ff029e_468x342.gif)
 ![](https://box.kancloud.cn/63e5833a7ccd8308b0f8ab59522c36c1_468x349.gif)
@@ -112,7 +114,7 @@
 ### 通用问题
  - 如果用在您的项目上图表不显示，请先运行demo页面，如果demo页面也无法显示，请查看全局样式是否定义了`canvas的样式`，如有请取消。
 - 图表`背景颜色`问题，很多朋友设置图表背景颜色时候，只修改了view和canvas的css,忘记了修改实例化参数中的`background:'#FFFFFF'`，导致图表画板右侧有一道白条（这个是图表配置中的右边距），所以特修改了demo中的`柱状图`的背景颜色供大家参考。
-- 如果遇到`图表与预期尺寸不符合`，请检查canvas标签上的`css`与`cWidth、cHeihgt`设置的值是否相符，css请用`upx`为单位，cWidth、cHeihgt的单位为`px`，请参考demo用uni.upx2px()方法转换。
+- 如果遇到`图表与预期尺寸不符合`，请检查canvas标签上的`css`与`cWidth、cHeihgt`设置的值是否相符，css请用`rpx`为单位，cWidth、cHeihgt的单位为`px`，请参考demo用uni.upx2px()方法转换。
 - 如遇到开启拖拽，而实际`无法拖拽`的情况，请先检查canvas标签是否绑定的`touch事件`。
 - 如果涉及到v-if切换显示图表组件，第二次可能会变空白，建议用v-show替代v-if切换显示图表组件。
 
@@ -120,14 +122,8 @@
 - 头条小程序目前不支持拖拽事件，后续官方支持的话，不必更换js文件，直接可用。
 
 ### 支付宝问题
-- 在高分屏模式下，如果发现图表已显示，但位置不正确，请检查上级`view`容器的`样式`，为了解决高分屏canvas模糊问题，使用了css的`transform`，所以请修改上级样式使canvas容器缩放至相应位置。
-- 如果将canvas放在多级<view>组件下，遇到ToolTip不显示或点击区域不正确，请在`touch`事件中增加以下代码解决。
-```javascript
-//#ifdef MP-ALIPAY
-e.mp.currentTarget.offsetTop+=uni.upx2px(510);
-//#endif
+- 在高分屏模式下，如果发现图表已显示，但位置不正确，请检查上级 `view` 容器的 `样式`。
+- 为了解决高分屏模糊问题，需要在canvas标签定义width、height和style属性来控制canvas的缩放来达到匹配高分屏，具体逻辑为width、height的数值应为图表根据pixelRatio的比例放大后的尺寸，而style的尺寸为屏幕的宽和高（并非真实物理像素点）例如：
 ```
-> `uni.upx2px(510);`是canvas组件的上级<view>组件的高度
-
-
-# `支付宝小程序IDE中不显示，但运行到真机是可以显示的，请真机测试。`
+width="750" height="500" style="width:750rpx;height:500rpx;"。
+```
