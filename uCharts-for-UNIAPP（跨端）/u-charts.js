@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.4.20190810
+ * uCharts v1.8.5.20190813
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -728,6 +728,34 @@ function findFunnelChartCurrentIndex(currentPoints, funnelData) {
   for (var i = 0, len = funnelData.series.length; i < len; i++) {
     var item = funnelData.series[i];
     if (currentPoints.x > item.funnelArea[0] && currentPoints.x < item.funnelArea[2] && currentPoints.y > item.funnelArea[1] && currentPoints.y < item.funnelArea[3]) {
+      currentIndex = i;
+      break;
+    }
+  }
+  return currentIndex;
+}
+
+function findWordChartCurrentIndex(currentPoints, wordData) {
+  var currentIndex = -1;
+  for (var i = 0, len = wordData.length; i < len; i++) {
+    var item = wordData[i];
+    if (currentPoints.x > item.area[0] && currentPoints.x < item.area[2] && currentPoints.y > item.area[1] && currentPoints.y < item.area[3]) {
+      currentIndex = i;
+      break;
+    }
+  }
+  return currentIndex;
+}
+
+function findMapChartCurrentIndex(currentPoints, opts) {
+  var currentIndex = -1;
+  var cData=opts.chartData.mapData;
+  var data=opts.series;
+  var tmp=pointToCoordinate(currentPoints.y, currentPoints.x,cData.bounds,cData.scale,cData.xoffset,cData.yoffset);
+  var poi=[tmp.x, tmp.y];
+  for (var i = 0, len = data.length; i < len; i++) {
+    var item = data[i].geometry.coordinates;
+    if(isPoiWithinPoly(poi,item)){
       currentIndex = i;
       break;
     }
@@ -3532,12 +3560,61 @@ function coordinateToPoint(latitude, longitude,bounds,scale,xoffset,yoffset) {
   };
 }
 
+function pointToCoordinate(pointY, pointX,bounds,scale,xoffset,yoffset) {
+  return {
+      x: (pointX-xoffset)/scale+bounds.xMin,
+      y: bounds.yMax - (pointY-yoffset)/scale
+  };
+}
+
+function isRayIntersectsSegment(poi,s_poi,e_poi){
+      if (s_poi[1]==e_poi[1]){return false;} 
+      if (s_poi[1]>poi[1] && e_poi[1]>poi[1]){return false;}
+      if (s_poi[1]<poi[1] && e_poi[1]<poi[1]){return false;}
+      if (s_poi[1]==poi[1] && e_poi[1]>poi[1]){return false;}
+      if (e_poi[1]==poi[1] && s_poi[1]>poi[1]){return false;}
+      if (s_poi[0]<poi[0] && e_poi[1]<poi[1]){return false;}
+      let xseg=e_poi[0]-(e_poi[0]-s_poi[0])*(e_poi[1]-poi[1])/(e_poi[1]-s_poi[1]); 
+      if (xseg<poi[0]){
+        return false;
+      }else{
+        return true;
+      }
+} 
+
+function isPoiWithinPoly(poi,poly){
+  let sinsc=0;
+  for (let i=0;i<poly.length;i++){
+    let epoly=poly[i][0];
+    if (poly.length == 1) {
+      epoly = poly[i][0]
+    }
+    for(let j=0;j<epoly.length-1;j++){
+      let s_poi=epoly[j];
+      let e_poi=epoly[j+1];
+      if (isRayIntersectsSegment(poi,s_poi,e_poi)){
+        sinsc+=1;
+      }
+    }
+  }
+  
+  if(sinsc%2==1){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+
 function drawMapDataPoints(series, opts, config, context) {
   var mapOption=assign({},{
     border:true,
     borderWidth:1,
     borderColor:'#666666',
-    fillOpacity:0.6
+    fillOpacity:0.6,
+    activeBorderColor:'#f04864',
+    activeFillColor:'#facc14',
+    activeFillOpacity:1
   },opts.extra.map);
   var coords, point;
   var data = series;
@@ -3557,6 +3634,12 @@ function drawMapDataPoints(series, opts, config, context) {
     context.setLineWidth(mapOption.borderWidth * opts.pixelRatio);
     context.setStrokeStyle(mapOption.borderColor);
     context.setFillStyle(hexToRgb(series[i].color, mapOption.fillOpacity));
+    if (opts.tooltip) {
+      if (opts.tooltip.index == i ) {
+        context.setStrokeStyle(mapOption.activeBorderColor);
+        context.setFillStyle(hexToRgb(mapOption.activeFillColor, mapOption.activeFillOpacity));
+      }
+    }
     var coorda = data[i].geometry.coordinates
     for (var k = 0; k < coorda.length; k++) {
       coords = coorda[k];
@@ -3577,28 +3660,36 @@ function drawMapDataPoints(series, opts, config, context) {
         context.stroke();
       }
     }
+    if(opts.dataLabel == true){
+      var centerPoint = data[i].properties.centroid;
+      if(centerPoint){
+        point = coordinateToPoint(centerPoint[1], centerPoint[0],bounds,scale,xoffset,yoffset);
+        let fontSize=data[i].textSize||config.fontSize;
+        let text=data[i].properties.name;
+        context.beginPath();
+        context.setFontSize(fontSize)
+        context.setFillStyle(data[i].textColor||'#666666')
+        context.fillText(text, point.x-measureText(text,fontSize)/2, point.y+fontSize/2);
+        context.closePath();
+        context.stroke();
+      }
+    }
   }
+  opts.chartData.mapData={
+    bounds:bounds,
+    scale:scale,
+    xoffset:xoffset,
+    yoffset:yoffset
+  }
+  drawToolTipBridge(opts, config, context,1);
   context.draw();
 }
 
-function drawWordCloudDataPoints(series, opts, config, context) {
-  let wordOption = assign({},{
-    type: 'normal',
-    autoColors: true
-  },opts.extra.word);
-  
-  context.beginPath();
-  context.clearRect(0, 0, opts.width, opts.height);
-  context.setFillStyle(opts.background||'#FFFFFF');
-  context.rect(0,0,opts.width,opts.height);
-  context.fill();
-  context.save();
-  let points = series.sort(function(a,b){return parseInt(b.textSize)-parseInt(a.textSize);});
-  switch (wordOption.type) {
+function getWordCloudPoint(opts,type){
+  let points = opts.series.sort(function(a,b){return parseInt(b.textSize)-parseInt(a.textSize);});
+  switch (type) {
     case 'normal':
-      context.translate(opts.width/2,opts.height/2);
-      for (let i = 0; i < points.length; i++) { 
-        context.save(); 
+      for (let i = 0; i < points.length; i++) {
         let text = points[i].name;
         let tHeight = points[i].textSize;
         let tWidth = measureText(text,tHeight);
@@ -3618,29 +3709,16 @@ function drawWordCloudDataPoints(series, opts, config, context) {
             }
         };
         points[i].area=area;
-        //console.log(points[i].color);
-        context.beginPath();
-        context.setFillStyle(points[i].color);
-        context.setFontSize(tHeight);
-        context.fillText(text,area[0]+5-opts.width/2,area[1]+5+tHeight-opts.height/2);
-        //context.rect(area[0]+5-opts.width/2,area[1]+5-opts.height/2,area[2]-area[0],area[3]-area[1]);
-        context.stroke();
-        context.draw(true);
-        context.restore();
       }
     break;
     case 'vertical':
-      context.translate(opts.width/2,opts.height/2);
       function Spin(){
         //获取均匀随机值，是否旋转，旋转的概率为（1-0.5）
         if (Math.random()>0.7) {
-            context.rotate(90 * Math.PI / 180); 
             return true;
         }else {return false};
       };
-      
       for (let i = 0; i < points.length; i++) { 
-        context.save(); 
         let text = points[i].name;
         let tHeight = points[i].textSize;
         let tWidth = measureText(text,tHeight);
@@ -3664,36 +3742,82 @@ function drawWordCloudDataPoints(series, opts, config, context) {
           } 
           if (!isCollision) break;
           if (breaknum==1000){
-            area=[-100,-100,-100,-100];
+            area=[-1000,-1000,-1000,-1000];
             break;
           }
         };
         if (isSpin) {
           points[i].area=areav;
+          points[i].areav=area;
         }else{
           points[i].area=area;
         }
-        //console.log(points[i].color);
-        context.beginPath();
-        context.setFillStyle(points[i].color);
-        context.setFontSize(tHeight);
-        context.fillText(text,area[0]+5-opts.width/2,area[1]+5+tHeight-opts.height/2);
-        context.stroke();
-        context.draw(true);
-        context.restore();
+        points[i].rotate=isSpin;
       };
     break;
-    //45度旋转
-    case 'tilt':
-      
-    break;
-    //随机旋转
-    case 'random':
-      
-    break;
   }
-  context.restore();
-  //drawCanvas(opts, context);
+  return points;
+}
+
+
+function drawWordCloudDataPoints(series, opts, config, context) {
+  let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let wordOption = assign({},{
+    type: 'normal',
+    autoColors: true
+  },opts.extra.word);
+  
+  context.beginPath();
+  context.setFillStyle(opts.background||'#FFFFFF');
+  context.rect(0,0,opts.width,opts.height);
+  context.fill();
+  context.save();
+  let points = opts.chartData.wordCloudData;
+  context.translate(opts.width/2,opts.height/2);
+  
+  for(let i=0;i<points.length;i++){
+      context.save();
+      if(points[i].rotate){
+        context.rotate(90 * Math.PI / 180);
+      }
+      let text = points[i].name;
+      let tHeight = points[i].textSize;
+      let tWidth = measureText(text,tHeight);
+      context.beginPath();
+      context.setStrokeStyle(points[i].color);
+      context.setFillStyle(points[i].color);
+      context.setFontSize(tHeight);
+      if(points[i].rotate){
+        if(points[i].areav[0]>0){
+          if (opts.tooltip) {
+            if (opts.tooltip.index == i) {
+              context.strokeText(text,(points[i].areav[0]+5-opts.width/2)*process-tWidth*(1-process)/2,(points[i].areav[1]+5+tHeight-opts.height/2)*process);
+              }else{
+                context.fillText(text,(points[i].areav[0]+5-opts.width/2)*process-tWidth*(1-process)/2,(points[i].areav[1]+5+tHeight-opts.height/2)*process);
+              }
+          }else{
+            context.fillText(text,(points[i].areav[0]+5-opts.width/2)*process-tWidth*(1-process)/2,(points[i].areav[1]+5+tHeight-opts.height/2)*process);
+          } 
+        }
+      }else{
+        if(points[i].area[0]>0){
+          if (opts.tooltip) {
+            if (opts.tooltip.index == i) {
+              context.strokeText(text,(points[i].area[0]+5-opts.width/2)*process-tWidth*(1-process)/2,(points[i].area[1]+5+tHeight-opts.height/2)*process);
+            }else{
+              context.fillText(text,(points[i].area[0]+5-opts.width/2)*process-tWidth*(1-process)/2,(points[i].area[1]+5+tHeight-opts.height/2)*process);
+            }
+          }else{
+            context.fillText(text,(points[i].area[0]+5-opts.width/2)*process-tWidth*(1-process)/2,(points[i].area[1]+5+tHeight-opts.height/2)*process);
+          }
+            
+        }
+      }
+      
+      context.stroke();
+      context.restore();
+  }
+  
 }
 
 function drawFunnelDataPoints(series, opts, config, context) {
@@ -4044,8 +4168,28 @@ function drawCharts(type, opts, config, context) {
 
   switch (type) {
     case 'word':
-      context.clearRect(0, 0, opts.width, opts.height);
-      drawWordCloudDataPoints(series, opts, config, context);
+      let wordOption = assign({},{
+        type: 'normal',
+        autoColors: true
+      },opts.extra.word);
+      if(opts.updateData==true || opts.updateData==undefined){
+        opts.chartData.wordCloudData=getWordCloudPoint(opts,wordOption.type);
+      }
+      this.animationInstance = new Animation({
+        timing: 'easeInOut',
+        duration: duration,
+        onProcess: function(process) {
+          context.clearRect(0, 0, opts.width, opts.height);
+          if (opts.rotate) {
+            contextRotate(context, opts);
+          }
+          drawWordCloudDataPoints(series, opts, config, context,process);
+          drawCanvas(opts, context);
+        },
+        onAnimationFinish: function onAnimationFinish() {
+          _this.event.trigger('renderComplete');
+        }
+      });
     break;
     case 'map':
       context.clearRect(0, 0, opts.width, opts.height);
@@ -4476,6 +4620,7 @@ var Charts = function Charts(opts) {
 Charts.prototype.updateData = function() {
   let data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   this.opts = assign({}, this.opts, data);
+  this.opts.updateData = true;
   let scrollPosition = data.scrollPosition || 'current';
   switch (scrollPosition) {
     case 'current':
@@ -4588,6 +4733,16 @@ Charts.prototype.getCurrentDataIndex = function(e) {
         x: _touches$.x,
         y: _touches$.y
       }, this.opts.chartData.funnelData);
+    } else if (this.opts.type === 'map') {
+      return findMapChartCurrentIndex({
+        x: _touches$.x,
+        y: _touches$.y
+      }, this.opts);
+    }else if (this.opts.type === 'word') {
+      return findWordChartCurrentIndex({
+        x: _touches$.x,
+        y: _touches$.y
+      }, this.opts.chartData.wordCloudData);
     } else {
       return findCurrentIndex({
         x: _touches$.x,
@@ -4657,8 +4812,7 @@ Charts.prototype.showToolTip = function(e) {
     if (index > -1) {
       var seriesData = getSeriesDataItem(this.opts.series, index);
       if (seriesData.length !== 0) {
-        var _getToolTipData = getToolTipData(seriesData, this.opts.chartData.calPoints, index, this.opts.categories,
-            option),
+        var _getToolTipData = getToolTipData(seriesData, this.opts.chartData.calPoints, index, this.opts.categories,option),
           textList = _getToolTipData.textList,
           offset = _getToolTipData.offset;
         offset.y = _touches$.y;
@@ -4682,8 +4836,7 @@ Charts.prototype.showToolTip = function(e) {
       });
       var seriesData = getSeriesDataItem(this.opts.series, index);
       if (seriesData.length !== 0) {
-        var _getMixToolTipData = getMixToolTipData(seriesData, this.opts.chartData.calPoints, index, this.opts.categories,
-            option),
+        var _getMixToolTipData = getMixToolTipData(seriesData, this.opts.chartData.calPoints, index, this.opts.categories,option),
           textList = _getMixToolTipData.textList,
           offset = _getMixToolTipData.offset;
         offset.y = _touches$.y;
@@ -4722,7 +4875,7 @@ Charts.prototype.showToolTip = function(e) {
     }
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
-  if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose') {
+  if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose'||this.opts.type === 'funnel' ) {
     var index = this.getCurrentDataIndex(e);
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
@@ -4748,7 +4901,7 @@ Charts.prototype.showToolTip = function(e) {
     }
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
-  if (this.opts.type === 'funnel') {
+  if (this.opts.type === 'map'||this.opts.type === 'word') {
     var index = this.getCurrentDataIndex(e);
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
@@ -4758,7 +4911,9 @@ Charts.prototype.showToolTip = function(e) {
       });
       var seriesData = this.opts._series_[index];
       var textList = [{
-        text: option.format ? option.format(seriesData) : seriesData.name + ': ' + seriesData.data, color: seriesData.color }];
+        text: option.format ? option.format(seriesData) : seriesData.properties.name ,
+        color: seriesData.color
+      }];
       var offset = {
         x: _touches$.x,
         y: _touches$.y
@@ -4770,6 +4925,7 @@ Charts.prototype.showToolTip = function(e) {
         index: index
       };
     }
+    opts.updateData = false;
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
   if (this.opts.type === 'radar') {

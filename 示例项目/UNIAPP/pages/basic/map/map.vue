@@ -13,10 +13,10 @@
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" ></canvas>
+			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchMap"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" ></canvas>
+			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" @touchstart="touchMap"></canvas>
 			<!--#endif-->
 		</view>
 	</view>
@@ -57,7 +57,7 @@
 		methods: {
 			getServerData(){
 				uni.request({
-					url: 'https://geo.datav.aliyun.com/areas/bound/100000_full.json',
+					url: 'https://www.ucharts.cn/map.json',
 					data:{
 					},
 					success: function(res) {
@@ -85,6 +85,7 @@
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					series: chartData.series,
+          dataLabel:false,
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
 					extra: {
@@ -100,24 +101,9 @@
 			touchMap(e){
 				canvaMap.showToolTip(e, {
 					format: function (item) {
-						return item.name + ':' + item.data 
+						return item.properties.name 
 					}
 				});
-				canvaMap.touchLegend(e,{animation:true});
-			},
-			changeData(){
-				if(isJSON(_self.textarea)){
-					let newdata=JSON.parse(_self.textarea);
-					canvaMap.updateData({
-						series: newdata.series,
-						categories: newdata.categories
-					});
-				}else{
-					uni.showToast({
-						title:'数据格式错误',
-						image:'../../../static/images/alert-warning.png'
-					})
-				}
 			}
 		}
 	}

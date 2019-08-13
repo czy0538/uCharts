@@ -13,10 +13,10 @@
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasWord" id="canvasWord" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}"></canvas>
+			<canvas canvas-id="canvasWord" id="canvasWord" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchWord"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasWord" id="canvasWord" class="charts"></canvas>
+			<canvas canvas-id="canvasWord" id="canvasWord" class="charts" @touchstart="touchWord"></canvas>
 			<!--#endif-->
 		</view>
     <!--#ifndef H5 -->
@@ -138,6 +138,7 @@
 					canvasId: canvasId,
 					type: 'word',
 					background:'#000000',
+          animation: true,
 					pixelRatio:_self.pixelRatio,
 					series: chartData.series,
 					width: _self.cWidth*_self.pixelRatio,
@@ -149,6 +150,13 @@
 					}
 				});
 			},
+      touchWord(e){
+        canvaWord.showToolTip(e, {
+        	format: function (item) {
+        		return item.name
+        	}
+        });
+      },
 			changeData(){
 				if(isJSON(_self.textarea)){
 					let newdata=JSON.parse(_self.textarea);
