@@ -1046,10 +1046,11 @@ function getRoseDataPoints(series, type, minRadius, radius) {
     count += item.data;
     dataArr.push(item.data);
   }
-  var minData = dataArr.pop();
-  var maxData = dataArr.shift();
+  
+  var minData = Math.min.apply(null, dataArr);
+  var maxData = Math.max.apply(null, dataArr);
   var radiusLength = radius - minRadius;
-
+  
   for (let i = 0; i < series.length; i++) {
     let item = series[i];
     item.data = item.data === null ? 0 : item.data;
@@ -1631,7 +1632,7 @@ function drawPieText(series, opts, config, context, radius, center) {
 
   var seriesConvert = series.map(function(item) {
     var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
-    var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) +'%';
+    var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_.toFixed(4) * 100) +'%';
     var color = item.color;
     var radius = item._radius_;
     return {
@@ -2040,12 +2041,19 @@ function drawColumnDataPoints(series, opts, config, context) {
         points.forEach(function(item, index) {
           if (item !== null) {
             context.beginPath();
+            context.setStrokeStyle(item.color || eachSeries.color);
+            context.setLineWidth(1)
             context.setFillStyle(item.color || eachSeries.color);
-            var startX = item.x - item.width / 2 + 1;
+            var startX = item.x - item.width / 2;
             var height = opts.height - item.y - opts.area[2];
-            context.moveTo(startX, item.y);
-            context.fillRect(startX, item.y, item.width - 2, height);
+            context.moveTo(startX-1, item.y);
+            context.lineTo(startX+item.width-2,item.y);
+            context.lineTo(startX+item.width-2,opts.height - opts.area[2]);
+            context.lineTo(startX,opts.height - opts.area[2]);
+            context.lineTo(startX,item.y);
+            //context.rect(startX, item.y, item.width, height);
             context.closePath();
+            context.stroke();
             context.fill();
           }
         });
@@ -2533,11 +2541,21 @@ function drawMixDataPoints(series, opts, config, context) {
       points.forEach(function(item, index) {
         if (item !== null) {
           context.beginPath();
+          context.setStrokeStyle(item.color || eachSeries.color);
+          context.setLineWidth(1)
           context.setFillStyle(item.color || eachSeries.color);
-          var startX = item.x - item.width / 2 + 1;
+          var startX = item.x - item.width / 2;
           var height = opts.height - item.y - opts.area[2];
           context.moveTo(startX, item.y);
-          context.rect(startX, item.y, item.width - 2, height);
+          context.moveTo(startX-1, item.y);
+          context.lineTo(startX+item.width-2,item.y);
+          context.lineTo(startX+item.width-2,opts.height - opts.area[2]);
+          context.lineTo(startX,opts.height - opts.area[2]);
+          context.lineTo(startX,item.y);
+          //context.rect(startX, item.y, item.width, height);
+          context.closePath();
+          context.stroke();
+          context.fill();
           context.closePath();
           context.fill();
         }
@@ -3154,14 +3172,7 @@ function drawRoseDataPoints(series, opts, config, context) {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
   };
-  var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_,
-    centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding);
-  if (opts.dataLabel) {
-    radius -= 10;
-  } else {
-    //TODO逻辑不对
-    radius -= (opts.padding[1] + opts.padding[3]);
-  }
+   var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
   var minRadius = roseOption.minRadius || radius * 0.5;
 
   series = getRoseDataPoints(series, roseOption.type, minRadius, radius, process);
@@ -3817,7 +3828,7 @@ function drawWordCloudDataPoints(series, opts, config, context) {
       context.stroke();
       context.restore();
   }
-  
+  context.restore();
 }
 
 function drawFunnelDataPoints(series, opts, config, context) {
