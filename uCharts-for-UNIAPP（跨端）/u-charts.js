@@ -1,5 +1,5 @@
 /*
- * uCharts v1.8.5.20190813
+ * uCharts v1.8.5.20190815
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1055,16 +1055,18 @@ function getRoseDataPoints(series, type, minRadius, radius) {
     let item = series[i];
     item.data = item.data === null ? 0 : item.data;
     if (count === 0 || type == 'area') {
-      item._proportion_ = 1 / series.length * process;
+      item._proportion_ = item.data / count * process;
+      item._rose_proportion_ = 1 / series.length * process;
     } else {
       item._proportion_ = item.data / count * process;
+      item._rose_proportion_ = item.data / count * process;
     }
     item._radius_ = minRadius + radiusLength * ((item.data - minData) / (maxData - minData));
   }
   for (let i = 0; i < series.length; i++) {
     let item = series[i];
     item._start_ = _start_;
-    _start_ += 2 * item._proportion_ * Math.PI;
+    _start_ += 2 * item._rose_proportion_ * Math.PI;
   }
 
   return series;
@@ -1631,8 +1633,9 @@ function drawPieText(series, opts, config, context, radius, center) {
   var lastTextObject = null;
 
   var seriesConvert = series.map(function(item) {
-    var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
     var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_.toFixed(4) * 100) +'%';
+    if(item._rose_proportion_) item._proportion_=item._rose_proportion_;
+    var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
     var color = item.color;
     var radius = item._radius_;
     return {
@@ -3191,7 +3194,7 @@ function drawRoseDataPoints(series, opts, config, context) {
         context.setFillStyle(hexToRgb(eachSeries.color, roseOption.activeOpacity || 0.5));
         context.moveTo(centerPosition.x, centerPosition.y);
         context.arc(centerPosition.x, centerPosition.y, activeRadius + eachSeries._radius_, eachSeries._start_,
-          eachSeries._start_ + 2 * eachSeries._proportion_ * Math.PI);
+          eachSeries._start_ + 2 * eachSeries._rose_proportion_ * Math.PI);
         context.closePath();
         context.fill();
       }
@@ -3203,7 +3206,7 @@ function drawRoseDataPoints(series, opts, config, context) {
     context.setFillStyle(eachSeries.color);
     context.moveTo(centerPosition.x, centerPosition.y);
     context.arc(centerPosition.x, centerPosition.y, eachSeries._radius_, eachSeries._start_, eachSeries._start_ + 2 *
-      eachSeries._proportion_ * Math.PI);
+      eachSeries._rose_proportion_ * Math.PI);
     context.closePath();
     context.fill();
     if (roseOption.border == true) {
