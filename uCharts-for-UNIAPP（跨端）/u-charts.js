@@ -3312,7 +3312,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
   if (gaugeOption.oldData == undefined) {
     gaugeOption.oldData = 0;
   }
-
+console.log(gaugeOption);
   categories = getGaugeAxisPoints(categories, gaugeOption.startAngle, gaugeOption.endAngle);
 
   var centerPosition = {
@@ -3405,8 +3405,8 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
   drawRingTitle(opts, config, context, centerPosition);
 
   if (process === 1 && opts.type === 'gauge') {
-    gaugeOption.oldAngle = series[0]._proportion_;
-    gaugeOption.oldData = series[0].data;
+    opts.extra.gauge.oldAngle = series[0]._proportion_;
+    opts.extra.gauge.oldData = series[0].data;
   }
   return {
     center: centerPosition,
