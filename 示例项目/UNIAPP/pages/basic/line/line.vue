@@ -88,6 +88,7 @@
 					$this:_self,
 					canvasId: canvasId,
 					type: 'line',
+          colors:['#facc14', '#f04864', '#8543e0', '#90ed7d'],
 					fontSize:11,
 					padding:[15,15,0,15],
 					legend:{

@@ -88,7 +88,7 @@
 					$this:_self,
 					canvasId: canvasId,
 					type: 'column',
-					padding:[15,15,0,15],
+					padding:[15,5,0,15],
 					legend:{
 						show:true,
 						padding:5,
@@ -105,7 +105,10 @@
 						disableGrid:true,
 					},
 					yAxis: {
-						format:(val)=>{return val.toFixed(0)+'元'}
+            data:[{
+              position:'right',
+              format:(val)=>{return val.toFixed(0)+'元'},
+            }]
 					},
 					dataLabel: true,
 					width: _self.cWidth*_self.pixelRatio,

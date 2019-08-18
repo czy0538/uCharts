@@ -261,6 +261,7 @@
 	},
 		"tabBar": {
 		"color": "#333333",
+    "backgroundColor": "#F8F8F8",
 		"selectedColor": "#00B26A",
 		"list": [{
 				"pagePath": "pages/basic/index",
@@ -279,13 +280,15 @@
 				"text": "手册",
 				"iconPath": "static/images/tabbar/doc.png",
 				"selectedIconPath": "static/images/tabbar/doc-act.png"
-			},
-			{
+			}
+      //#ifndef MP-TOUTIAO
+			,{
 				"pagePath": "pages/user/index",
 				"text": "我的",
 				"iconPath": "static/images/tabbar/user.png",
 				"selectedIconPath": "static/images/tabbar/user-act.png"
 			}
+      //#endif
 		]
 	}
 }

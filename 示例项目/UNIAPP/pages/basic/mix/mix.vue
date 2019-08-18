@@ -76,6 +76,10 @@
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
 						Mix.categories=res.data.data.Mix.categories;
 						Mix.series=res.data.data.Mix.series;
+            //这里后台数据没有指定数据用哪个Y轴，我人为定义了一下，仅做示例
+            Mix.series[1].index=1;
+            Mix.series[2].index=1;
+            Mix.series[5].index=2;
 						_self.textarea = JSON.stringify(res.data.data.Mix);
 						_self.showMix("canvasMix",Mix);
 					},
@@ -90,9 +94,11 @@
 					canvasId: canvasId,
 					type: 'mix',
 					fontSize:11,
-					padding:[15,15,0,15],
+					padding:[5,5,0,5],
 					legend:{
 						show:true,
+            position:'bottom',
+            float:'center',
 						padding:5,
 						lineHeight:11,
 						margin:6,
@@ -112,18 +118,41 @@
 						scrollAlign:'left',
 					},
 					yAxis: {
+            data:[{
+              calibration:true,
+              position:'left',
+              title:'折线',
+              titleFontSize:12,
+              format:(val)=>{return val.toFixed(0)+'度'}
+            },{
+              calibration:true,
+              position:'right',
+              min:0,
+              max:200,
+              title:'柱状图',
+              titleFontSize:12,
+              format:(val)=>{return val.toFixed(0)+'元'}
+            },{
+              calibration:true,
+              position:'right',
+              min:0,
+              max:200,
+              title:'点',
+              titleFontSize:12
+            }],
+            showTitle:true,
 						gridType:'dash',
 						dashLength:4,
-						splitNumber:5,
-						min:10,
-						max:180,
-						format:(val)=>{return val.toFixed(0)}
+						splitNumber:5
 					},
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
 					dataLabel: true,
 					dataPointShape: true,
 					extra: {
+            column:{
+              width:20*_self.pixelRatio
+            },
 						tooltip:{
 							bgColor:'#000000',
 							bgOpacity:0.7,

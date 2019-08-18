@@ -61,6 +61,21 @@ export default {
 			{image:'/static/images/charts/map.png',text:'地图',url:'map/map'}]
 		};
 	},
+  onShow() {
+    //#ifdef MP-BAIDU
+      swan.setPageInfo({
+                  title: 'uCharts高性能跨平台图表库',
+                  keywords: 'H5图表,APP图表,小程序图表',
+                  description: 'uCharts高性能跨平台图表库支持H5图表、APP图表、小程序图表，调用简单方便、性能及体验极佳。',
+                  success: function () {
+                      console.log('setPageInfo success');
+                  },
+                  fail: function (err) {
+                      console.log('setPageInfo fail', err);
+                  }
+              })
+    //#endif
+  },
 	methods: {
         change(e) {
             this.current = e.detail.current;

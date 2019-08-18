@@ -1,10 +1,12 @@
 <template>
 	<view class="about">
 		<view class="content">
+      <!--#ifndef MP-TOUTIAO-->
 			<view class="qrcode">
 				<image src="../../static/images/qrcode.png" @longtap="save"></image>
 				<text class="tip">扫码体验uCharts</text>
 			</view>
+      <!--#endif-->
 			<view class="desc">
 				<text class="code">uCharts</text>
 				是一个基于 <text class="code">uni-app</text> 开发跨平台应用的<text class="code">高性能图表工具</text>。

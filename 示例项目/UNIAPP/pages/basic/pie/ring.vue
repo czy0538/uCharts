@@ -126,7 +126,7 @@
 					},
 					extra: {
 						pie: {
-						  offsetAngle: -105,
+						  offsetAngle: 0,
 						  ringWidth: 40*_self.pixelRatio,
 						  labelWidth:15
 						}
