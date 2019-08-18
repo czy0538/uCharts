@@ -4341,7 +4341,6 @@ function drawCharts(type, opts, config, context) {
   }
   opts.chartData.yAxisData = _calYAxisData;
 
-console.log(opts.chartData.yAxisData);
   if (opts.categories && opts.categories.length) {
     opts.chartData.xAxisData = getXAxisPoints(opts.categories, opts, config);
     let _calCategoriesData = calCategoriesData(opts.categories, opts, config, opts.chartData.xAxisData.eachSpacing),
@@ -4996,6 +4995,7 @@ Charts.prototype.touchLegend = function(e) {
     if (index >= 0) {
       this.opts.series[index].show = !this.opts.series[index].show;
       this.opts.animation = option.animation ? true : false;
+			this.opts._scrollDistance_= this.scrollOption.currentOffset;
       drawCharts.call(this, this.opts.type, this.opts, this.config, this.context);
     }
   }
