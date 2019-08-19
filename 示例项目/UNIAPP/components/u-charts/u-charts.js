@@ -2457,6 +2457,11 @@ function drawAreaDataPoints(series, opts, config, context) {
 
       //画连线
       if (areaOption.addLine) {
+				if (eachSeries.lineType == 'dash') {
+					let dashLength = eachSeries.dashLength?eachSeries.dashLength:8;
+					dashLength *= opts.pixelRatio;
+				  context.setLineDash([dashLength, dashLength]);
+				}
         context.beginPath();
         context.setStrokeStyle(eachSeries.color);
         context.setLineWidth(areaOption.width * opts.pixelRatio);
@@ -2481,8 +2486,8 @@ function drawAreaDataPoints(series, opts, config, context) {
           }
           context.moveTo(points[0].x, points[0].y);
         }
-        context.closePath();
         context.stroke();
+				context.setLineDash([]);
       }
     }
 
@@ -2517,13 +2522,12 @@ function drawAreaDataPoints(series, opts, config, context) {
 
 function drawLineDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
-  var lineOption = opts.extra.line || {
-    type: 'straight',
-    width: 2
-  };
-  lineOption.type = lineOption.type ? lineOption.type : 'straight';
-  lineOption.width = lineOption.width ? lineOption.width : 2;
-
+  var lineOption = assign({},{
+		type: 'straight',
+		width: 2
+	},opts.extra.line);
+	lineOption.width *=opts.pixelRatio;
+	
   let xAxisData = opts.chartData.xAxisData,
     xAxisPoints = xAxisData.xAxisPoints,
     eachSpacing = xAxisData.eachSpacing;
@@ -2543,11 +2547,18 @@ function drawLineDataPoints(series, opts, config, context) {
     var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
     calPoints.push(points);
     var splitPointList = splitPoints(points);
-
+		
+		if (eachSeries.lineType == 'dash') {
+			let dashLength = eachSeries.dashLength?eachSeries.dashLength:8;
+			dashLength *= opts.pixelRatio;
+		  context.setLineDash([dashLength, dashLength]);
+		}
+		context.beginPath();
+		context.setStrokeStyle(eachSeries.color);
+		context.setLineWidth(lineOption.width);
+		
     splitPointList.forEach(function(points, index) {
-      context.beginPath();
-      context.setStrokeStyle(eachSeries.color);
-      context.setLineWidth(lineOption.width * opts.pixelRatio);
+			
       if (points.length === 1) {
         context.moveTo(points[0].x, points[0].y);
         context.arc(points[0].x, points[0].y, 1, 0, 2 * Math.PI);
@@ -2571,10 +2582,12 @@ function drawLineDataPoints(series, opts, config, context) {
         }
         context.moveTo(points[0].x, points[0].y);
       }
-      context.closePath();
-      context.stroke();
+      
     });
-
+		
+		context.stroke();
+		context.setLineDash([]);
+		
     if (opts.dataPointShape !== false) {
       var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
       drawPointShape(points, eachSeries.color, shape, context, opts);
@@ -2717,6 +2730,11 @@ function drawMixDataPoints(series, opts, config, context) {
     if (eachSeries.type == 'line') {
       var splitPointList = splitPoints(points);
       splitPointList.forEach(function(points, index) {
+				if (eachSeries.lineType == 'dash') {
+					let dashLength = eachSeries.dashLength?eachSeries.dashLength:8;
+					dashLength *= opts.pixelRatio;
+				  context.setLineDash([dashLength, dashLength]);
+				}
         context.beginPath();
         context.setStrokeStyle(eachSeries.color);
         context.setLineWidth(2 * opts.pixelRatio);
@@ -2743,8 +2761,8 @@ function drawMixDataPoints(series, opts, config, context) {
           }
           context.moveTo(points[0].x, points[0].y);
         }
-        context.closePath();
         context.stroke();
+				context.setLineDash([]);
       });
     }
 

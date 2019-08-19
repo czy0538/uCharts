@@ -80,6 +80,9 @@
             Mix.series[1].index=1;
             Mix.series[2].index=1;
             Mix.series[5].index=2;
+						//第二根线为虚线的设置
+						Mix.series[4].lineType='dash';
+						Mix.series[4].dashLength=10;
 						_self.textarea = JSON.stringify(res.data.data.Mix);
 						_self.showMix("canvasMix",Mix);
 					},

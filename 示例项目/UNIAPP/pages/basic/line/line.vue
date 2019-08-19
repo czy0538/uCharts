@@ -75,6 +75,9 @@
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
 						LineA.categories=res.data.data.LineA.categories;
 						LineA.series=res.data.data.LineA.series;
+						//第二根线为虚线的设置
+						LineA.series[1].lineType='dash';
+						LineA.series[1].dashLength=10;
 						_self.textarea = JSON.stringify(res.data.data.LineA);
 						_self.showLineA("canvasLineA",LineA);
 					},
