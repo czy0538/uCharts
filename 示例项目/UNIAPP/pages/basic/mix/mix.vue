@@ -154,6 +154,7 @@
               width:20*_self.pixelRatio
             },
 						tooltip:{
+							showBox:false,//是否显示半透明黑色的提示区域
 							bgColor:'#000000',
 							bgOpacity:0.7,
 							gridType:'dash',
@@ -169,6 +170,19 @@
 							labelFontColor:'#666666'
 						}
 					},
+				});
+				/*下面是渲染完成时的事件，不需要请删除，注：拖动和图表交互的时候都会重新渲染
+				canvaMix.addEventListener('renderComplete', () => {
+				    console.log("图表渲染完成");
+				});
+				*/
+				//下面是拖动滚动条到尽头的事件，不需要请删除
+				canvaMix.addEventListener('scrollLeft', () => {
+				    console.log("已经到最【左】边啦");
+				});
+				//下面是拖动滚动条到尽头的事件，不需要请删除
+				canvaMix.addEventListener('scrollRight', () => {
+				    console.log("已经到最【右】边啦");
 				});
 			},
 			touchMix(e){

@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.0 Beta 20190818
+ * uCharts v1.9.1 20190819
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -179,14 +179,16 @@ function calCandleMA(dayArr, nameArr, colorArr, kdata) {
   return seriesTemp;
 }
 
-function calValidDistance(distance, chartData, config, opts) {
+function calValidDistance(self,distance, chartData, config, opts) {
   var dataChartAreaWidth = opts.width - opts.area[1] - opts.area[3];
   var dataChartWidth = chartData.eachSpacing * (opts.chartData.xAxisData.xAxisPoints.length-1);
   var validDistance = distance;
   if (distance >= 0) {
     validDistance = 0;
+		self.event.trigger('scrollLeft');
   } else if (Math.abs(distance) >= dataChartWidth - dataChartAreaWidth) {
     validDistance = dataChartAreaWidth - dataChartWidth;
+		self.event.trigger('scrollRight');
   }
   return validDistance;
 }
@@ -1985,6 +1987,7 @@ function drawToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
 
 function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxisPoints) {
   var toolTipOption = assign({}, {
+		showBox:true,
     bgColor: '#000000',
     bgOpacity: 0.7,
     fontColor: '#FFFFFF'
@@ -2008,6 +2011,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
   var toolTipWidth = legendWidth + legendMarginRight + 4 * config.toolTipPadding + Math.max.apply(null, textWidth);
   var toolTipHeight = 2 * config.toolTipPadding + textList.length * config.toolTipLineHeight;
 
+	if(toolTipOption.showBox == false){ return }
   // if beyond the right border
   if (offset.x - Math.abs(opts._scrollDistance_) + arrowWidth + toolTipWidth > opts.width) {
     isOverRightBorder = true;
@@ -2867,8 +2871,23 @@ function drawXAxis(categories, opts, config, context) {
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0) {
     context.translate(opts._scrollDistance_, 0);
   }
-
-
+	
+	//绘制X轴刻度线
+	if (opts.xAxis.calibration === true) {
+		context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
+		context.setLineCap('butt');
+		context.setLineWidth(1 * opts.pixelRatio);
+	  xAxisPoints.forEach(function(item, index) {
+	    if (index > 0) {
+	      context.beginPath();
+	      context.moveTo(item - eachSpacing / 2, startY);
+	      context.lineTo(item - eachSpacing / 2, startY + 3 * opts.pixelRatio);
+	      context.closePath();
+	      context.stroke();
+	    }
+	  });
+	}
+	//绘制X轴网格
   if (opts.xAxis.disableGrid !== true) {
     context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
     context.setLineCap('butt');
@@ -2876,32 +2895,20 @@ function drawXAxis(categories, opts, config, context) {
     if (opts.xAxis.gridType == 'dash') {
       context.setLineDash([opts.xAxis.dashLength, opts.xAxis.dashLength]);
     }
-    if (opts.xAxis.type === 'calibration') {
-      xAxisPoints.forEach(function(item, index) {
-        if (index > 0) {
-          context.beginPath();
-          context.moveTo(item - eachSpacing / 2, startY);
-          context.lineTo(item - eachSpacing / 2, startY + 4 * opts.pixelRatio);
-          context.closePath();
-          context.stroke();
-        }
-      });
-    } else {
-      opts.xAxis.gridEval = opts.xAxis.gridEval || 1;
-      xAxisPoints.forEach(function(item, index) {
-        if (index % opts.xAxis.gridEval == 0) {
-          context.beginPath();
-          context.moveTo(item, startY);
-          context.lineTo(item, endY);
-          context.stroke();
-        }
-      });
-    }
+		opts.xAxis.gridEval = opts.xAxis.gridEval || 1;
+		xAxisPoints.forEach(function(item, index) {
+			if (index % opts.xAxis.gridEval == 0) {
+				context.beginPath();
+				context.moveTo(item, startY);
+				context.lineTo(item, endY);
+				context.stroke();
+			}
+		});
     context.setLineDash([]);
   }
   
 
-  //绘制X轴
+  //绘制X轴文案
   if (opts.xAxis.disabled !== true) {
     // 对X轴列表做抽稀处理
     //默认全部显示X轴标签
@@ -2961,7 +2968,7 @@ function drawXAxis(categories, opts, config, context) {
           offset+=eachSpacing / 2;
         }
         var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
-          transX = _calRotateTranslate.transX,
+          transX = _calRotateTranslate.transX + 15,
           transY = _calRotateTranslate.transY;
 
         context.rotate(-1 * config._xAxisTextAngle_);
@@ -2974,6 +2981,8 @@ function drawXAxis(categories, opts, config, context) {
     }
   }
   context.restore();
+	
+	//绘制X轴轴线
   if(opts.xAxis.axisLine){
     context.beginPath();
     context.setStrokeStyle(opts.xAxis.axisLineColor);
@@ -3035,6 +3044,9 @@ function drawYAxis(series, opts, config, context) {
   if (opts.xAxis.scrollShow) {
     fillEndY -= 3 * opts.pixelRatio;
   }
+	if (opts.xAxis.rotateLabel){
+		fillEndY = opts.height - opts.area[2]+3;
+	}
   // set YAxis background
   context.beginPath();
   context.setFillStyle(opts.background || '#ffffff');
@@ -5219,7 +5231,7 @@ Charts.prototype.scroll = function(e) {
     var _distance;
     _distance = _touches$.x - this.scrollOption.startTouchX;
     var currentOffset = this.scrollOption.currentOffset;
-    var validDistance = calValidDistance(currentOffset + _distance, this.opts.chartData, this.config, this.opts);
+    var validDistance = calValidDistance(this,currentOffset + _distance, this.opts.chartData, this.config, this.opts);
     this.scrollOption.distance = _distance = validDistance - currentOffset;
     var opts = assign({}, this.opts, {
       _scrollDistance_: currentOffset + _distance,
