@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.1 20190819
+ * uCharts v1.9.1.20190820
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -2639,15 +2639,10 @@ function drawMixDataPoints(series, opts, config, context) {
 
   series.forEach(function(eachSeries, seriesIndex) {
     let ranges,minRange,maxRange;
-    if(opts.yAxis.data.length>1){
-      ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
-      minRange = ranges.pop();
-      maxRange = ranges.shift();
-    }else{
-      ranges = [].concat(opts.chartData.yAxisData.ranges);
-      minRange = ranges.pop();
-      maxRange = ranges.shift();
-    }
+    
+		ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
+		minRange = ranges.pop();
+		maxRange = ranges.shift();
 
     var data = eachSeries.data;
     var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -2792,15 +2787,11 @@ function drawMixDataPoints(series, opts, config, context) {
     var columnIndex = 0;
     series.forEach(function(eachSeries, seriesIndex) {
       let ranges,minRange,maxRange;
-      if(opts.yAxis.data.length>1){
-        ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
-        minRange = ranges.pop();
-        maxRange = ranges.shift();
-      }else{
-        ranges = [].concat(opts.chartData.yAxisData.ranges);
-        minRange = ranges.pop();
-        maxRange = ranges.shift();
-      }
+      
+			ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
+			minRange = ranges.pop();
+			maxRange = ranges.shift();
+				
       var data = eachSeries.data;
       var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
       if (eachSeries.type !== 'column') {
@@ -3131,8 +3122,10 @@ function drawYAxis(series, opts, config, context) {
         }
         context.stroke();
       }
+			
       //画Y轴标题
       if (opts.yAxis.showTitle) {
+				
         let titleFontSize = yData.titleFontSize || config.fontSize;
         let title = yData.title;
         context.beginPath();
@@ -3526,85 +3519,92 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
   radius -= 5 * opts.pixelRatio;
   radius -= gaugeOption.width / 2;
   var innerRadius = radius - gaugeOption.width;
-
-  //画背景
-  context.setLineWidth(gaugeOption.width);
-  context.setLineCap('butt');
-  for (let i = 0; i < categories.length; i++) {
-    let eachCategories = categories[i];
-    context.beginPath();
-    context.setStrokeStyle(eachCategories.color);
-    context.arc(centerPosition.x, centerPosition.y, radius, eachCategories._startAngle_ * Math.PI, eachCategories._endAngle_ *
-      Math.PI, false);
-    context.stroke();
-  }
-  context.save();
-
-  //画刻度线
-  let totalAngle = gaugeOption.startAngle - gaugeOption.endAngle + 1;
-  let splitAngle = totalAngle / gaugeOption.splitLine.splitNumber;
-  let childAngle = totalAngle / gaugeOption.splitLine.splitNumber / gaugeOption.splitLine.childNumber;
-  let startX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius;
-  let endX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius + gaugeOption.splitLine.width;
-  let childendX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius + gaugeOption.splitLine.childWidth;
-
-  context.translate(centerPosition.x, centerPosition.y);
-  context.rotate((gaugeOption.startAngle - 1) * Math.PI);
-
-  for (let i = 0; i < gaugeOption.splitLine.splitNumber + 1; i++) {
-    context.beginPath();
-    context.setStrokeStyle(gaugeOption.splitLine.color);
-    context.setLineWidth(2 * opts.pixelRatio);
-    context.moveTo(startX, 0);
-    context.lineTo(endX, 0);
-    context.stroke();
-    context.rotate(splitAngle * Math.PI);
-  }
-  context.restore();
-
-  context.save();
-  context.translate(centerPosition.x, centerPosition.y);
-  context.rotate((gaugeOption.startAngle - 1) * Math.PI);
-
-  for (let i = 0; i < gaugeOption.splitLine.splitNumber * gaugeOption.splitLine.childNumber + 1; i++) {
-    context.beginPath();
-    context.setStrokeStyle(gaugeOption.splitLine.color);
-    context.setLineWidth(1 * opts.pixelRatio);
-    context.moveTo(startX, 0);
-    context.lineTo(childendX, 0);
-    context.stroke();
-    context.rotate(childAngle * Math.PI);
-  }
-  context.restore();
-
-  //画指针
-  series = getGaugeDataPoints(series, categories, gaugeOption, process);
-
-  for (let i = 0; i < series.length; i++) {
-    let eachSeries = series[i];
-    context.save();
-    context.translate(centerPosition.x, centerPosition.y);
-    context.rotate((eachSeries._proportion_ - 1) * Math.PI);
-    context.beginPath();
-    context.setFillStyle(eachSeries.color);
-    context.moveTo(gaugeOption.pointer.width, 0);
-    context.lineTo(0, -gaugeOption.pointer.width / 2);
-    context.lineTo(-innerRadius, 0);
-    context.lineTo(0, gaugeOption.pointer.width / 2);
-    context.lineTo(gaugeOption.pointer.width, 0);
-    context.closePath();
-    context.fill();
-    context.beginPath();
-    context.setFillStyle('#FFFFFF');
-    context.arc(0, 0, gaugeOption.pointer.width / 6, 0, 2 * Math.PI, false);
-    context.fill();
-    context.restore();
-  }
-
-  if (opts.dataLabel !== false) {
-    drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, context);
-  }
-
+	var totalAngle=0;
+	
+	//判断仪表盘的样式：default百度样式，progress新样式
+	if(gaugeOption.type == 'progress'){
+		
+	}else{
+		//画背景
+		context.setLineWidth(gaugeOption.width);
+		context.setLineCap('butt');
+		for (let i = 0; i < categories.length; i++) {
+		  let eachCategories = categories[i];
+		  context.beginPath();
+		  context.setStrokeStyle(eachCategories.color);
+		  context.arc(centerPosition.x, centerPosition.y, radius, eachCategories._startAngle_ * Math.PI, eachCategories._endAngle_ *
+		    Math.PI, false);
+		  context.stroke();
+		}
+		context.save();
+		
+		//画刻度线
+		totalAngle = gaugeOption.startAngle - gaugeOption.endAngle + 1;
+		let splitAngle = totalAngle / gaugeOption.splitLine.splitNumber;
+		let childAngle = totalAngle / gaugeOption.splitLine.splitNumber / gaugeOption.splitLine.childNumber;
+		let startX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius;
+		let endX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius + gaugeOption.splitLine.width;
+		let childendX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius + gaugeOption.splitLine.childWidth;
+		
+		context.translate(centerPosition.x, centerPosition.y);
+		context.rotate((gaugeOption.startAngle - 1) * Math.PI);
+		
+		for (let i = 0; i < gaugeOption.splitLine.splitNumber + 1; i++) {
+		  context.beginPath();
+		  context.setStrokeStyle(gaugeOption.splitLine.color);
+		  context.setLineWidth(2 * opts.pixelRatio);
+		  context.moveTo(startX, 0);
+		  context.lineTo(endX, 0);
+		  context.stroke();
+		  context.rotate(splitAngle * Math.PI);
+		}
+		context.restore();
+		
+		context.save();
+		context.translate(centerPosition.x, centerPosition.y);
+		context.rotate((gaugeOption.startAngle - 1) * Math.PI);
+		
+		for (let i = 0; i < gaugeOption.splitLine.splitNumber * gaugeOption.splitLine.childNumber + 1; i++) {
+		  context.beginPath();
+		  context.setStrokeStyle(gaugeOption.splitLine.color);
+		  context.setLineWidth(1 * opts.pixelRatio);
+		  context.moveTo(startX, 0);
+		  context.lineTo(childendX, 0);
+		  context.stroke();
+		  context.rotate(childAngle * Math.PI);
+		}
+		context.restore();
+		
+		//画指针
+		series = getGaugeDataPoints(series, categories, gaugeOption, process);
+		
+		for (let i = 0; i < series.length; i++) {
+		  let eachSeries = series[i];
+		  context.save();
+		  context.translate(centerPosition.x, centerPosition.y);
+		  context.rotate((eachSeries._proportion_ - 1) * Math.PI);
+		  context.beginPath();
+		  context.setFillStyle(eachSeries.color);
+		  context.moveTo(gaugeOption.pointer.width, 0);
+		  context.lineTo(0, -gaugeOption.pointer.width / 2);
+		  context.lineTo(-innerRadius, 0);
+		  context.lineTo(0, gaugeOption.pointer.width / 2);
+		  context.lineTo(gaugeOption.pointer.width, 0);
+		  context.closePath();
+		  context.fill();
+		  context.beginPath();
+		  context.setFillStyle('#FFFFFF');
+		  context.arc(0, 0, gaugeOption.pointer.width / 6, 0, 2 * Math.PI, false);
+		  context.fill();
+		  context.restore();
+		}
+		
+		if (opts.dataLabel !== false) {
+		  drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, context);
+		}
+	}
+	
+	//画仪表盘标题，副标题
   drawRingTitle(opts, config, context, centerPosition);
 
   if (process === 1 && opts.type === 'gauge') {
@@ -4343,7 +4343,7 @@ function drawCharts(type, opts, config, context) {
     if(opts.yAxis.showTitle){
       let maxTitleHeight=0;
       for(let i=0;i<opts.yAxis.data.length;i++){
-        maxTitleHeight = Math.max(maxTitleHeight,opts.yAxis.data[i].titleFontSize)
+        maxTitleHeight = Math.max(maxTitleHeight,opts.yAxis.data[i].titleFontSize?opts.yAxis.data[i].titleFontSize:config.fontSize)
       }
       opts.area[0] += (maxTitleHeight+6)*opts.pixelRatio;
     }
