@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.1.20190820
+ * uCharts v1.9.1.20190821
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1086,14 +1086,14 @@ function getArcbarDataPoints(series, arcbarOption) {
     let item = series[i];
     item.data = item.data === null ? 0 : item.data;
     let totalAngle;
-    if (arcbarOption.type == 'default') {
-      if (arcbarOption.endAngle < arcbarOption.startAngle) {
-        totalAngle = 2 + arcbarOption.endAngle - arcbarOption.startAngle;
-      } else{
-        totalAngle = arcbarOption.startAngle - arcbarOption.endAngle;
-      }
-    } else {
+    if (arcbarOption.type == 'circle') {
       totalAngle = 2;
+    } else {
+			if (arcbarOption.endAngle < arcbarOption.startAngle) {
+			  totalAngle = 2 + arcbarOption.endAngle - arcbarOption.startAngle;
+			} else{
+			  totalAngle = arcbarOption.startAngle - arcbarOption.endAngle;
+			}
     }
     item._proportion_ = totalAngle * item.data * process + arcbarOption.startAngle;
     if (item._proportion_ >= 2) {
@@ -3530,6 +3530,91 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 	//判断仪表盘的样式：default百度样式，progress新样式
 	if(gaugeOption.type == 'progress'){
 		
+		//## 第一步画中心圆形背景和进度条背景
+		//中心圆形背景
+		var pieRadius = radius - gaugeOption.width*3;
+		context.beginPath();
+		let gradient = context.createLinearGradient(centerPosition.x, centerPosition.y-pieRadius, centerPosition.x , centerPosition.y+pieRadius);
+		//配置渐变填充（起点：中心点向上减半径；结束点中心点向下加半径）
+		gradient.addColorStop('0', hexToRgb(series[0].color, 0.3));
+		gradient.addColorStop('1.0',hexToRgb("#FFFFFF", 0.1));
+		context.setFillStyle(gradient);
+		context.arc(centerPosition.x, centerPosition.y, pieRadius, 0, 2*Math.PI, false);
+		context.fill();
+		//画进度条背景
+		context.setLineWidth(gaugeOption.width);
+		context.setStrokeStyle(hexToRgb(series[0].color, 0.3));
+		context.setLineCap('round');
+		context.beginPath();
+		context.arc(centerPosition.x, centerPosition.y, innerRadius , gaugeOption.startAngle * Math.PI, gaugeOption.endAngle *Math.PI, false);
+		context.stroke();
+		
+		//## 第二步画刻度线
+		totalAngle = gaugeOption.startAngle - gaugeOption.endAngle + 1;
+		let splitAngle = totalAngle / gaugeOption.splitLine.splitNumber;
+		let childAngle = totalAngle / gaugeOption.splitLine.splitNumber / gaugeOption.splitLine.childNumber;
+		let startX = -radius - gaugeOption.width * 0.5 - gaugeOption.splitLine.fixRadius;
+		let endX = -radius - gaugeOption.width - gaugeOption.splitLine.fixRadius + gaugeOption.splitLine.width;
+		context.save();
+		context.translate(centerPosition.x, centerPosition.y);
+		context.rotate((gaugeOption.startAngle - 1) * Math.PI);
+		let len = gaugeOption.splitLine.splitNumber * gaugeOption.splitLine.childNumber + 1;
+		let proc = series[0].data * process;
+		for (let i = 0; i < len; i++) {
+		  context.beginPath();
+			//刻度线随进度变色
+			if(proc>(i/len)){
+				context.setStrokeStyle(hexToRgb(series[0].color, 1));
+			}else{
+				context.setStrokeStyle(hexToRgb(series[0].color, 0.3));
+			}
+		  context.setLineWidth(3 * opts.pixelRatio);
+		  context.moveTo(startX, 0);
+		  context.lineTo(endX, 0);
+		  context.stroke();
+		  context.rotate(childAngle * Math.PI);
+		}
+		context.restore();
+		
+		//## 第三步画进度条
+		series = getArcbarDataPoints(series, gaugeOption, process);
+		context.setLineWidth(gaugeOption.width);
+		let gradient2 = context.createLinearGradient(centerPosition.x-innerRadius, centerPosition.y, centerPosition.x+innerRadius , centerPosition.y);
+		gradient2.addColorStop('0', hexToRgb(series[0].color, 0.2));
+		gradient2.addColorStop('1.0', hexToRgb(series[0].color, 1));
+		context.setStrokeStyle(gradient2);
+		context.setLineCap('round');
+		context.beginPath();
+		context.arc(centerPosition.x, centerPosition.y, innerRadius , gaugeOption.startAngle * Math.PI, series[0]._proportion_ *Math.PI, false);
+		context.stroke();
+		
+		//## 第四步画指针
+		let pointerRadius = radius - gaugeOption.width*2.5;
+		context.save();
+		context.translate(centerPosition.x, centerPosition.y);
+		context.rotate((series[0]._proportion_ - 1) * Math.PI);
+		context.beginPath();
+		context.setLineWidth(gaugeOption.width/3);
+		let gradient3 = context.createLinearGradient(0, -pointerRadius*0.6, 0 , pointerRadius*0.6);
+		gradient3.addColorStop('0', hexToRgb('#FFFFFF', 0));
+		gradient3.addColorStop('0.5', hexToRgb(series[0].color, 1));
+		gradient3.addColorStop('1.0', hexToRgb('#FFFFFF', 0));
+		context.setStrokeStyle(gradient3);
+		context.arc(0, 0, pointerRadius , 0.85* Math.PI, 1.15 * Math.PI, false);
+		context.stroke();
+		context.beginPath();
+		context.setLineWidth(1);
+		context.setStrokeStyle(series[0].color);
+		context.setFillStyle(series[0].color);
+		context.moveTo(-pointerRadius-gaugeOption.width/3/2,-4);
+		context.lineTo(-pointerRadius-gaugeOption.width/3/2-4,0);
+		context.lineTo(-pointerRadius-gaugeOption.width/3/2,4);
+		context.lineTo(-pointerRadius-gaugeOption.width/3/2,-4);
+		context.stroke();
+		context.fill();
+		context.restore();
+		
+	//default百度样式
 	}else{
 		//画背景
 		context.setLineWidth(gaugeOption.width);
@@ -3538,8 +3623,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 		  let eachCategories = categories[i];
 		  context.beginPath();
 		  context.setStrokeStyle(eachCategories.color);
-		  context.arc(centerPosition.x, centerPosition.y, radius, eachCategories._startAngle_ * Math.PI, eachCategories._endAngle_ *
-		    Math.PI, false);
+		  context.arc(centerPosition.x, centerPosition.y, radius, eachCategories._startAngle_ * Math.PI, eachCategories._endAngle_ *Math.PI, false);
 		  context.stroke();
 		}
 		context.save();
