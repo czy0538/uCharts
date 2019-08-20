@@ -1436,22 +1436,26 @@ function calYAxisData(series, opts, config) {
     var rangesArr =new Array(YLength);
     var rangesFormatArr = new Array(YLength);
     var yAxisWidthArr =new Array(YLength);
+		
     for(let i=0;i<YLength;i++){
       let yData = opts.yAxis.data[i];
+			//如果总开关不显示，强制每个Y轴为不显示
+			if(opts.yAxis.disabled == true){
+				yData.disabled = true;
+			}
+			rangesArr[i]=getYAxisTextList(newSeries[i], opts, config, columnstyle.type,i);
+			let yAxisFontSizes = yData.fontSize || config.fontSize;
+			yAxisWidthArr[i] = {position:yData.position?yData.position:'left',width:0};
+			rangesFormatArr[i]= rangesArr[i].map(function(items) {
+				items = util.toFixed(items, 6);
+				items = yData.format ? yData.format(Number(items)) : items;
+				yAxisWidthArr[i].width = Math.max(yAxisWidthArr[i].width, measureText(items, yAxisFontSizes) + 5);
+				return items;
+			});
+			let calibration= yData.calibration? 4*opts.pixelRatio : 0 ;
+			yAxisWidthArr[i].width += calibration +3*opts.pixelRatio;
       if (yData.disabled === true) {
-        yAxisWidthArr[i].width = {position:yData.position,width:0};
-      }else{
-        rangesArr[i]=getYAxisTextList(newSeries[i], opts, config, columnstyle.type,i);
-        let yAxisFontSizes = yData.fontSize || config.fontSize;
-        yAxisWidthArr[i] = {position:yData.position,width:0};
-        rangesFormatArr[i]= rangesArr[i].map(function(items) {
-          items = util.toFixed(items, 6);
-          items = yData.format ? yData.format(Number(items)) : items;
-          yAxisWidthArr[i].width = Math.max(yAxisWidthArr[i].width, measureText(items, yAxisFontSizes) + 5);
-          return items;
-        });
-        let calibration= yData.calibration? 4*opts.pixelRatio : 0 ;
-        yAxisWidthArr[i].width += calibration +3*opts.pixelRatio;
+        yAxisWidthArr[i].width=0;
       }
     }
     
@@ -1459,22 +1463,23 @@ function calYAxisData(series, opts, config) {
     var rangesArr =new Array(1);
     var rangesFormatArr = new Array(1);
     var yAxisWidthArr =new Array(1);
-    if (opts.yAxis.disabled === true) {
-      yAxisWidthArr[0] = {position:'left',width:0};
-      opts.yAxis.data[0]={disabled:true};
-    }else{
-      rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type);
-      yAxisWidthArr[0] = {position:'left',width:0};
-      var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
-      rangesFormatArr[0] = rangesArr[0].map(function(item) {
-        item = util.toFixed(item, 6);
-        item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
-        yAxisWidthArr[0].width = Math.max(yAxisWidthArr[0].width, measureText(item, yAxisFontSize) + 5);
-        return item;
-      });
-      yAxisWidthArr[0].width += 3*opts.pixelRatio;
-      opts.yAxis.data[0]={disabled:false,position:'left',max:opts.yAxis.max,min:opts.yAxis.min,format:opts.yAxis.format};
-    }
+		rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type);
+		yAxisWidthArr[0] = {position:'left',width:0};
+		var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
+		rangesFormatArr[0] = rangesArr[0].map(function(item) {
+			item = util.toFixed(item, 6);
+			item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
+			yAxisWidthArr[0].width = Math.max(yAxisWidthArr[0].width, measureText(item, yAxisFontSize) + 5);
+			return item;
+		});
+		yAxisWidthArr[0].width += 3*opts.pixelRatio;
+		if (opts.yAxis.disabled === true) {
+		  yAxisWidthArr[0] = {position:'left',width:0};
+		  opts.yAxis.data[0]={disabled:true};
+		}else{
+			opts.yAxis.data[0]={disabled:false,position:'left',max:opts.yAxis.max,min:opts.yAxis.min,format:opts.yAxis.format};
+		}
+    
   }
 
   return {
@@ -3486,6 +3491,7 @@ function drawArcbarDataPoints(series, opts, config, context) {
 function drawGaugeDataPoints(categories, series, opts, config, context) {
   var process = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
   var gaugeOption = assign({}, {
+		type:'default',
     startAngle: 0.75,
     endAngle: 0.25,
     width: 15,
