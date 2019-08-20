@@ -7,6 +7,7 @@
 		<view class="qiun-bg-white qiun-padding">
 		    <text>pages/basic/gauge/gauge</text>
 		</view>
+		<button class="qiun-button" @tap="changeType()">更改样式</button>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">仪表盘</view>
@@ -45,7 +46,8 @@
 				cHeight:'',
 				pixelRatio:1,
 				textarea:'',
-				gaugeWidth:15
+				gaugeWidth:15,
+				type:'default'
 			}
 		},
 		onLoad() {
@@ -91,7 +93,7 @@
 					canvasId: canvasId,
 					type: 'gauge',
 					fontSize:11,
-					legend:false,
+					legend:{show:false},
 					title: {
 						name: Math.round(chartData.series[0].data*100)+'%',
 						color: chartData.categories[1].color,
@@ -169,6 +171,20 @@
 						image:'../../../static/images/alert-warning.png'
 					})
 				}
+			},
+			changeType(){
+				this.type=this.type=='default'?'progress':'default';
+				canvaGauge.opts.extra.gauge.type=this.type;
+				if(this.type=='default'){
+					canvaGauge.opts.title.fontSize=25*_self.pixelRatio;
+					canvaGauge.opts.title.offsetY=50*_self.pixelRatio;
+					canvaGauge.opts.subtitle.offsetY=-50*_self.pixelRatio;
+				}else{
+					canvaGauge.opts.title.fontSize=35*_self.pixelRatio;
+					canvaGauge.opts.title.offsetY=0;
+					canvaGauge.opts.subtitle.offsetY=0;
+				}
+				canvaGauge.updateData({});
 			}
 		}
 	}
