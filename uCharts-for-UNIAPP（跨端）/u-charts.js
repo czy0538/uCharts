@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.1.20190821
+ * uCharts v1.9.1.20190822
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -2498,8 +2498,7 @@ function drawAreaDataPoints(series, opts, config, context) {
 
     //画点
     if (opts.dataPointShape !== false) {
-      var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
-      drawPointShape(points, eachSeries.color, shape, context, opts);
+      drawPointShape(points, eachSeries.color, eachSeries.pointShape, context, opts);
     }
 
   });
@@ -2594,8 +2593,7 @@ function drawLineDataPoints(series, opts, config, context) {
 		context.setLineDash([]);
 		
     if (opts.dataPointShape !== false) {
-      var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
-      drawPointShape(points, eachSeries.color, shape, context, opts);
+      drawPointShape(points, eachSeries.color, eachSeries.pointShape, context, opts);
     }
   });
 
@@ -2768,24 +2766,11 @@ function drawMixDataPoints(series, opts, config, context) {
 
     // 绘制点数据图
     if (eachSeries.type == 'point') {
-      points.forEach(function(pointsa, index) {
-        if (pointsa) {
-          context.beginPath();
-          context.setFillStyle(eachSeries.color);
-          context.setStrokeStyle('#FFFFFF');
-          context.setLineWidth(1 * opts.pixelRatio);
-          context.moveTo(pointsa.x + 3.5 * opts.pixelRatio, pointsa.y);
-          context.arc(pointsa.x, pointsa.y, 4 * opts.pixelRatio, 0, 2 * Math.PI);
-          context.closePath();
-          context.fill();
-          context.stroke();
-        }
-      });
+			eachSeries.addPoint = true;
     }
 
-    if (eachSeries.addPoint == true && eachSeries.type !== 'column') {
-      var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
-      drawPointShape(points, eachSeries.color, shape, context, opts);
+    if (eachSeries.addPoint == true && eachSeries.type !== 'column' ) {
+      drawPointShape(points, eachSeries.color, eachSeries.pointShape, context, opts);
     }
   });
   if (opts.dataLabel !== false && process === 1) {
@@ -3784,11 +3769,10 @@ function drawRadarDataPoints(series, opts, config, context) {
     context.fill();
 
     if (opts.dataPointShape !== false) {
-      var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
       var points = eachSeries.data.map(function(item) {
         return item.position;
       });
-      drawPointShape(points, eachSeries.color, shape, context, opts);
+      drawPointShape(points, eachSeries.color, eachSeries.pointShape, context, opts);
     }
   });
   // draw label text
