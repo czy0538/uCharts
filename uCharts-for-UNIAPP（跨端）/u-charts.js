@@ -983,6 +983,8 @@ function getRadarDataPoints(angleList, center, radius, series, opts) {
     let each = series[i];
     let listItem = {};
     listItem.color = each.color;
+		listItem.legendShape = each.legendShape;
+		listItem.pointShape = each.pointShape;
     listItem.data = [];
     each.data.forEach(function(item, index) {
       let tmp = {};
@@ -3751,9 +3753,9 @@ function drawRadarDataPoints(series, opts, config, context) {
   for (var i = 1; i <= config.radarGridCount; i++) {
     _loop(i);
   }
-
+console.log(radarDataPoints);
   var radarDataPoints = getRadarDataPoints(coordinateAngle, centerPosition, radius, series, opts, process);
-
+console.log(radarDataPoints);
   radarDataPoints.forEach(function(eachSeries, seriesIndex) {
     // 绘制区域数据
     context.beginPath();
@@ -3772,6 +3774,7 @@ function drawRadarDataPoints(series, opts, config, context) {
       var points = eachSeries.data.map(function(item) {
         return item.position;
       });
+			console.log(eachSeries);
       drawPointShape(points, eachSeries.color, eachSeries.pointShape, context, opts);
     }
   });
@@ -4454,7 +4457,11 @@ function drawCharts(type, opts, config, context) {
     config._xAxisTextAngle_ = angle;
     opts.area[2] += xAxisHeight;
     opts.chartData.categoriesData = _calCategoriesData;
-  }
+  }else{
+		opts.chartData.xAxisData={
+			xAxisPoints: []
+		};
+	}
 
   //计算右对齐偏移距离
   if (opts.enableScroll && opts.xAxis.scrollAlign == 'right' && opts._scrollDistance_ === undefined) {
