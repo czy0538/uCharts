@@ -3753,9 +3753,9 @@ function drawRadarDataPoints(series, opts, config, context) {
   for (var i = 1; i <= config.radarGridCount; i++) {
     _loop(i);
   }
-console.log(radarDataPoints);
+
   var radarDataPoints = getRadarDataPoints(coordinateAngle, centerPosition, radius, series, opts, process);
-console.log(radarDataPoints);
+
   radarDataPoints.forEach(function(eachSeries, seriesIndex) {
     // 绘制区域数据
     context.beginPath();
@@ -3774,7 +3774,6 @@ console.log(radarDataPoints);
       var points = eachSeries.data.map(function(item) {
         return item.position;
       });
-			console.log(eachSeries);
       drawPointShape(points, eachSeries.color, eachSeries.pointShape, context, opts);
     }
   });
