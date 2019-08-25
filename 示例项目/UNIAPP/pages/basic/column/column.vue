@@ -107,6 +107,7 @@
 					yAxis: {
             data:[{
               position:'right',
+							axisLine:false,
               format:(val)=>{return val.toFixed(0)+'元'},
             }]
 					},

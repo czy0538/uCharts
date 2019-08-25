@@ -197,9 +197,9 @@
 				});
 				//这里演示了获取点击序列的方法，如需要将数据显示到canvas外面，可用此方法。
 				var xx=canvaCandle.getCurrentDataIndex(e);
-				console.log(canvaCandle.opts.series[0].data[xx]);
+				//console.log(canvaCandle.opts.series[0].data[xx]);
 				//下面是计算好的MA均线集合，想要点击序列中的当前数据，需要自己遍历seriesMA
-				console.log(canvaCandle.opts.seriesMA);
+				//console.log(canvaCandle.opts.seriesMA);
 			},
 			tapButton(type){
 				let step=5;

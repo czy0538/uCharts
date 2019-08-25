@@ -3,9 +3,6 @@
 		<view class="qiun-padding" style="font-size: 32upx;">
 			<text>{{tips}}</text>
 		</view>
-    <view class="qiun-padding">
-    	<view class="qiun-tip" @tap="changeData()">更新柱状图数据</view>
-    </view>
     <view class="qiun-title-bar" style="background-color: #E5FDC3;">
       <view class="qiun-title-dot-light">柱状图</view>
     </view>
@@ -220,10 +217,10 @@
 					title: "正在加载数据..."
 				})
 				uni.request({
-					url: 'https://unidemo.dcloud.net.cn/hello-uniapp-ucharts-data.json',
+					url: 'https://www.ucharts.cn/data.json',
 					data: {},
 					success: function(res) {
-						_self.fillData(res.data);
+						_self.fillData(res.data.data);
 					},
 					fail: () => {
 						_self.tips = "网络错误，小程序端请检查合法域名";
@@ -881,7 +878,7 @@
           enableMarkLine: true,/***需要开启标记线***/
 					categories: chartData.categories,
 					series: chartData.series,
-					animation: true,
+					animation: false,
 					enableScroll: true,//开启图表拖拽功能
 					xAxis: {
 						disableGrid:true,//不绘制X轴网格线

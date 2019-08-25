@@ -111,7 +111,7 @@
 						gridType:'dash',
 						itemCount:4,
 						scrollShow:true,
-						scrollAlign:'left',
+						scrollAlign:'left'
 					},
 					yAxis: {
 						//disabled:true

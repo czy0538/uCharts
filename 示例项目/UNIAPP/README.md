@@ -25,7 +25,6 @@
 ## [更新记录](https://www.kancloud.cn/qiun/ucharts/content/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
 
 ## 未来计划（V1.0 至 2.0 版本）
-- [ ] 2019.08.xx 推迟计划加入 `第二种仪表盘样式`，增加[《亲手教您如何改造 uCharts，打造您的专属图表》]()教程。
 - [ ] 2019.08.xx 计划加入 `渐变颜色填充` 功能，支持`柱状图、区域图、混合图、圆弧进度条`。
 - [ ] 2019.08.xx 计划修复折线图样式为曲线时，个别情况下曲线超出 `X` 轴的问题。
 
@@ -73,11 +72,11 @@
 - 为何要改造uCharts?
 - 并不是所有图表插件直接拿来就可以满足客户需求，如果您的UI设计师设计一个图表，如下图:
 
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/example.gif?raw=true)
+![](https://img.kancloud.cn/c2/1f/c21f7f84c5ff42d323267323d7f48b05_468x337.gif)
 
 - 您会发现这个图表即使在echarts里也不是很好实现，那么就需要我们自己动手去实现。下面就让我们一起来完成，本文旨在抛砖引玉，希望各位朋友能够更好的应用uCharts来完成您的项目，如果您有更好的设计，请提交您的PR到github[uCharts跨端图表](https://github.com/16cheng/uCharts)，帮助更多朋友，感谢您的付出及贡献！
 
-## [uCharts跨端图表改造教程（暂未完成，请关注）]()
+## [【uCharts 跨端图表改造教程】](https://gitee.com/uCharts/uCharts/wikis/%E6%94%B9%E9%80%A0uCharts%E6%89%93%E9%80%A0%E4%B8%93%E5%B1%9E%E5%9B%BE%E8%A1%A8?sort_id=1535997)
 
 
 ## 图表示例
@@ -89,6 +88,7 @@
 ![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/mix.gif?raw=true)
 ![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/mix2.gif?raw=true)
 ![](https://box.kancloud.cn/2f00fcf5a8ce7a9593aea3bc14b8f150_468x411.gif)
+![](https://img.kancloud.cn/c2/1f/c21f7f84c5ff42d323267323d7f48b05_468x337.gif)
 ![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/yibiaopan.gif?raw=true)
 ![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/arcbar.gif?raw=true)
 ![](https://box.kancloud.cn/af4fb86f40538d85da3e8def8669b87d_468x342.gif)

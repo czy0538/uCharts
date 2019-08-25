@@ -83,6 +83,8 @@
 						//第二根线为虚线的设置
 						Mix.series[4].lineType='dash';
 						Mix.series[4].dashLength=10;
+						Mix.series[4].pointShape='triangle';
+						Mix.series[4].addPoint=true;
 						_self.textarea = JSON.stringify(res.data.data.Mix);
 						_self.showMix("canvasMix",Mix);
 					},

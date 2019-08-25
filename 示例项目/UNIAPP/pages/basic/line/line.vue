@@ -11,13 +11,19 @@
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">基本折线图</view>
 		</view>
+		<view class="qiun-bg-white qiun-padding">
+		    <text>交互数据：{{Interactive}}</text>
+		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchLineA"></canvas>
+			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchLineA" @touchmove="moveLineA" @touchend="touchEndLineA"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" @touchstart="touchLineA"></canvas>
+			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" @touchstart="touchLineA" @touchmove="moveLineA" @touchend="touchEndLineA"></canvas>
 			<!--#endif-->
+		</view>
+		<view class="qiun-common-mt" style="font-size:14px;text-align: center;">
+			请在图表上左右移动
 		</view>
 		<!--#ifdef H5 -->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
@@ -37,13 +43,15 @@
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
 	var canvaLineA=null;
+	var lastMoveTime=null;//最后执行移动的时间戳
 	export default {
 		data() {
 			return {
 				cWidth:'',
 				cHeight:'',
 				pixelRatio:1,
-				textarea:''
+				textarea:'',
+				Interactive:'',//交互显示的数据
 			}
 		},
 		onLoad() {
@@ -75,6 +83,7 @@
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
 						LineA.categories=res.data.data.LineA.categories;
 						LineA.series=res.data.data.LineA.series;
+						
 						//第二根线为虚线的设置
 						LineA.series[1].lineType='dash';
 						LineA.series[1].dashLength=10;
@@ -111,7 +120,8 @@
 						type:'grid',
 						gridColor:'#CCCCCC',
 						gridType:'dash',
-						dashLength:8
+						dashLength:8,
+						//disableGrid:true
 					},
 					yAxis: {
 						gridType:'dash',
@@ -129,6 +139,35 @@
 				
 			},
 			touchLineA(e) {
+				lastMoveTime=Date.now();
+			},
+			moveLineA(e){
+				let currMoveTime = Date.now();
+				let duration = currMoveTime - lastMoveTime;
+				if (duration < Math.floor(1000 / 60)) return;//每秒60帧
+				lastMoveTime = currMoveTime;
+				
+				let currIndex=canvaLineA.getCurrentDataIndex(e);
+				if(currIndex>-1&&currIndex<canvaLineA.opts.categories.length){
+					let riqi=canvaLineA.opts.categories[currIndex];
+					let leibie=canvaLineA.opts.series[0].name;
+					let shuju=canvaLineA.opts.series[0].data[currIndex];
+					this.Interactive=leibie+':'+riqi+'-'+shuju+'元';
+				}
+				canvaLineA.showToolTip(e, {
+					format: function (item, category) {
+						return category + ' ' + item.name + ':' + item.data 
+					}
+				});
+			},
+			touchEndLineA(e){
+				let currIndex=canvaLineA.getCurrentDataIndex(e);
+				if(currIndex>-1&&currIndex<canvaLineA.opts.categories.length){
+					let riqi=canvaLineA.opts.categories[currIndex];
+					let leibie=canvaLineA.opts.series[0].name;
+					let shuju=canvaLineA.opts.series[0].data[currIndex];
+					this.Interactive=leibie+':'+riqi+'-'+shuju+'元';
+				}
 				canvaLineA.touchLegend(e);
 				canvaLineA.showToolTip(e, {
 					format: function (item, category) {
