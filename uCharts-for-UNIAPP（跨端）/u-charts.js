@@ -43,7 +43,6 @@ var config = {
   toolTipBackground: '#000000',
   toolTipOpacity: 0.7,
   toolTipLineHeight: 20,
-  radarGridCount: 3,
   radarLabelTextMargin: 15,
   gaugeLabelTextMargin: 15
 };
@@ -1534,9 +1533,15 @@ function contextRotate(context, opts) {
 
 function drawPointShape(points, color, shape, context, opts) {
   context.beginPath();
-  context.setStrokeStyle("#ffffff");
-  context.setLineWidth(1 * opts.pixelRatio);
-  context.setFillStyle(color);
+	if(opts.dataPointShapeType == 'hollow'){
+		context.setStrokeStyle(color);
+		context.setFillStyle(opts.background);
+		context.setLineWidth(2 * opts.pixelRatio);
+	}else{
+		context.setStrokeStyle("#ffffff");
+		context.setFillStyle(color);
+		context.setLineWidth(1 * opts.pixelRatio);
+	}
   if (shape === 'diamond') {
     points.forEach(function(item, index) {
       if (item !== null) {
@@ -1550,8 +1555,8 @@ function drawPointShape(points, color, shape, context, opts) {
   } else if (shape === 'circle') {
     points.forEach(function(item, index) {
       if (item !== null) {
-        context.moveTo(item.x + 3.5 * opts.pixelRatio, item.y);
-        context.arc(item.x, item.y, 4 * opts.pixelRatio, 0, 2 * Math.PI, false);
+        context.moveTo(item.x + 2.5 * opts.pixelRatio, item.y);
+        context.arc(item.x, item.y, 3 * opts.pixelRatio, 0, 2 * Math.PI, false);
       }
     });
   } else if (shape === 'rect') {
@@ -4960,6 +4965,7 @@ var Charts = function Charts(opts) {
   opts.extra = assign({}, opts.extra);
   opts.rotate = opts.rotate ? true : false;
   opts.animation = opts.animation ? true : false;
+	opts.rotate = opts.rotate ? true : false;
 
   let config$$1 = JSON.parse(JSON.stringify(config));
   config$$1.colors = opts.colors ? opts.colors : config$$1.colors;
