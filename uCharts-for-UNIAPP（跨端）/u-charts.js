@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190825
+ * uCharts v1.9.2.20190829
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1631,8 +1631,7 @@ function drawPointText(points, series, config, context) {
         value = data[index].value
       }
       var formatVal = series.format ? series.format(value) : value;
-      context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -
-        2);
+      context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -4);
       context.closePath();
       context.stroke();
     }
@@ -3792,7 +3791,8 @@ function drawRadarDataPoints(series, opts, config, context) {
   var radarOption = assign({},{
     gridColor: '#cccccc',
     labelColor: '#666666',
-    opacity: 0.2
+    opacity: 0.2,
+		gridCount:3
   },opts.extra.radar);
   
   var coordinateAngle = getRadarCoordinateSeries(opts.categories.length);
@@ -3826,8 +3826,7 @@ function drawRadarDataPoints(series, opts, config, context) {
     context.setLineWidth(1 * opts.pixelRatio);
     context.setStrokeStyle(radarOption.gridColor);
     coordinateAngle.forEach(function(angle, index) {
-      var pos = convertCoordinateOrigin(radius / config.radarGridCount * i * Math.cos(angle), radius / config.radarGridCount *
-        i * Math.sin(angle), centerPosition);
+      var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(angle), radius / radarOption.gridCount * i * Math.sin(angle), centerPosition);
       if (index === 0) {
         startPos = pos;
         context.moveTo(pos.x, pos.y);
@@ -3840,7 +3839,7 @@ function drawRadarDataPoints(series, opts, config, context) {
     context.closePath();
   };
 
-  for (var i = 1; i <= config.radarGridCount; i++) {
+  for (var i = 1; i <= radarOption.gridCount; i++) {
     _loop(i);
   }
 
