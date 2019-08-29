@@ -2425,7 +2425,8 @@ function drawAreaDataPoints(series, opts, config, context) {
     type: 'straight',
     opacity: 0.2,
     addLine: false,
-    width: 2
+    width: 2,
+		gradient:false
   },opts.extra.area);
 
   let xAxisData = opts.chartData.xAxisData,
@@ -2454,13 +2455,19 @@ function drawAreaDataPoints(series, opts, config, context) {
     calPoints.push(points);
 
     let splitPointList = splitPoints(points);
-
     for (let i = 0; i < splitPointList.length; i++) {
       let points = splitPointList[i];
       // 绘制区域数
       context.beginPath();
       context.setStrokeStyle(hexToRgb(eachSeries.color, areaOption.opacity));
-      context.setFillStyle(hexToRgb(eachSeries.color, areaOption.opacity));
+			if(areaOption.gradient){
+				let gradient = context.createLinearGradient(0, opts.area[0], 0, opts.height-opts.area[2]);
+				gradient.addColorStop('0', hexToRgb(eachSeries.color, areaOption.opacity));
+				gradient.addColorStop('1.0',hexToRgb("#FFFFFF", 0.1));
+				context.setFillStyle(gradient);
+			}else{
+				context.setFillStyle(hexToRgb(eachSeries.color, areaOption.opacity));
+			}
       context.setLineWidth(areaOption.width * opts.pixelRatio);
       if (points.length > 1) {
         let firstPoint = points[0];
