@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190825
+ * uCharts v1.9.2.20190830
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -43,34 +43,31 @@ var config = {
   toolTipBackground: '#000000',
   toolTipOpacity: 0.7,
   toolTipLineHeight: 20,
-  radarGridCount: 3,
   radarLabelTextMargin: 15,
   gaugeLabelTextMargin: 15
 };
 
-let assign;
-if (Object.assign) {
-  assign = Object.assign;
-} else {
-  // 使用polyfill
-  assign = function(target, varArgs) {
+let assign = function (target, ...varArgs) {
     if (target == null) {
-      throw new TypeError('Cannot convert undefined or null to object');
+        throw new TypeError('Cannot convert undefined or null to object');
     }
-    var to = Object(target);
-    for (var index = 1; index < arguments.length; index++) {
-      var nextSource = arguments[index];
-      if (nextSource != null) {
-        for (var nextKey in nextSource) {
-          if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-            to[nextKey] = nextSource[nextKey];
-          }
+    if (!varArgs || varArgs.length <= 0) {
+        return target;
+    }
+    // 深度合并对象
+    function deepAssign(obj1, obj2) {
+        for (let key in obj2) {
+            obj1[key] = obj1[key] && obj1[key].toString() === "[object Object]" ?
+                deepAssign(obj1[key], obj2[key]) : obj1[key] = obj2[key];
         }
-      }
+        return obj1;
     }
-    return to;
-  }
-}
+
+    varArgs.forEach(val => {
+        target = deepAssign(target, val);
+    });
+    return target;
+};
 
 var util = {
   toFixed: function toFixed(num, limit) {
@@ -1534,9 +1531,15 @@ function contextRotate(context, opts) {
 
 function drawPointShape(points, color, shape, context, opts) {
   context.beginPath();
-  context.setStrokeStyle("#ffffff");
-  context.setLineWidth(1 * opts.pixelRatio);
-  context.setFillStyle(color);
+	if(opts.dataPointShapeType == 'hollow'){
+		context.setStrokeStyle(color);
+		context.setFillStyle(opts.background);
+		context.setLineWidth(2 * opts.pixelRatio);
+	}else{
+		context.setStrokeStyle("#ffffff");
+		context.setFillStyle(color);
+		context.setLineWidth(1 * opts.pixelRatio);
+	}
   if (shape === 'diamond') {
     points.forEach(function(item, index) {
       if (item !== null) {
@@ -1550,8 +1553,8 @@ function drawPointShape(points, color, shape, context, opts) {
   } else if (shape === 'circle') {
     points.forEach(function(item, index) {
       if (item !== null) {
-        context.moveTo(item.x + 3.5 * opts.pixelRatio, item.y);
-        context.arc(item.x, item.y, 4 * opts.pixelRatio, 0, 2 * Math.PI, false);
+        context.moveTo(item.x + 2.5 * opts.pixelRatio, item.y);
+        context.arc(item.x, item.y, 3 * opts.pixelRatio, 0, 2 * Math.PI, false);
       }
     });
   } else if (shape === 'rect') {
@@ -1631,8 +1634,7 @@ function drawPointText(points, series, config, context) {
         value = data[index].value
       }
       var formatVal = series.format ? series.format(value) : value;
-      context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -
-        2);
+      context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -4);
       context.closePath();
       context.stroke();
     }
@@ -2421,7 +2423,8 @@ function drawAreaDataPoints(series, opts, config, context) {
     type: 'straight',
     opacity: 0.2,
     addLine: false,
-    width: 2
+    width: 2,
+		gradient:false
   },opts.extra.area);
 
   let xAxisData = opts.chartData.xAxisData,
@@ -2450,13 +2453,19 @@ function drawAreaDataPoints(series, opts, config, context) {
     calPoints.push(points);
 
     let splitPointList = splitPoints(points);
-
     for (let i = 0; i < splitPointList.length; i++) {
       let points = splitPointList[i];
       // 绘制区域数
       context.beginPath();
       context.setStrokeStyle(hexToRgb(eachSeries.color, areaOption.opacity));
-      context.setFillStyle(hexToRgb(eachSeries.color, areaOption.opacity));
+			if(areaOption.gradient){
+				let gradient = context.createLinearGradient(0, opts.area[0], 0, opts.height-opts.area[2]);
+				gradient.addColorStop('0', hexToRgb(eachSeries.color, areaOption.opacity));
+				gradient.addColorStop('1.0',hexToRgb("#FFFFFF", 0.1));
+				context.setFillStyle(gradient);
+			}else{
+				context.setFillStyle(hexToRgb(eachSeries.color, areaOption.opacity));
+			}
       context.setLineWidth(areaOption.width * opts.pixelRatio);
       if (points.length > 1) {
         let firstPoint = points[0];
@@ -3656,10 +3665,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 		//## 第三步画进度条
 		series = getArcbarDataPoints(series, gaugeOption, process);
 		context.setLineWidth(gaugeOption.width);
-		let gradient2 = context.createLinearGradient(centerPosition.x-innerRadius, centerPosition.y, centerPosition.x+innerRadius , centerPosition.y);
-		gradient2.addColorStop('0', hexToRgb(series[0].color, 0.2));
-		gradient2.addColorStop('1.0', hexToRgb(series[0].color, 1));
-		context.setStrokeStyle(gradient2);
+		context.setStrokeStyle(series[0].color);
 		context.setLineCap('round');
 		context.beginPath();
 		context.arc(centerPosition.x, centerPosition.y, innerRadius , gaugeOption.startAngle * Math.PI, series[0]._proportion_ *Math.PI, false);
@@ -3792,7 +3798,8 @@ function drawRadarDataPoints(series, opts, config, context) {
   var radarOption = assign({},{
     gridColor: '#cccccc',
     labelColor: '#666666',
-    opacity: 0.2
+    opacity: 0.2,
+		gridCount:3
   },opts.extra.radar);
   
   var coordinateAngle = getRadarCoordinateSeries(opts.categories.length);
@@ -3826,8 +3833,7 @@ function drawRadarDataPoints(series, opts, config, context) {
     context.setLineWidth(1 * opts.pixelRatio);
     context.setStrokeStyle(radarOption.gridColor);
     coordinateAngle.forEach(function(angle, index) {
-      var pos = convertCoordinateOrigin(radius / config.radarGridCount * i * Math.cos(angle), radius / config.radarGridCount *
-        i * Math.sin(angle), centerPosition);
+      var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(angle), radius / radarOption.gridCount * i * Math.sin(angle), centerPosition);
       if (index === 0) {
         startPos = pos;
         context.moveTo(pos.x, pos.y);
@@ -3840,7 +3846,7 @@ function drawRadarDataPoints(series, opts, config, context) {
     context.closePath();
   };
 
-  for (var i = 1; i <= config.radarGridCount; i++) {
+  for (var i = 1; i <= radarOption.gridCount; i++) {
     _loop(i);
   }
 
@@ -4961,6 +4967,7 @@ var Charts = function Charts(opts) {
   opts.extra = assign({}, opts.extra);
   opts.rotate = opts.rotate ? true : false;
   opts.animation = opts.animation ? true : false;
+	opts.rotate = opts.rotate ? true : false;
 
   let config$$1 = JSON.parse(JSON.stringify(config));
   config$$1.colors = opts.colors ? opts.colors : config$$1.colors;
@@ -5001,7 +5008,6 @@ var Charts = function Charts(opts) {
   config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pixelRatio;
   config$$1.columePadding = config.columePadding * opts.pixelRatio;
   opts.$this = opts.$this ? opts.$this : this;
-  
   this.context = document.getElementById(opts.canvasId).getContext("2d");
   this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }
   this.context.setLineWidth = function(e){ return this.lineWidth=e; }

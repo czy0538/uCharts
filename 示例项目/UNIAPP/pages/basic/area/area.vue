@@ -126,7 +126,8 @@
 							type: 'curve',
 							opacity:0.2,
 							addLine:true,
-							width:2
+							width:2,
+							gradient:false
 						}
 					}
 				});

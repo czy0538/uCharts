@@ -13,20 +13,12 @@
 ## 口令【`uniapp`】
 ![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/QQqrcode.png?raw=true)
 
-
-
 ## 快速体验
 
 一套代码编到7个平台，依次扫描二维码，亲自体验uCharts图表跨平台效果！IOS因demo比较简单无法上架，请自行编译。
-
 ![](https://box.kancloud.cn/58092090f2bccc6871ca54dbec268811_654x479.png)
 
-
 ## [更新记录](https://www.kancloud.cn/qiun/ucharts/content/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
-
-## 未来计划（V1.0 至 2.0 版本）
-- [ ] 2019.08.xx 计划加入 `渐变颜色填充` 功能，支持`柱状图、区域图、混合图、圆弧进度条`。
-- [ ] 2019.08.xx 计划修复折线图样式为曲线时，个别情况下曲线超出 `X` 轴的问题。
 
 ## 未来计划(全新V2.0版本)
 ## 2019.5.20重要又浪漫的日期，uCharts团队正式建立了，我们将以追求极致、追求完美的极客精神来打造uCharts。uCharts2.0版本正在前期策划中，将以全新结构重写uCharts，支持多Y轴、多X轴、自定义图例位置、以及更多图表类型，请各位敬请期待。

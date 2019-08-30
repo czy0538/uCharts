@@ -99,6 +99,7 @@
 					},
 					dataLabel:true,
 					dataPointShape:true,
+					dataPointShapeType:'hollow',
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
 					categories: chartData.categories,

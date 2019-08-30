@@ -7,8 +7,9 @@
 		<view class="qiun-bg-white qiun-padding">
 		    <text>pages/basic/gauge/gauge</text>
 		</view>
-		<button class="qiun-button" @tap="changeType()">更改样式</button>
 		<!--#endif-->
+		<button class="qiun-button" @tap="changeType()">更改样式</button>
+		
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">仪表盘</view>
 		</view>
