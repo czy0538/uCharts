@@ -3665,10 +3665,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
 		//## 第三步画进度条
 		series = getArcbarDataPoints(series, gaugeOption, process);
 		context.setLineWidth(gaugeOption.width);
-		let gradient2 = context.createLinearGradient(centerPosition.x-innerRadius, centerPosition.y, centerPosition.x+innerRadius , centerPosition.y);
-		gradient2.addColorStop('0', hexToRgb(series[0].color, 0.2));
-		gradient2.addColorStop('1.0', hexToRgb(series[0].color, 1));
-		context.setStrokeStyle(gradient2);
+		context.setStrokeStyle(series[0].color);
 		context.setLineCap('round');
 		context.beginPath();
 		context.arc(centerPosition.x, centerPosition.y, innerRadius , gaugeOption.startAngle * Math.PI, series[0]._proportion_ *Math.PI, false);
