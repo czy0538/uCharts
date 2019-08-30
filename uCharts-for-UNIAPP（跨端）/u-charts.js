@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190829
+ * uCharts v1.9.2.20190830
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -47,29 +47,27 @@ var config = {
   gaugeLabelTextMargin: 15
 };
 
-let assign;
-if (Object.assign) {
-  assign = Object.assign;
-} else {
-  // 使用polyfill
-  assign = function(target, varArgs) {
+let assign = function (target, ...varArgs) {
     if (target == null) {
-      throw new TypeError('Cannot convert undefined or null to object');
+        throw new TypeError('Cannot convert undefined or null to object');
     }
-    var to = Object(target);
-    for (var index = 1; index < arguments.length; index++) {
-      var nextSource = arguments[index];
-      if (nextSource != null) {
-        for (var nextKey in nextSource) {
-          if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-            to[nextKey] = nextSource[nextKey];
-          }
+    if (!varArgs || varArgs.length <= 0) {
+        return target;
+    }
+    // 深度合并对象
+    function deepAssign(obj1, obj2) {
+        for (let key in obj2) {
+            obj1[key] = obj1[key] && obj1[key].toString() === "[object Object]" ?
+                deepAssign(obj1[key], obj2[key]) : obj1[key] = obj2[key];
         }
-      }
+        return obj1;
     }
-    return to;
-  }
-}
+
+    varArgs.forEach(val => {
+        target = deepAssign(target, val);
+    });
+    return target;
+};
 
 var util = {
   toFixed: function toFixed(num, limit) {
