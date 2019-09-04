@@ -13,7 +13,14 @@
 		data() {
 			return {
 				info: [{
-				    title: '(v-for)组件内使用示例',
+				  title: 'scroll-view中使用',
+					texts:'本示例为演示在scroll-view中使用uChart的用法。',
+					images:'column2.png',
+					url:'demo/scroll',
+					demo:null,
+					tips:'点击查看示例'
+				},{
+				  title: '(v-for)组件内使用示例',
 					texts:'通过v-for生成组件的示例，支持不固定的图表类型，支持拖拽，支持动态更新组件图表。',
 					images:'rect.png',
 					url:'demo/component',
@@ -31,14 +38,9 @@
 					demo:'/static/images/demo/demo2.png',
 					tips:'点击查看示例'
 				},
+				
 				/*
-				,{
-				    title: '柱状图自定义颜色',
-					images:'column2.png',
-					url:'demo/column',
-					demo:null,
-					tips:'更新中'
-				}, {
+				, {
 				    title: '自定义图表背景颜色',
 					images:'line.png',
 					url:'demo/bgcolor',

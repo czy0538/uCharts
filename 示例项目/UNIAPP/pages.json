@@ -208,6 +208,13 @@
 			}
 		},
 		{
+			"path": "pages/app/demo/scroll",
+			"style": {
+				"navigationBarTitleText": "scroll-view中使用",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/user/about",
 			"style": {
 				"navigationBarTitleText": "关于uCharts",
