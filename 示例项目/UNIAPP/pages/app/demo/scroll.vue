@@ -90,7 +90,6 @@
 				});
 			},
 			scroll: function(e) {
-					console.log(e)
 					this.scrollTop = e.detail.scrollTop
 			},
 			showColumn(canvasId,chartData){
@@ -135,8 +134,10 @@
 			},
 			touchColumn(e){
 				//这里一定要加，将偏移量累加到该事件中
+				//#ifndef H5
 				e.changedTouches[0].y+=this.scrollTop;
 				e.mp.changedTouches[0].y+=this.scrollTop;
+				//#endif
 				canvaColumn.showToolTip(e, {
 					format: function (item, category) {
 						if(typeof item.data === 'object'){
