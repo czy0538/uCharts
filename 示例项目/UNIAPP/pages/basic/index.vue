@@ -51,6 +51,7 @@ export default {
 			{image:'/static/images/charts/ring.png',text:'圆环图',url:'pie/ring'},
 			{image:'/static/images/charts/rose.png',text:'玫瑰图',url:'pie/rose'},
 			{image:'/static/images/charts/arc-bar.png',text:'进度条',url:'arcbar/arcbar'},
+			{image:'/static/images/charts/arcbar.png',text:'进度条',url:'arcbar/mix'},
 			{image:'/static/images/charts/area2.png',text:'区域图',url:'area/area'},
 			{image:'/static/images/charts/mix.png',text:'混合图',url:'mix/mix'},
 			{image:'/static/images/charts/candle.png',text:'K线图',url:'candle/candle'},

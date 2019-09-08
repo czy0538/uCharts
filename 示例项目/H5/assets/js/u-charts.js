@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190830
+ * uCharts v1.9.2.20190909
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -3529,39 +3529,50 @@ function drawArcbarDataPoints(series, opts, config, context) {
     startAngle: 0.75,
     endAngle: 0.25,
     type: 'default',
-    width: 12 * opts.pixelRatio
+    width: 12 * opts.pixelRatio,
+		gap:2 * opts.pixelRatio
   }, opts.extra.arcbar);
 
   series = getArcbarDataPoints(series, arcbarOption, process);
-  var centerPosition = {
-    x: opts.width / 2,
-    y: opts.height / 2
-  };
-  var radius = Math.min(centerPosition.x, centerPosition.y);
-  radius -= 5 * opts.pixelRatio;
-  radius -= arcbarOption.width / 2;
-
-  //背景颜色
-  context.setLineWidth(arcbarOption.width);
-  context.setStrokeStyle(arcbarOption.backgroundColor || '#E9E9E9');
-  context.setLineCap('round');
-  context.beginPath();
-  if (arcbarOption.type == 'default') {
-    context.arc(centerPosition.x, centerPosition.y, radius, arcbarOption.startAngle * Math.PI, arcbarOption.endAngle *
-      Math.PI, false);
-  } else {
-    context.arc(centerPosition.x, centerPosition.y, radius, 0, 2 * Math.PI, false);
-  }
-  context.stroke();
-
+	
+  var centerPosition;
+	if(arcbarOption.center){
+		centerPosition=arcbarOption.center;
+	}else{
+		centerPosition= {
+		  x: opts.width / 2,
+		  y: opts.height / 2
+		};
+	}
+	
+  var radius;
+	if(arcbarOption.radius){
+		radius=arcbarOption.radius;
+	}else{
+		radius = Math.min(centerPosition.x, centerPosition.y);
+		radius -= 5 * opts.pixelRatio;
+		radius -= arcbarOption.width / 2;
+	}
+	
   for (let i = 0; i < series.length; i++) {
     let eachSeries = series[i];
+		//背景颜色
+		context.setLineWidth(arcbarOption.width);
+		context.setStrokeStyle(arcbarOption.backgroundColor || '#E9E9E9');
+		context.setLineCap('round');
+		context.beginPath();
+		if (arcbarOption.type == 'default') {
+		  context.arc(centerPosition.x, centerPosition.y, radius-(arcbarOption.width+arcbarOption.gap)*i, arcbarOption.startAngle * Math.PI, arcbarOption.endAngle * Math.PI, false);
+		} else {
+		  context.arc(centerPosition.x, centerPosition.y, radius-(arcbarOption.width+arcbarOption.gap)*i, 0, 2 * Math.PI, false);
+		}
+		context.stroke();
+		//进度条
     context.setLineWidth(arcbarOption.width);
     context.setStrokeStyle(eachSeries.color);
     context.setLineCap('round');
     context.beginPath();
-    context.arc(centerPosition.x, centerPosition.y, radius, arcbarOption.startAngle * Math.PI, eachSeries._proportion_ *
-      Math.PI, false);
+    context.arc(centerPosition.x, centerPosition.y, radius-(arcbarOption.width+arcbarOption.gap)*i, arcbarOption.startAngle * Math.PI, eachSeries._proportion_ * Math.PI, false);
     context.stroke();
   }
 
@@ -5008,6 +5019,7 @@ var Charts = function Charts(opts) {
   config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pixelRatio;
   config$$1.columePadding = config.columePadding * opts.pixelRatio;
   opts.$this = opts.$this ? opts.$this : this;
+  
   this.context = document.getElementById(opts.canvasId).getContext("2d");
   this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }
   this.context.setLineWidth = function(e){ return this.lineWidth=e; }
@@ -5015,7 +5027,6 @@ var Charts = function Charts(opts) {
   this.context.setFontSize = function(e){ return this.font=e+"px sans-serif"; }
   this.context.setFillStyle = function(e){ return this.fillStyle=e; }
   this.context.draw = function(){ }
-
   opts.chartData = {};
   this.event = new Event();
   this.scrollOption = {

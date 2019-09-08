@@ -176,6 +176,13 @@
 			}
 		},
 		{
+			"path": "pages/basic/arcbar/mix",
+			"style": {
+				"navigationBarTitleText": "多重圆弧进度条",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/basic/column/column-scroll",
 			"style": {
 				"navigationBarTitleText": "柱状图带滚动条",
