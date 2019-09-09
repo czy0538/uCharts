@@ -1407,9 +1407,9 @@ function getYAxisTextList(series, opts, config, stack) {
   var maxRange = dataRange.maxRange;
 
   var range = [];
-  var eachRange = (maxRange - minRange) / config.yAxisSplit;
+  var eachRange = (maxRange - minRange) / opts.yAxis.splitNumber;
 
-  for (var i = 0; i <= config.yAxisSplit; i++) {
+  for (var i = 0; i <= opts.yAxis.splitNumber; i++) {
     range.push(minRange + eachRange * i);
   }
   return range.reverse();
@@ -3098,7 +3098,7 @@ function drawYAxisGrid(categories, opts, config, context) {
     return;
   }
   let spacingValid = opts.height - opts.area[0] - opts.area[2];
-  let eachSpacing = spacingValid / config.yAxisSplit;
+  let eachSpacing = spacingValid / opts.yAxis.splitNumber;
   let startX = opts.area[3];
   let xAxisPoints = opts.chartData.xAxisData.xAxisPoints,
     xAxiseachSpacing = opts.chartData.xAxisData.eachSpacing;
@@ -3106,7 +3106,7 @@ function drawYAxisGrid(categories, opts, config, context) {
   let endX = startX + TotalWidth;
 
   let points = [];
-  for (let i = 0; i < config.yAxisSplit + 1; i++) {
+  for (let i = 0; i < opts.yAxis.splitNumber + 1; i++) {
     points.push(opts.height - opts.area[2] - eachSpacing * i);
   }
 
@@ -3136,7 +3136,7 @@ function drawYAxis(series, opts, config, context) {
     return;
   }
   var spacingValid = opts.height - opts.area[0] - opts.area[2];
-  var eachSpacing = spacingValid / config.yAxisSplit;
+  var eachSpacing = spacingValid / opts.yAxis.splitNumber;
   var startX = opts.area[3];
   var endX = opts.width - opts.area[1];
   var endY = opts.height - opts.area[2];
@@ -3160,7 +3160,7 @@ function drawYAxis(series, opts, config, context) {
   context.stroke();
 
   var points = [];
-  for (let i = 0; i <= config.yAxisSplit; i++) {
+  for (let i = 0; i <= opts.yAxis.splitNumber; i++) {
     points.push(opts.area[0] + eachSpacing * i);
   }
 
