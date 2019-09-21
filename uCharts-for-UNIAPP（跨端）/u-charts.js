@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190921
+ * uCharts v1.9.2.20190909
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1743,7 +1743,7 @@ function drawPieText(series, opts, config, context, radius, center) {
     // text start
     let orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
     let orginY3 = orginY1;
-    let textWidth = measureText(item.text);
+    let textWidth = measureText(item.text,item.textSize||config.fontSize);
     let startY = orginY3;
 
     if (lastTextObject && util.isSameXCoordinateArea(lastTextObject.start, {
