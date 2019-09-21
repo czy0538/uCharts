@@ -963,7 +963,7 @@ function calCategoriesData(categories, opts, config, eachSpacing) {
     xAxisHeight: config.xAxisHeight
   };
   var categoriesTextLenth = categories.map(function(item) {
-    return measureText(item);
+    return measureText(item,opts.xAxis.fontSize||config.fontSize);
   });
   var maxTextLength = Math.max.apply(this, categoriesTextLenth);
 
@@ -972,6 +972,49 @@ function calCategoriesData(categories, opts, config, eachSpacing) {
     result.xAxisHeight = 2 * config.xAxisTextPadding + maxTextLength * Math.sin(result.angle);
   }
   return result;
+}
+
+function calXAxisData(series, opts, config){
+    var result = {
+        angle: 0,
+        xAxisHeight: config.xAxisHeight
+    };
+
+    result.ranges = getXAxisTextList(series, opts, config);
+    result.rangesFormat = result.ranges.map(function(item){
+        item = opts.xAxis.format? opts.xAxis.format(item):util.toFixed(item, 2);
+        return item;
+    });
+    var xAxisScaleValues = result.ranges.map(function (item) {
+        // 如果刻度值是浮点数,则保留两位小数
+        item = util.toFixed(item, 2);
+        // 若有自定义格式则调用自定义的格式化函数
+        item = opts.xAxis.format ? opts.xAxis.format(Number(item)) : item;
+        return item;
+    });
+
+    result = Object.assign(result,getXAxisPoints(xAxisScaleValues, opts, config));
+    // 计算X轴刻度的属性譬如每个刻度的间隔,刻度的起始点\结束点以及总长
+    var eachSpacing = result.eachSpacing;
+
+    var textLength = xAxisScaleValues.map(function (item) {
+        return measureText(item);
+    });
+    
+    // get max length of categories text
+    var maxTextLength = Math.max.apply(this, textLength);
+
+    // 如果刻度值文本内容过长,则将其逆时针旋转45°
+    if (maxTextLength + 2 * config.xAxisTextPadding > eachSpacing) {
+        result.angle = 45 * Math.PI / 180;
+        result.xAxisHeight = 2 * config.xAxisTextPadding + maxTextLength * Math.sin(result.angle);
+    }
+
+    if (opts.xAxis.disabled === true) {
+        result.xAxisHeight = 0;
+    }
+
+    return result;
 }
 
 function getRadarDataPoints(angleList, center, radius, series, opts) {
@@ -3068,13 +3111,13 @@ function drawXAxis(categories, opts, config, context) {
         context.beginPath();
         context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        var textWidth = measureText(item);
+        var textWidth = measureText(item,xAxisFontSize);
         var offset = - textWidth;
         if(boundaryGap == 'center'){
           offset+=eachSpacing / 2;
         }
         var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
-          transX = _calRotateTranslate.transX + 15,
+          transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
         context.rotate(-1 * config._xAxisTextAngle_);
