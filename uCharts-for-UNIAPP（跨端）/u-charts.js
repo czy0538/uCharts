@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190909
+ * uCharts v1.9.2.20190921
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -263,6 +263,12 @@ function createCurveControlPoints(points, i) {
   if (isNotMiddlePoint(points, i)) {
     pAy = points[i].y;
   }
+	if (pAy >= Math.max(points[i].y, points[i + 1].y) || pAy <= Math.min(points[i].y, points[i + 1].y)) {
+	pAy = points[i].y;
+	}
+	if (pBy >= Math.max(points[i].y, points[i + 1].y) || pBy <= Math.min(points[i].y, points[i + 1].y)) {
+	pBy = points[i + 1].y;
+	}
   return {
     ctrA: {
       x: pAx,
@@ -4568,7 +4574,6 @@ function drawCharts(type, opts, config, context) {
 			xAxisPoints: []
 		};
 	}
-
   //计算右对齐偏移距离
   if (opts.enableScroll && opts.xAxis.scrollAlign == 'right' && opts._scrollDistance_ === undefined) {
     let offsetLeft = 0,
