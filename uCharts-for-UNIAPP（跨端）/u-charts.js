@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.2.20190909
+ * uCharts v1.9.3.20190922
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -502,8 +502,14 @@ function getToolTipData(seriesData, calPoints, index, categories) {
   var option = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
   var textList = seriesData.map(function(item) {
+		let titleText=[];
+		if(categories){
+			titleText=categories;
+		}else{
+			titleText=item.data;
+		}
     return {
-      text: option.format ? option.format(item, categories[index]) : item.name + ': ' + item.data,
+      text: option.format ? option.format(item, titleText[index]) : item.name + ': ' + item.data,
       color: item.color
     };
   });
@@ -642,13 +648,20 @@ function filterSeries(series) {
   return tempSeries;
 }
 
-function findCurrentIndex(currentPoints, xAxisPoints, opts, config) {
+function findCurrentIndex(currentPoints, calPoints, opts, config) {
   var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
   var currentIndex = -1;
   var spacing = 0;
+	let xAxisPoints=[];
+	for(let i=0;i<calPoints[0].length;i++){
+		xAxisPoints.push(calPoints[0][i].x)
+	}
   if((opts.type=='line' || opts.type=='area') && opts.xAxis.boundaryGap=='justify'){
     spacing = opts.chartData.eachSpacing/2;
   }
+	if(!opts.categories){
+		spacing=0
+	}
   if (isInExactChartArea(currentPoints, opts, config)) {
     xAxisPoints.forEach(function(item, index) {
       if (currentPoints.x + offset + spacing > item) {
@@ -972,6 +985,83 @@ function calCategoriesData(categories, opts, config, eachSpacing) {
     result.xAxisHeight = 2 * config.xAxisTextPadding + maxTextLength * Math.sin(result.angle);
   }
   return result;
+}
+
+function getXAxisTextList(series, opts, config) {
+  var index = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : -1;
+  var data = dataCombine(series);
+  var sorted = [];
+  // remove null from data
+  data = data.filter(function(item) {
+    //return item !== null;
+    if (typeof item === 'object' && item !== null) {
+      if (item.constructor == Array) {
+        return item !== null;
+      } else {
+        return item.value !== null;
+      }
+    } else {
+      return item !== null;
+    }
+  });
+  data.map(function(item) {
+    if (typeof item === 'object') {
+      if (item.constructor == Array) {
+				if(opts.type=='candle'){
+					item.map(function(subitem) {
+					  sorted.push(subitem);
+					})
+				}else{
+					sorted.push(item[0]);
+				}
+      } else {
+        sorted.push(item.value);
+      }
+    } else {
+      sorted.push(item);
+    }
+  })
+	
+  var minData = 0;
+  var maxData = 0;
+  if (sorted.length > 0) {
+    minData = Math.min.apply(this, sorted);
+    maxData = Math.max.apply(this, sorted);
+  }
+  //为了兼容v1.9.0之前的项目
+  if(index>-1){
+    if (typeof opts.xAxis.data[index].min === 'number') {
+      minData = Math.min(opts.xAxis.data[index].min, minData);
+    }
+    if (typeof opts.xAxis.data[index].max === 'number') {
+      maxData = Math.max(opts.xAxis.data[index].max, maxData);
+    }
+  }else{
+    if (typeof opts.xAxis.min === 'number') {
+      minData = Math.min(opts.xAxis.min, minData);
+    }
+    if (typeof opts.xAxis.max === 'number') {
+      maxData = Math.max(opts.xAxis.max, maxData);
+    }
+  }
+  
+
+  if (minData === maxData) {
+    var rangeSpan = maxData || 10;
+    maxData += rangeSpan;
+  }
+
+  var dataRange = getDataRange(minData, maxData);
+  var minRange = dataRange.minRange;
+  var maxRange = dataRange.maxRange;
+
+  var range = [];
+  var eachRange = (maxRange - minRange) / opts.xAxis.splitNumber;
+
+  for (var i = 0; i <= opts.xAxis.splitNumber; i++) {
+    range.push(minRange + eachRange * i);
+  }
+  return range;
 }
 
 function calXAxisData(series, opts, config){
@@ -1325,6 +1415,7 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
   }
   var points = [];
   var validHeight = opts.height - opts.area[0] - opts.area[2];
+	var validWidth = opts.width - opts.area[1] - opts.area[3];
   data.forEach(function(item, index) {
     if (item === null) {
       points.push(null);
@@ -1332,13 +1423,23 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
       var point = {};
       point.color = item.color;
       point.x = xAxisPoints[index];
-      if(boundaryGap=='center'){
-        point.x += Math.round(eachSpacing / 2);
-      }
       var value = item;
       if (typeof item === 'object' && item !== null) {
-        value = item.value
+				if (item.constructor == Array) {
+					let xranges,xminRange,xmaxRange;
+					xranges = [].concat(opts.chartData.xAxisData.ranges);
+					
+					xminRange = xranges.shift();
+					xmaxRange = xranges.pop();
+				  value = item[1];
+					point.x = opts.area[3]+ validWidth * (item[0] - xminRange) / (xmaxRange - xminRange);
+				} else {
+				  value = item.value;
+				}
       }
+			if(boundaryGap=='center'){
+			  point.x += Math.round(eachSpacing / 2);
+			}
       var height = validHeight * (value - minRange) / (maxRange - minRange);
       height *= process;
       point.y = opts.height - Math.round(height) - opts.area[2];
@@ -1412,9 +1513,13 @@ function getYAxisTextList(series, opts, config, stack) {
   data.map(function(item) {
     if (typeof item === 'object') {
       if (item.constructor == Array) {
-        item.map(function(subitem) {
-          sorted.push(subitem);
-        })
+				if(opts.type=='candle'){
+					item.map(function(subitem) {
+					  sorted.push(subitem);
+					})
+				}else{
+					sorted.push(item[1]);
+				}
       } else {
         sorted.push(item.value);
       }
@@ -1422,6 +1527,7 @@ function getYAxisTextList(series, opts, config, stack) {
       sorted.push(item);
     }
   })
+	
   var minData = 0;
   var maxData = 0;
   if (sorted.length > 0) {
@@ -1680,7 +1786,11 @@ function drawPointText(points, series, config, context) {
       context.setFillStyle(series.textColor || '#666666');
       var value = data[index]
       if (typeof data[index] === 'object' && data[index] !== null) {
-        value = data[index].value
+				if (data[index].constructor == Array) {
+					value = data[index][1];
+				}else{
+					value = data[index].value
+				}
       }
       var formatVal = series.format ? series.format(value) : value;
       context.fillText(String(formatVal), item.x - measureText(formatVal, series.textSize || config.fontSize) / 2, item.y -4);
@@ -3089,7 +3199,7 @@ function drawXAxis(categories, opts, config, context) {
     var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
-        var offset = - measureText(item, xAxisFontSize) / 2;
+        var offset = - measureText(String(item), xAxisFontSize) / 2;
         if(boundaryGap == 'center'){
           offset+=eachSpacing / 2;
         }
@@ -3100,7 +3210,7 @@ function drawXAxis(categories, opts, config, context) {
         context.beginPath();
         context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight - scrollHeight - xAxisFontSize) / 2);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight - scrollHeight - xAxisFontSize) / 2);
         context.closePath();
         context.stroke();
       });
@@ -3111,7 +3221,7 @@ function drawXAxis(categories, opts, config, context) {
         context.beginPath();
         context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        var textWidth = measureText(item,xAxisFontSize);
+        var textWidth = measureText(String(item),xAxisFontSize);
         var offset = - textWidth;
         if(boundaryGap == 'center'){
           offset+=eachSpacing / 2;
@@ -3122,7 +3232,7 @@ function drawXAxis(categories, opts, config, context) {
 
         context.rotate(-1 * config._xAxisTextAngle_);
         context.translate(transX, transY);
-        context.fillText(item, xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
         context.closePath();
         context.stroke();
         context.restore();
@@ -4519,7 +4629,7 @@ function drawCharts(type, opts, config, context) {
   var categories = opts.categories;
   series = fillSeries(series, opts, config);
   var duration = opts.animation ? opts.duration : 0;
-  this.animationInstance && this.animationInstance.stop();
+  _this.animationInstance && _this.animationInstance.stop();
   var seriesMA = null;
   if (type == 'candle') {
     let average = assign({}, opts.extra.candle.average);
@@ -4613,9 +4723,21 @@ function drawCharts(type, opts, config, context) {
     opts.area[2] += xAxisHeight;
     opts.chartData.categoriesData = _calCategoriesData;
   }else{
-		opts.chartData.xAxisData={
-			xAxisPoints: []
-		};
+		if (opts.type === 'line' || opts.type === 'area' || opts.type === 'points') {
+			opts.chartData.xAxisData = calXAxisData(series, opts, config);
+			categories=opts.chartData.xAxisData.rangesFormat;
+			let _calCategoriesData = calCategoriesData(categories, opts, config, opts.chartData.xAxisData.eachSpacing),
+			  xAxisHeight = _calCategoriesData.xAxisHeight,
+			  angle = _calCategoriesData.angle;
+			config.xAxisHeight = xAxisHeight;
+			config._xAxisTextAngle_ = angle;
+			opts.area[2] += xAxisHeight;
+			opts.chartData.categoriesData = _calCategoriesData;
+		}else{
+			opts.chartData.xAxisData={
+				xAxisPoints: []
+			};
+		}
 	}
   //计算右对齐偏移距离
   if (opts.enableScroll && opts.xAxis.scrollAlign == 'right' && opts._scrollDistance_ === undefined) {
@@ -5224,7 +5346,7 @@ Charts.prototype.getCurrentDataIndex = function(e) {
       return findCurrentIndex({
         x: _touches$.x,
         y: _touches$.y
-      }, this.opts.chartData.xAxisPoints, this.opts, this.config, Math.abs(this.scrollOption.currentOffset));
+      }, this.opts.chartData.calPoints, this.opts, this.config, Math.abs(this.scrollOption.currentOffset));
     }
   }
   return -1;

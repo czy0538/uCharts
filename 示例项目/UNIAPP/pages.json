@@ -106,6 +106,13 @@
 			}
 		},
 		{
+			"path": "pages/basic/area/time",
+			"style": {
+				"navigationBarTitleText": "时间X轴",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/basic/area/area",
 			"style": {
 				"navigationBarTitleText": "基本区域图",
