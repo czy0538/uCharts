@@ -651,7 +651,7 @@ function filterSeries(series) {
 function findCurrentIndex(currentPoints, calPoints, opts, config) {
   var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
   var currentIndex = -1;
-  var spacing = 0;
+  var spacing = opts.chartData.eachSpacing/2;
 	let xAxisPoints=[];
 	for(let i=0;i<calPoints[0].length;i++){
 		xAxisPoints.push(calPoints[0][i].x)
@@ -1051,9 +1051,9 @@ function getXAxisTextList(series, opts, config) {
     maxData += rangeSpan;
   }
 
-  var dataRange = getDataRange(minData, maxData);
-  var minRange = dataRange.minRange;
-  var maxRange = dataRange.maxRange;
+  //var dataRange = getDataRange(minData, maxData);
+  var minRange = minData;
+  var maxRange = maxData;
 
   var range = [];
   var eachRange = (maxRange - minRange) / opts.xAxis.splitNumber;
@@ -1075,6 +1075,7 @@ function calXAxisData(series, opts, config){
         item = opts.xAxis.format? opts.xAxis.format(item):util.toFixed(item, 2);
         return item;
     });
+		
     var xAxisScaleValues = result.ranges.map(function (item) {
         // 如果刻度值是浮点数,则保留两位小数
         item = util.toFixed(item, 2);
@@ -1428,7 +1429,6 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
 				if (item.constructor == Array) {
 					let xranges,xminRange,xmaxRange;
 					xranges = [].concat(opts.chartData.xAxisData.ranges);
-					
 					xminRange = xranges.shift();
 					xmaxRange = xranges.pop();
 				  value = item[1];
