@@ -653,22 +653,24 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
   var currentIndex = -1;
   var spacing = opts.chartData.eachSpacing/2;
 	let xAxisPoints=[];
-	for(let i=0;i<calPoints[0].length;i++){
-		xAxisPoints.push(calPoints[0][i].x)
+	if(calPoints.length>0){
+		for(let i=0;i<calPoints[0].length;i++){
+			xAxisPoints.push(calPoints[0][i].x)
+		}
+		if((opts.type=='line' || opts.type=='area') && opts.xAxis.boundaryGap=='justify'){
+		  spacing = opts.chartData.eachSpacing/2;
+		}
+		if(!opts.categories){
+			spacing=0
+		}
+		if (isInExactChartArea(currentPoints, opts, config)) {
+		  xAxisPoints.forEach(function(item, index) {
+		    if (currentPoints.x + offset + spacing > item) {
+		      currentIndex = index;
+		    }
+		  });
+		}
 	}
-  if((opts.type=='line' || opts.type=='area') && opts.xAxis.boundaryGap=='justify'){
-    spacing = opts.chartData.eachSpacing/2;
-  }
-	if(!opts.categories){
-		spacing=0
-	}
-  if (isInExactChartArea(currentPoints, opts, config)) {
-    xAxisPoints.forEach(function(item, index) {
-      if (currentPoints.x + offset + spacing > item) {
-        currentIndex = index;
-      }
-    });
-  }
   return currentIndex;
 }
 
