@@ -228,13 +228,18 @@ function createCurveControlPoints(points, i) {
 
   function isNotMiddlePoint(points, i) {
     if (points[i - 1] && points[i + 1]) {
-      return points[i].y >= Math.max(points[i - 1].y, points[i + 1].y) || points[i].y <= Math.min(points[i - 1].y,
-        points[
-          i + 1].y);
+      return points[i].y >= Math.max(points[i - 1].y, points[i + 1].y) || points[i].y <= Math.min(points[i - 1].y,points[i + 1].y);
     } else {
       return false;
     }
   }
+	function isNotMiddlePointX(points, i) {
+	  if (points[i - 1] && points[i + 1]) {
+	    return points[i].x >= Math.max(points[i - 1].x, points[i + 1].x) || points[i].x <= Math.min(points[i - 1].x,points[i + 1].x);
+	  } else {
+	    return false;
+	  }
+	}
   var a = 0.2;
   var b = 0.2;
   var pAx = null;
@@ -263,11 +268,23 @@ function createCurveControlPoints(points, i) {
   if (isNotMiddlePoint(points, i)) {
     pAy = points[i].y;
   }
+	if (isNotMiddlePointX(points, i + 1)) {
+	  pBx = points[i + 1].x;
+	}
+	if (isNotMiddlePointX(points, i)) {
+	  pAx = points[i].x;
+	}
 	if (pAy >= Math.max(points[i].y, points[i + 1].y) || pAy <= Math.min(points[i].y, points[i + 1].y)) {
 	pAy = points[i].y;
 	}
 	if (pBy >= Math.max(points[i].y, points[i + 1].y) || pBy <= Math.min(points[i].y, points[i + 1].y)) {
 	pBy = points[i + 1].y;
+	}
+	if (pAx >= Math.max(points[i].x, points[i + 1].x) || pAx <= Math.min(points[i].x, points[i + 1].x)) {
+	pAx = points[i].x;
+	}
+	if (pBx >= Math.max(points[i].x, points[i + 1].x) || pBx <= Math.min(points[i].x, points[i + 1].x)) {
+	pBx = points[i + 1].x;
 	}
   return {
     ctrA: {
