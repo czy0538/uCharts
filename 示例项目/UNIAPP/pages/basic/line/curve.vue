@@ -126,7 +126,18 @@
 						}
 					}
 				});
-				
+				//下面是默认选中索引
+				let cindex=3;
+				//下面是自定义文案
+				let textList=[{text:'我是一个标题',color:null},{text:'自定义1：值1',color:'#2fc25b'},{text:'自定义2：值2',color:'#facc14'},{text:'自定义3：值3',color:'#f04864'}];
+				//下面是event的模拟,tooltip的Y坐标值通过这个mp.changedTouches[0].y控制
+				let tmpevent={mp:{changedTouches:[{x: 0, y: 80}]}};
+				setTimeout(()=>{
+					canvaLineA.showToolTip( tmpevent , {
+						index:cindex,
+						textList:textList
+					});
+				},200)
 			},
 			touchLineA(e) {
 				canvaLineA.touchLegend(e);

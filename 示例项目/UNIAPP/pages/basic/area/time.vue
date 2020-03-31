@@ -5,7 +5,7 @@
 			<view class="qiun-title-dot-light">页面地址</view>
 		</view>
 		<view class="qiun-bg-white qiun-padding">
-		    <text>pages/basic/line/time</text>
+		    <text>pages/basic/area/time</text>
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >

@@ -2,12 +2,11 @@
 
 # [uCharts官方网站](https://www.ucharts.cn)
 # <https://www.ucharts.cn>
+[![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 
-# [码云gitee开源地址](https://gitee.com/uCharts/uCharts)
-# `小伙伴们，需要star哦~~~`
+[![uCharts/uCharts](https://gitee.com/uCharts/uCharts/widgets/widget_card.svg?colors=393222,ebdfc1,fffae5,d8ca9f,393222,a28b40)](https://gitee.com/uCharts/uCharts)
 
 # [在线文档（参数在API章节）](http://doc.ucharts.cn)
-# [在线文档（备用地址）](https://www.kancloud.cn/qiun/ucharts/content)
 
 ## QQ交流群:371774600
 ## 口令【`uniapp`】
@@ -20,8 +19,6 @@
 
 ## [更新记录](https://www.kancloud.cn/qiun/ucharts/content/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
 
-## 未来计划(全新V2.0版本)
-## 2019.5.20重要又浪漫的日期，uCharts团队正式建立了，我们将以追求极致、追求完美的极客精神来打造uCharts。uCharts2.0版本正在前期策划中，将以全新结构重写uCharts，支持多Y轴、多X轴、自定义图例位置、以及更多图表类型，请各位敬请期待。
 
 ## 支持图表类型
 - 饼图   `pie`

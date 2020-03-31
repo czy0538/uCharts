@@ -1,5 +1,5 @@
 /*
- * uCharts v1.9.3.20190922
+ * uCharts v1.9.4.20200331
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
  * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -671,8 +671,14 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
   var spacing = opts.chartData.eachSpacing/2;
 	let xAxisPoints=[];
 	if(calPoints.length>0){
-		for(let i=0;i<calPoints[0].length;i++){
-			xAxisPoints.push(calPoints[0][i].x)
+		if(opts.type=='candle'){
+			for(let i=0;i<calPoints[0].length;i++){
+				xAxisPoints.push(calPoints[0][i][0].x)
+			}
+		}else{
+			for(let i=0;i<calPoints[0].length;i++){
+				xAxisPoints.push(calPoints[0][i].x)
+			}
 		}
 		if((opts.type=='line' || opts.type=='area') && opts.xAxis.boundaryGap=='justify'){
 		  spacing = opts.chartData.eachSpacing/2;
@@ -2331,7 +2337,7 @@ function drawColumnDataPoints(series, opts, config, context) {
             context.setFillStyle(item.color || eachSeries.color);
             var startX = item.x - item.width / 2;
             var height = opts.height - item.y - opts.area[2];
-            context.moveTo(startX-1, item.y);
+            context.moveTo(startX, item.y);
             context.lineTo(startX+item.width-2,item.y);
             context.lineTo(startX+item.width-2,opts.height - opts.area[2]);
             context.lineTo(startX,opts.height - opts.area[2]);
@@ -2925,7 +2931,7 @@ function drawMixDataPoints(series, opts, config, context) {
           var startX = item.x - item.width / 2;
           var height = opts.height - item.y - opts.area[2];
           context.moveTo(startX, item.y);
-          context.moveTo(startX-1, item.y);
+          context.moveTo(startX, item.y);
           context.lineTo(startX+item.width-2,item.y);
           context.lineTo(startX+item.width-2,opts.height - opts.area[2]);
           context.lineTo(startX,opts.height - opts.area[2]);
@@ -5427,7 +5433,7 @@ Charts.prototype.showToolTip = function(e) {
     animation: false
   });
   if (this.opts.type === 'line' || this.opts.type === 'area' || this.opts.type === 'column') {
-    var index = this.getCurrentDataIndex(e);
+    var index = option.index==undefined? this.getCurrentDataIndex(e):option.index ;
     if (index > -1) {
       var seriesData = getSeriesDataItem(this.opts.series, index);
       if (seriesData.length !== 0) {
@@ -5436,7 +5442,7 @@ Charts.prototype.showToolTip = function(e) {
           offset = _getToolTipData.offset;
         offset.y = _touches$.y;
         opts.tooltip = {
-          textList: textList,
+          textList: option.textList?option.textList:textList,
           offset: offset,
           option: option,
           index: index
@@ -5446,7 +5452,7 @@ Charts.prototype.showToolTip = function(e) {
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
   if (this.opts.type === 'mix') {
-    var index = this.getCurrentDataIndex(e);
+    var index = option.index==undefined? this.getCurrentDataIndex(e):option.index ;
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
       var opts = assign({}, this.opts, {
@@ -5460,7 +5466,7 @@ Charts.prototype.showToolTip = function(e) {
           offset = _getMixToolTipData.offset;
         offset.y = _touches$.y;
         opts.tooltip = {
-          textList: textList,
+          textList: option.textList?option.textList:textList,
           offset: offset,
           option: option,
           index: index
@@ -5470,7 +5476,7 @@ Charts.prototype.showToolTip = function(e) {
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
   if (this.opts.type === 'candle') {
-    var index = this.getCurrentDataIndex(e);
+    var index = option.index==undefined? this.getCurrentDataIndex(e):option.index ;
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
       var opts = assign({}, this.opts, {
@@ -5485,7 +5491,7 @@ Charts.prototype.showToolTip = function(e) {
           offset = _getToolTipData.offset;
         offset.y = _touches$.y;
         opts.tooltip = {
-          textList: textList,
+          textList: option.textList?option.textList:textList,
           offset: offset,
           option: option,
           index: index
@@ -5495,7 +5501,7 @@ Charts.prototype.showToolTip = function(e) {
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
   if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose'||this.opts.type === 'funnel' ) {
-    var index = this.getCurrentDataIndex(e);
+    var index = option.index==undefined? this.getCurrentDataIndex(e):option.index ;
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
       var opts = assign({}, this.opts, {
@@ -5512,7 +5518,7 @@ Charts.prototype.showToolTip = function(e) {
         y: _touches$.y
       };
       opts.tooltip = {
-        textList: textList,
+        textList: option.textList?option.textList:textList,
         offset: offset,
         option: option,
         index: index
@@ -5521,7 +5527,7 @@ Charts.prototype.showToolTip = function(e) {
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
   if (this.opts.type === 'map'||this.opts.type === 'word') {
-    var index = this.getCurrentDataIndex(e);
+    var index = option.index==undefined? this.getCurrentDataIndex(e):option.index ;
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
       var opts = assign({}, this.opts, {
@@ -5538,7 +5544,7 @@ Charts.prototype.showToolTip = function(e) {
         y: _touches$.y
       };
       opts.tooltip = {
-        textList: textList,
+        textList: option.textList?option.textList:textList,
         offset: offset,
         option: option,
         index: index
@@ -5548,7 +5554,7 @@ Charts.prototype.showToolTip = function(e) {
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
   if (this.opts.type === 'radar') {
-    var index = this.getCurrentDataIndex(e);
+    var index = option.index==undefined? this.getCurrentDataIndex(e):option.index ;
     if (index > -1) {
       var currentOffset = this.scrollOption.currentOffset;
       var opts = assign({}, this.opts, {
@@ -5568,7 +5574,7 @@ Charts.prototype.showToolTip = function(e) {
           y: _touches$.y
         };
         opts.tooltip = {
-          textList: textList,
+          textList: option.textList?option.textList:textList,
           offset: offset,
           option: option,
           index: index
