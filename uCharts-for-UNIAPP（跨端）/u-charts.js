@@ -603,8 +603,12 @@ function getCandleToolTipData(series, seriesData, calPoints, index, categories, 
   };
   textList.push(text0);
   seriesData.map(function(item) {
-    if (index == 0 && item.data[1] - item.data[0] < 0) {
-      color[1] = downColor;
+    if (index == 0) {
+      if(item.data[1] - item.data[0] < 0){
+      	color[1] = downColor;
+      }else{
+      	color[1] = upColor;
+      }
     } else {
       if (item.data[0] < series[index - 1][1]) {
         color[0] = downColor;
