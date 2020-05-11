@@ -2502,7 +2502,7 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
   }
 
   //画均线
-  if (candleOption.average.show) {
+  if (candleOption.average.show||seriesMA) {
     seriesMA.forEach(function(eachSeries, seriesIndex) {
       let ranges,minRange,maxRange;
       ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
