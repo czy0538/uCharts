@@ -44,9 +44,10 @@
 # [在线文档（参数在 API 章节）](http://doc.ucharts.cn)
 # [在线文档（备用地址）](https://www.kancloud.cn/qiun/ucharts/content)
 
-## QQ交流群：371774600
+## QQ交流群1：371774600（已满）
+## QQ交流群2：619841586
 ## 口令【`gitee`】
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/QQqrcode.png?raw=true)
+![](https://images.gitee.com/uploads/images/2020/0811/082547_a00ecd37_1316944.png)
 
 
 
@@ -54,7 +55,7 @@
 
 一套代码编到 7 个平台，依次扫描二维码，亲自体验 uCharts 图表跨平台效果！iOS 因 demo 比较简单无法上架，请自行编译。
 
-![](https://box.kancloud.cn/58092090f2bccc6871ca54dbec268811_654x479.png)
+![](https://images.gitee.com/uploads/images/2020/0811/082547_f0ab655a_1316944.png)
 
 
 ## [更新记录](https://www.kancloud.cn/qiun/ucharts/content/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
@@ -94,13 +95,13 @@
 
 ## uni-app 图表选型参考流程
 
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/xuanxing.png?raw=true)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_f5a1f3f3_1316944.png)
 
 ## 亲手教您如何改造uCharts，打造您的专属图表
 - 为何要改造 uCharts?
 - 并不是所有图表插件直接拿来就可以满足客户需求，如果您的 UI 设计师设计一个图表，如下图:
 
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/example.gif?raw=true)
+![](https://images.gitee.com/uploads/images/2020/0811/082547_507c0601_1316944.gif)
 
 - 您会发现这个图表即使在 echarts 里也不是很好实现，那么就需要我们自己动手去实现。下面就让我们一起来完成，本文旨在抛砖引玉，希望各位朋友能够更好的应用 uCharts 来完成您的项目，如果您有更好的设计，请提交您的 PR 到 Github [uCharts跨端图表](https://github.com/16cheng/uCharts)，帮助更多朋友，感谢您的付出及贡献！
 
@@ -108,27 +109,27 @@
 
 
 ## 图表示例
-![](https://img.kancloud.cn/ac/ef/acef49105d33936d872f8eb9d3526af1_468x453.gif)
-![](https://img.kancloud.cn/b4/df/b4dfcc01461fc6b918932f1e15c06172_446x337.gif)
-![](https://img.kancloud.cn/0f/8e/0f8e525821ab2fe671095ece89ff6a1a_460x342.gif)
-![](https://box.kancloud.cn/1d5e2c60898de86f5f33f93020ff029e_468x342.gif)
-![](https://box.kancloud.cn/63e5833a7ccd8308b0f8ab59522c36c1_468x349.gif)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/mix.gif?raw=true)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/mix2.gif?raw=true)
-![](https://box.kancloud.cn/2f00fcf5a8ce7a9593aea3bc14b8f150_468x411.gif)
-![](https://img.kancloud.cn/c2/1f/c21f7f84c5ff42d323267323d7f48b05_468x337.gif)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/yibiaopan.gif?raw=true)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/arcbar.gif?raw=true)
-![](https://box.kancloud.cn/af4fb86f40538d85da3e8def8669b87d_468x342.gif)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/lineA.gif?raw=true)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/lineA-scroll.gif?raw=true)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/dashLine.gif?raw=true)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/area.gif?raw=true)
-![](https://box.kancloud.cn/1a7b5b2908751cbb3f135e5071e42f1b_468x345.gif)
-![](https://box.kancloud.cn/a3c42919a45fbf93db028fe9a0975adc_468x345.gif)
-![](https://box.kancloud.cn/fe5f988bfb017c5d46d695e4626bd656_468x345.gif)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/radar.gif?raw=true)
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/lineB.gif?raw=true)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_dd1a2aa6_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_192b0f03_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_9eab1c50_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082547_ed673d7d_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_970eecc9_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_478ccd12_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_dc388c4b_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_cf5c07a1_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_e30e6e54_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082549_6265279d_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082549_8a12c53f_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082548_4622e533_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082550_5ac18565_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082550_1e3cf661_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082550_67b1ab5f_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082550_1a808e63_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082549_3cf74443_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082549_f2d24367_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082549_aa946560_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082550_519ce273_1316944.gif)
+![](https://images.gitee.com/uploads/images/2020/0811/082551_508757b1_1316944.gif)
 
 
 ## 常见问题
