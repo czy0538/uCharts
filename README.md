@@ -47,7 +47,6 @@
 ## QQ交流群1：371774600（已满）
 ## QQ交流群2：619841586
 ## 口令【`gitee`】
-![](https://images.gitee.com/uploads/images/2020/0811/082547_a00ecd37_1316944.png)
 
 
 
