@@ -1,6 +1,6 @@
 {
     "name" : "跨端图表",
-    "appid" : "__UNI__B3AB472",
+    "appid" : "",
     "description" : "适用于uni-app的高性能跨全端图表，支持H5、APP、各大平台小程序",
     "versionName" : "1.9.4",
     "versionCode" : "100",
