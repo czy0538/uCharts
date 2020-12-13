@@ -1,29 +1,30 @@
 <template>
 	<view class="qiun-columns">
-		<scroll-view scroll-y="true" style="height: 400rpx;" @scroll="scroll">
-			<view style="height: 400rpx;">
-				<image src="../../../static/images/banner/banner1.png" style="width: 750rpx;height: 400rpx;"></image>
-			</view>
+		<view style="height: 400rpx;">
+			<image src="../../../static/images/banner/banner2.png" style="width: 750rpx;height: 400rpx;"></image>
+		</view>
+		<view class="qiun-text-tips">Tips：下面是scroll-view，请滑动图表查看是否被上方图片覆盖。</view>
+		<scroll-view scroll-y="true" style="height: 600rpx;" @scroll="scroll">
+			
 			<!--#ifdef H5 -->
 			<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 				<view class="qiun-title-dot-light">页面地址</view>
 			</view>
 			<view class="qiun-bg-white qiun-padding">
-					<text>pages/app/demo/scroll</text>
+					<text>pages/app/demo/canvas2d</text>
 			</view>
 			<!--#endif-->
 			<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 				<view class="qiun-title-dot-light">基本柱状图</view>
 			</view>
 			<view class="qiun-charts" >
-				<!--#ifdef MP-ALIPAY -->
-				<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @tap="touchColumn"></canvas>
-				<!--#endif-->
-				<!--#ifndef MP-ALIPAY -->
-				<!-- 注意，这里用里@tap来触发事件 -->
-				<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" @tap="touchColumn"></canvas>
-				<!--#endif-->
+				<!-- 注意，这里需要用id和type -->
+				<canvas id="canvasColumn" type="2d" class="charts" ></canvas>
 			</view>
+			<view style="height: 400rpx;">
+				<image src="../../../static/images/banner/banner1.png" style="width: 750rpx;height: 400rpx;"></image>
+			</view>
+			
 			<!--#ifdef H5 -->
 			<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 				<view class="qiun-title-dot-light">标准数据格式</view>
@@ -35,7 +36,7 @@
 			<button class="qiun-button" @tap="changeData()">更新图表</button>
 			<!--#endif-->
 		</scroll-view>
-		<view class="qiun-text-tips">Tips：请向上滑动图片，然后点击柱状图。点击事件请用tap，不可以用touchstart，点击方法中请修改e的坐标值。</view>
+		
 	</view>
 </template>
 
@@ -61,17 +62,7 @@
 		},
 		onLoad() {
 			_self = this;
-			//#ifdef MP-ALIPAY
-			uni.getSystemInfo({
-				success: function (res) {
-					if(res.pixelRatio>1){
-						//正常这里给2就行，如果pixelRatio=3性能会降低一点
-						//_self.pixelRatio =res.pixelRatio;
-						_self.pixelRatio =2;
-					}
-				}
-			});
-			//#endif
+			_self.pixelRatio=uni.getSystemInfoSync().pixelRatio;
 			this.cWidth=uni.upx2px(750);
 			this.cHeight=uni.upx2px(500);
 			this.getServerData();
@@ -100,62 +91,60 @@
 					this.scrollTop = e.detail.scrollTop
 			},
 			showColumn(canvasId,chartData){
-				canvaColumn=new uCharts({
-					$this:_self,
-					canvasId: canvasId,
-					type: 'column',
-					padding:[15,5,0,15],
-					legend:{
-						show:true,
-						padding:5,
-						lineHeight:11,
-						margin:0,
-					},
-					fontSize:11,
-					background:'#FFFFFF',
-					pixelRatio:_self.pixelRatio,
-					animation: true,
-					categories: chartData.categories,
-					series: chartData.series,
-					xAxis: {
-						disableGrid:true,
-					},
-					yAxis: {
-            data:[{
-              position:'right',
-							axisLine:false,
-              format:(val)=>{return val.toFixed(0)+'元'},
-            }]
-					},
-					dataLabel: true,
-					width: _self.cWidth*_self.pixelRatio,
-					height: _self.cHeight*_self.pixelRatio,
-					extra: {
-						column: {
-							type:'group',
-							width: _self.cWidth*_self.pixelRatio*0.45/chartData.categories.length
-						}
-					  }
-				});
+				const query = uni.createSelectorQuery()
+				    query.select('#'+canvasId)
+				      .fields({ node: true, size: true })
+				      .exec((res) => {
+				        const canvas = res[0].node
+				        const ctx = canvas.getContext('2d')
+				        canvas.width = res[0].width * _self.pixelRatio
+				        canvas.height = res[0].height * _self.pixelRatio
+								//此步不需要缩放画布，ucharts会自动缩放
+				        //ctx.scale(_self.pixelRatio, _self.pixelRatio)
+								canvaColumn=new uCharts({
+									$this:_self,
+									//这俩参数是新增加的，开启2d并传入ctx
+									canvas2d:true,
+									context:ctx,
+									//这俩参数是新增加的，开启2d并传入ctx
+									canvasId: canvasId,
+									type: 'column',
+									padding:[15,5,0,15],
+									legend:{
+										show:true,
+										padding:5,
+										lineHeight:11,
+										margin:0,
+									},
+									fontSize:11,
+									background:'#FFFFFF',
+									pixelRatio:_self.pixelRatio,
+									animation: true,
+									categories: chartData.categories,
+									series: chartData.series,
+									xAxis: {
+										disableGrid:true,
+									},
+									yAxis: {
+										data:[{
+											position:'right',
+											axisLine:false,
+											format:(val)=>{return val.toFixed(0)+'元'},
+										}]
+									},
+									dataLabel: true,
+									width: _self.cWidth*_self.pixelRatio,
+									height: _self.cHeight*_self.pixelRatio,
+									extra: {
+										column: {
+											type:'group',
+											width: _self.cWidth*_self.pixelRatio*0.45/chartData.categories.length
+										}
+										}
+								});
+				      })
 				
-			},
-			touchColumn(e){
-				//这里一定要加，将偏移量累加到该事件中
-				//#ifndef H5
-				e.changedTouches[0].pageY+=this.scrollTop;
-				e.mp.changedTouches[0].pageY+=this.scrollTop;
-				//#endif
-				console.log(e);
-				canvaColumn.showToolTip(e, {
-					format: function (item, category) {
-						if(typeof item.data === 'object'){
-							return category + ' ' + item.name + ':' + item.data.value 
-						}else{
-							return category + ' ' + item.name + ':' + item.data 
-						}
-					}
-				});
-        canvaColumn.touchLegend(e,{animation:true});
+				
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){

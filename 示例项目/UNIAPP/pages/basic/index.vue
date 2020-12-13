@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<!-- #ifndef MP-WEIXIN -->
 		<uni-swiper-dot :info="info" :current="current" field="content" mode="nav" >
 			<swiper class="swiper-box" @change="change">
 				<swiper-item v-for="(item ,index) in info" :key="index">
@@ -7,6 +8,10 @@
 				</swiper-item>
 			</swiper>
 		</uni-swiper-dot>
+		<!-- #endif -->
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-5860dcfc30347d7a" ad-type="video" ad-theme="white"></ad>
+		<!-- #endif -->
 		<uni-notice-bar show-icon="true" scrollable="true" single="true" :text="notice" speed=50>
 		</uni-notice-bar>
 		<uni-grid :options="options" column-num="4">
@@ -63,6 +68,11 @@ export default {
 			{image:'/static/images/charts/area.png',text:'时间轴',url:'area/time'}]
 		};
 	},
+	onShareAppMessage(){
+			//#ifdef MP-QQ
+			qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+			//#endif
+	},	
   onShow() {
     //#ifdef MP-BAIDU
       swan.setPageInfo({

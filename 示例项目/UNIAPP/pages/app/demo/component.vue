@@ -1,5 +1,8 @@
 <template>
 	<view>
+		<!-- #ifdef MP-WEIXIN -->
+			<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+			<!-- #endif -->
 		<block v-for="(item, index) in arr" :key="index">
 			<view class="qiun-columns" style="background-color: #FFFFFF;">
 				<u-charts :canvas-id="item.id" :chartType="item.chartType" :cWidth="cWidth" :cHeight="cHeight" :opts="item.opts" :ref="item.id"/>
@@ -27,6 +30,11 @@
 		},
 		components: {
 			uCharts
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		onLoad() {
 			_self = this;

@@ -8,10 +8,9 @@
 
 # [在线文档（参数在API章节）](http://doc.ucharts.cn)
 
-## QQ交流群:371774600
+## QQ交流群1:371774600（已满）
+## QQ交流群2:619841586
 ## 口令【`uniapp`】
-![](https://github.com/16cheng/uCharts/blob/master/example/uni-app/static/QQqrcode.png?raw=true)
-
 ## 快速体验
 
 一套代码编到7个平台，依次扫描二维码，亲自体验uCharts图表跨平台效果！IOS因demo比较简单无法上架，请自行编译。
@@ -19,6 +18,7 @@
 
 ## [更新记录](https://www.kancloud.cn/qiun/ucharts/content/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
 
+#`canvas-2d模式请参考pages/app/demo/canvas2d`
 
 ## 支持图表类型
 - 饼图   `pie`

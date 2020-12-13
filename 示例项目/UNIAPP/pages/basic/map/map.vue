@@ -19,6 +19,9 @@
 			<canvas canvas-id="canvasMap" id="canvasMap" class="charts" @touchstart="touchMap"></canvas>
 			<!--#endif-->
 		</view>
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -36,6 +39,11 @@
 				pixelRatio:1,
 				textarea:''
 			}
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		onLoad() {
 			_self = this;

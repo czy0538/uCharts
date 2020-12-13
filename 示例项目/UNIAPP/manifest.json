@@ -1,8 +1,8 @@
 {
     "name" : "跨端图表",
-    "appid" : "",
+    "appid" : "__UNI__B3AB472",
     "description" : "适用于uni-app的高性能跨全端图表，支持H5、APP、各大平台小程序",
-    "versionName" : "1.9.4",
+    "versionName" : "1.9.3",
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
@@ -76,27 +76,35 @@
                 }
             }
         },
-        "usingComponents" : false
+        "usingComponents" : true
     },
     /* SDK配置 */
     "quickapp" : {},
     /* 快应用特有相关 */
     "mp-weixin" : {
         /* 小程序特有相关 */
-        "appid" : "",
+        "appid" : "wx37a9ee6a7398dec0",
         "setting" : {
             "urlCheck" : true,
             "es6" : false,
             "minified" : true
         },
-        "usingComponents" : false
+        "usingComponents" : true
     },
     "h5" : {
         "router" : {
-            "base" : "/H5/"
+            "base" : "/H5/",
+            "mode" : "hash"
         },
         "title" : "uCharts跨端图表",
-        "domain" : "https://www.ucharts.cn/H5/"
+        "domain" : "https://www.ucharts.cn",
+        "optimization" : {
+            "preload" : true,
+            "prefetch" : true,
+            "treeShaking" : {
+                "enable" : true
+            }
+        }
     },
     "mp-toutiao" : {
         "setting" : {
@@ -105,14 +113,20 @@
             "postcss" : true,
             "urlCheck" : false
         },
-        "appid" : "",
-        "usingComponents" : false
+        "appid" : "ttfe358888611f7093",
+        "usingComponents" : true
     },
     "mp-baidu" : {
-        "appid" : "",
-        "usingComponents" : false
+        "appid" : "16252649",
+        "usingComponents" : true
     },
     "mp-alipay" : {
-        "usingComponents" : false
+        "usingComponents" : true
+    },
+    "mp-qq" : {
+        "appid" : "",
+        "setting" : {
+            "minified" : true
+        }
     }
 }

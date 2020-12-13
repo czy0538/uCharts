@@ -1,5 +1,8 @@
 <template>
 	<view class="qiun-columns">
+		<!-- #ifdef MP-WEIXIN -->
+			<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+			<!-- #endif -->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt qiun-rows" >
 			<view class="qiun-title-dot-light">K线图与柱状图联动</view>
 			<view style="flex: 1;qiun-rows;text-align: right;">
@@ -48,6 +51,11 @@
 				itemCount:20,//x轴单屏数据密度
 				sliderMax:50
 			}
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		onLoad() {
 			_self = this;

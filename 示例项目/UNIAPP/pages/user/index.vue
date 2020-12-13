@@ -52,6 +52,7 @@
 </template>
 
 <script>
+	var interstitialAd = null;
 	export default {
 		data() {
 			return {
@@ -65,6 +66,26 @@
 			if (userinfo) {
 				this.login=true;
 				this.uerInfo = userinfo;
+			}
+			if (wx.createInterstitialAd) {
+			  interstitialAd = wx.createInterstitialAd({
+			    adUnitId: 'adunit-035d0c6533e6f944'
+			  })
+			  interstitialAd.onLoad(() => {})
+			  interstitialAd.onError((err) => {})
+			  interstitialAd.onClose(() => {})
+			}
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
+		},
+		onShow() {
+			if (interstitialAd) {
+			  interstitialAd.show().catch((err) => {
+			    console.error(err)
+			  })
 			}
 		},
 		methods: {

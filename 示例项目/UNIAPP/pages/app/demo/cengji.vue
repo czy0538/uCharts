@@ -1,29 +1,30 @@
 <template>
 	<view class="qiun-columns">
+		<view style="height: 400rpx;">
+			<image src="../../../static/images/banner/banner2.png" style="width: 750rpx;height: 400rpx;"></image>
+		</view>
+		<view class="qiun-text-tips">Tips：下面是scroll-view，请滑动图表查看是否被上方图片覆盖。</view>
 		<scroll-view scroll-y="true" style="height: 400rpx;" @scroll="scroll">
-			<view style="height: 400rpx;">
-				<image src="../../../static/images/banner/banner1.png" style="width: 750rpx;height: 400rpx;"></image>
-			</view>
+			
 			<!--#ifdef H5 -->
 			<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 				<view class="qiun-title-dot-light">页面地址</view>
 			</view>
 			<view class="qiun-bg-white qiun-padding">
-					<text>pages/app/demo/scroll</text>
+					<text>pages/app/demo/cengji</text>
 			</view>
 			<!--#endif-->
 			<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 				<view class="qiun-title-dot-light">基本柱状图</view>
 			</view>
 			<view class="qiun-charts" >
-				<!--#ifdef MP-ALIPAY -->
-				<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @tap="touchColumn"></canvas>
-				<!--#endif-->
-				<!--#ifndef MP-ALIPAY -->
 				<!-- 注意，这里用里@tap来触发事件 -->
-				<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts" @tap="touchColumn"></canvas>
-				<!--#endif-->
+				<canvas canvas-id="canvasColumn" class="charts" ></canvas>
 			</view>
+			<view style="height: 400rpx;">
+				<image src="../../../static/images/banner/banner1.png" style="width: 750rpx;height: 400rpx;"></image>
+			</view>
+			
 			<!--#ifdef H5 -->
 			<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 				<view class="qiun-title-dot-light">标准数据格式</view>
@@ -35,7 +36,7 @@
 			<button class="qiun-button" @tap="changeData()">更新图表</button>
 			<!--#endif-->
 		</scroll-view>
-		<view class="qiun-text-tips">Tips：请向上滑动图片，然后点击柱状图。点击事件请用tap，不可以用touchstart，点击方法中请修改e的坐标值。</view>
+		
 	</view>
 </template>
 
@@ -121,11 +122,11 @@
 						disableGrid:true,
 					},
 					yAxis: {
-            data:[{
-              position:'right',
+						data:[{
+							position:'right',
 							axisLine:false,
-              format:(val)=>{return val.toFixed(0)+'元'},
-            }]
+							format:(val)=>{return val.toFixed(0)+'元'},
+						}]
 					},
 					dataLabel: true,
 					width: _self.cWidth*_self.pixelRatio,
@@ -135,27 +136,8 @@
 							type:'group',
 							width: _self.cWidth*_self.pixelRatio*0.45/chartData.categories.length
 						}
-					  }
-				});
-				
-			},
-			touchColumn(e){
-				//这里一定要加，将偏移量累加到该事件中
-				//#ifndef H5
-				e.changedTouches[0].pageY+=this.scrollTop;
-				e.mp.changedTouches[0].pageY+=this.scrollTop;
-				//#endif
-				console.log(e);
-				canvaColumn.showToolTip(e, {
-					format: function (item, category) {
-						if(typeof item.data === 'object'){
-							return category + ' ' + item.name + ':' + item.data.value 
-						}else{
-							return category + ' ' + item.name + ':' + item.data 
 						}
-					}
 				});
-        canvaColumn.touchLegend(e,{animation:true});
 			},
 			changeData(){
 				if(isJSON(_self.textarea)){

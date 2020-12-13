@@ -5,6 +5,9 @@
 			<view class="qiun-text">欢迎您选择并使用uCharts，uCharts是一款开源的、跨平台的、基于uni-app平台的快速图表生成组件，支持H5、APP、各大小程序。</view>
 			<view class="qiun-text">使用uCharts前您应当阅读并遵守本协议。请您务必审慎阅读、充分理解各条款内容,特别是免除或者限制责任的条款,以及开通是使用某项服务的单独协议,并选择接收或者不接受。限制、免责条款可能以加粗形式提示您注意。</view>
 			<view class="qiun-text">除非您已阅读并接受本协议所有条款，否则您无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、登录等行为即视为您已阅读并同意本协议的约束。</view>
+			<!-- #ifdef MP-WEIXIN -->
+			<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+			<!-- #endif -->
 			<view class="qiun-text-title">一 协议的范围</view>
 			<view class="qiun-text-title">1.1 协议适用主体范围：</view>
 			<view class="qiun-text">本协议适用于uCharts下载、安装、使用、登录本软件，以及使用本服务所订立的协议的人员。</view>
@@ -46,6 +49,11 @@
 			return {
 				
 			}
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		methods: {
 			

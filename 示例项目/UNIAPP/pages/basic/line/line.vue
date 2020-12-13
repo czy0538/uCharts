@@ -25,6 +25,9 @@
 		<view class="qiun-common-mt" style="font-size:14px;text-align: center;">
 			请在图表上左右移动
 		</view>
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 		<!--#ifdef H5 -->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">标准数据格式</view>
@@ -53,6 +56,11 @@
 				textarea:'',
 				Interactive:'',//交互显示的数据
 			}
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		onLoad() {
 			_self = this;

@@ -229,6 +229,20 @@
 			}
 		},
 		{
+			"path": "pages/app/demo/cengji",
+			"style": {
+				"navigationBarTitleText": "渲染层级问题",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
+			"path": "pages/app/demo/canvas2d",
+			"style": {
+				"navigationBarTitleText": "canvas2d同层渲染示例",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/user/about",
 			"style": {
 				"navigationBarTitleText": "关于uCharts",

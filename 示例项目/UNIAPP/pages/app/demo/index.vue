@@ -184,6 +184,11 @@
 				sliderMax: 50
 			}
 		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
+		},
 		onLoad() {
 			_self = this;
 			//#ifdef MP-ALIPAY

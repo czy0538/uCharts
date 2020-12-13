@@ -1,12 +1,16 @@
 <template>
 	<view class="about">
+		<!-- #ifdef MP-WEIXIN -->
+			<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+			<!-- #endif -->
 		<view class="content">
-      <!--#ifndef MP-TOUTIAO-->
+      <!--#ifdef H5-->
 			<view class="qrcode">
 				<image src="../../static/images/qrcode.png" @longtap="save"></image>
 				<text class="tip">扫码体验uCharts</text>
 			</view>
       <!--#endif-->
+			
 			<view class="desc">
 				<text class="code">uCharts</text>
 				是一个基于 <text class="code">uni-app</text> 开发跨平台应用的<text class="code">高性能图表工具</text>。
@@ -81,6 +85,11 @@
 				}
 			});
 		// #endif
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		methods: {
 			// #ifdef APP-PLUS
@@ -176,7 +185,6 @@
 		flex: 1;
 		padding: 30upx;
 		flex-direction: column;
-		justify-content: center;
 	}
 
 	.qrcode {
@@ -190,7 +198,6 @@
 	}
 
 	.desc {
-		margin-top: 30upx;
 		display: block;
 	}
 

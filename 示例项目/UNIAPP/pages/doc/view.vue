@@ -1,9 +1,12 @@
 <template>
-	<view>
+	<view style="padding-bottom: 50px;">
 		<block v-for="(item ,index) in info" :key="index">
 			<uni-card :title="item.title" bgcolor='#f7f7fa' :texts="item.describe" :note="item.tips">
 			</uni-card>
 		</block>
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -25,6 +28,11 @@
 			return {
 				info: [],
 			};
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		methods: {
 			getData(s,id){

@@ -25,6 +25,9 @@
 		<view class="inputArea">
 			<text style="float:right;color:blue;" @click="openAgreement">《用户协议》</text>
 		</view>
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 	</view>
 </template>
 

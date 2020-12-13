@@ -23,6 +23,9 @@
 			<canvas canvas-id="canvasArcbar3" id="canvasArcbar3" class="charts3" style="margin-left: 500upx;"></canvas>
 			<!--#endif-->
 		</view>
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 		<!--#ifdef H5 -->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">标准数据格式(左侧图)</view>
@@ -69,6 +72,11 @@
 			this.cHeight3=uni.upx2px(250);//这里要与样式的宽高对应
 			this.arcbarWidth=uni.upx2px(24);
 			this.getServerData();
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		methods: {
 			getServerData(){

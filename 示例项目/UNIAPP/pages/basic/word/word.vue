@@ -22,6 +22,9 @@
     <!--#ifndef H5 -->
     <button class="qiun-button" @tap="saveImage()">保存图片</button>
     <!--#endif-->
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 		<!--#ifdef H5 -->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">标准数据格式</view>
@@ -48,6 +51,11 @@
 				pixelRatio:1,
 				textarea:''
 			}
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		onLoad() {
 			_self = this;

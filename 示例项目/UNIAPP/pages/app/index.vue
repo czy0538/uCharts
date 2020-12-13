@@ -9,10 +9,26 @@
 
 <script>
 	import uniCard from '@/components/uni-ui/uni-card/uni-card.vue'
+	var interstitialAd = null;
 	export default {
 		data() {
 			return {
-				info: [{
+				info: [
+					{
+					  title: 'canvas2d同层渲染示例',
+						texts:'本示例为演示使用uChart的canvas2d同层渲染示例。',
+						images:'bubble.png',
+						url:'demo/canvas2d',
+						demo:null,
+						tips:'点击查看示例'
+					},{
+					  title: '渲染层级问题示例',
+						texts:'本示例为演示使用uChart的渲染层级问题。',
+						images:'gauge.png',
+						url:'demo/cengji',
+						demo:null,
+						tips:'点击查看示例'
+					},{
 				  title: 'scroll-view中使用',
 					texts:'本示例为演示在scroll-view中使用uChart的用法。',
 					images:'column2.png',
@@ -59,6 +75,28 @@
 		},
 		components: {
 			uniCard
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
+		},
+		onLoad() {
+			if (wx.createInterstitialAd) {
+			  interstitialAd = wx.createInterstitialAd({
+			    adUnitId: 'adunit-035d0c6533e6f944'
+			  })
+			  interstitialAd.onLoad(() => {})
+			  interstitialAd.onError((err) => {})
+			  interstitialAd.onClose(() => {})
+			}
+		},
+		onShow() {
+			if (interstitialAd) {
+			  interstitialAd.show().catch((err) => {
+			    console.error(err)
+			  })
+			}
 		},
 		methods: {
 			clickCard(url) {

@@ -20,6 +20,9 @@
             </view>
         </view>
         <button type="primary" class="feedback-submit" @tap="send">提交</button>
+				<!-- #ifdef MP-WEIXIN -->
+				<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+				<!-- #endif -->
     </view>
 </template>
 

@@ -19,6 +19,9 @@
 			<canvas canvas-id="canvasColumn" id="canvasColumn" class="charts-rotate" @touchstart="touchColumn"></canvas>
 			<!--#endif-->
 		</view>
+		<!-- #ifdef MP-WEIXIN -->
+		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
+		<!-- #endif -->
 		<!--#ifdef H5 -->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
 			<view class="qiun-title-dot-light">标准数据格式</view>
@@ -62,6 +65,11 @@
 			this.cWidth2=uni.upx2px(700);
 			this.cHeight2=uni.upx2px(1100);
 			this.getServerData();
+		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
 		},
 		methods: {
 			getServerData(){

@@ -28,6 +28,11 @@
 			console.log('logout页面onLoad');
 			this.userinfo = uni.getStorageSync('userinfo');
 		},
+		onShareAppMessage(){
+				//#ifdef MP-QQ
+				qq.showShareMenu({showShareItems: ['qq', 'qzone', 'wechatFriends', 'wechatMoment']})
+				//#endif
+		},
 		methods: {
 			logout() {
 				uni.showLoading({
