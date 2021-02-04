@@ -99,7 +99,7 @@ interface UchartsSetOption {
     /** 标题内容 */
     name?: string
     /** 标题字体大小（可选，单位为px） */
-    fontSize?: string
+    fontSize?: number
     /** 标题颜色（可选） */
     color?: string
     /** 标题横向位置偏移量，单位px，默认0 */
