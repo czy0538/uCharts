@@ -1,7 +1,7 @@
 /*
- * uCharts v1.9.5.20201214
+ * uCharts v1.9.6.20210214
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
- * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
+ * Copyright (c) 2021 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 
  * uCharts官方网站
@@ -2827,7 +2827,8 @@ function drawLineDataPoints(series, opts, config, context) {
               context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,item.x, item.y);
             }
           };
-        } else {
+        } 
+				if (lineOption.type === 'straight') {
           for(let j=0;j<points.length;j++){
           	let item=points[j];
           	if(startPoint==0 && item.x > leftSpace){
@@ -2839,6 +2840,19 @@ function drawLineDataPoints(series, opts, config, context) {
             }
           };
         }
+				if (lineOption.type === 'step') {
+				  for(let j=0;j<points.length;j++){
+				  	let item=points[j];
+				  	if(startPoint==0 && item.x > leftSpace){
+				  		context.moveTo(item.x, item.y);
+				  		startPoint=1;
+				  	}
+				    if (j > 0 && item.x > leftSpace && item.x < rightSpace) {
+							context.lineTo(item.x, points[j-1].y);
+				      context.lineTo(item.x, item.y);
+				    }
+				  };
+				}
         context.moveTo(points[0].x, points[0].y);
       }
       
@@ -3988,6 +4002,7 @@ function drawRadarDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
   var radarOption = assign({},{
     gridColor: '#cccccc',
+		gridType: 'radar',
     labelColor: '#666666',
     opacity: 0.2,
 		gridCount:3
@@ -4000,12 +4015,11 @@ function drawRadarDataPoints(series, opts, config, context) {
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
   };
 
-  var radius = Math.min(centerPosition.x - (getMaxTextListLength(opts.categories) + config.radarLabelTextMargin),
-    centerPosition.y - config.radarLabelTextMargin);
+  var radius = Math.min(centerPosition.x - (getMaxTextListLength(opts.categories) + config.radarLabelTextMargin),centerPosition.y - config.radarLabelTextMargin);
   //TODO逻辑不对
   radius -= opts.padding[1];
 
-  // draw grid
+  // 画分割线
   context.beginPath();
   context.setLineWidth(1 * opts.pixelRatio);
   context.setStrokeStyle(radarOption.gridColor);
@@ -4016,23 +4030,28 @@ function drawRadarDataPoints(series, opts, config, context) {
   });
   context.stroke();
   context.closePath();
-  // draw split line grid
-
+	
+  // 画背景网格
   var _loop = function _loop(i) {
     var startPos = {};
     context.beginPath();
     context.setLineWidth(1 * opts.pixelRatio);
     context.setStrokeStyle(radarOption.gridColor);
-    coordinateAngle.forEach(function(angle, index) {
-      var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(angle), radius / radarOption.gridCount * i * Math.sin(angle), centerPosition);
-      if (index === 0) {
-        startPos = pos;
-        context.moveTo(pos.x, pos.y);
-      } else {
-        context.lineTo(pos.x, pos.y);
-      }
-    });
-    context.lineTo(startPos.x, startPos.y);
+		if(radarOption.gridType=='radar'){
+			coordinateAngle.forEach(function(angle, index) {
+			  var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(angle), radius / radarOption.gridCount * i * Math.sin(angle), centerPosition);
+			  if (index === 0) {
+			    startPos = pos;
+			    context.moveTo(pos.x, pos.y);
+			  } else {
+			    context.lineTo(pos.x, pos.y);
+			  }
+			});
+			context.lineTo(startPos.x, startPos.y);
+		}else{
+			var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(1.5), radius / radarOption.gridCount * i * Math.sin(1.5), centerPosition);
+			context.arc(centerPosition.x, centerPosition.y, centerPosition.y - pos.y, 0, 2 * Math.PI, false);
+		}
     context.stroke();
     context.closePath();
   };

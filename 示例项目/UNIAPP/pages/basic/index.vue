@@ -50,6 +50,7 @@ export default {
       {image:'/static/images/charts/mark-line.png',text:'标记线',url:'column/mark-line'},
 			{image:'/static/images/charts/line.png',text:'折线图',url:'line/line'},
 			{image:'/static/images/charts/line-curve.png',text:'曲线图',url:'line/curve'},
+			{image:'/static/images/charts/step.png',text:'时序图',url:'line/step'},
 			{image:'/static/images/charts/line-scroll.png',text:'滚动条',url:'line/line-scroll'},
 			{image:'/static/images/charts/line-rotate.png',text:'横屏模式',url:'line/rotate'},
 			{image:'/static/images/charts/pie.png',text:'饼图',url:'pie/pie'},
@@ -65,7 +66,10 @@ export default {
 			{image:'/static/images/charts/cloud.png',text:'词云图',url:'word/word'},
 			{image:'/static/images/charts/funnel.png',text:'漏斗图',url:'funnel/funnel'},
 			{image:'/static/images/charts/map.png',text:'地图',url:'map/map'},
-			{image:'/static/images/charts/area.png',text:'时间轴',url:'area/time'}]
+			{image:'/static/images/charts/point.png',text:'散点图',url:'point/point'},
+			{image:'/static/images/charts/bubble.png',text:'气泡图',url:'bubble/bubble'},
+			{image:'/static/images/charts/area.png',text:'时间轴',url:'area/time'}
+			]
 		};
 	},
 	onShareAppMessage(){

@@ -1,7 +1,7 @@
 /*
- * uCharts v1.9.4.20200331
+ * uCharts v1.9.6.20210214
  * uni-app平台高性能跨全端图表，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）
- * Copyright (c) 2019 QIUN秋云 https://www.ucharts.cn All rights reserved.
+ * Copyright (c) 2021 QIUN秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 
  * uCharts官方网站
@@ -454,12 +454,10 @@ function getTouches(touches, opts, e) {
   if (touches.clientX) {
     if (opts.rotate) {
       y = opts.height - touches.clientX * opts.pixelRatio;
-      x = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) *
-        opts.pixelRatio;
+      x = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) * opts.pixelRatio;
     } else {
       x = touches.clientX * opts.pixelRatio;
-      y = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) *
-        opts.pixelRatio;
+      y = (touches.pageY - e.currentTarget.offsetTop - (opts.height / opts.pixelRatio / 2) * (opts.pixelRatio - 1)) * opts.pixelRatio;
     }
   } else {
     if (opts.rotate) {
@@ -603,8 +601,12 @@ function getCandleToolTipData(series, seriesData, calPoints, index, categories, 
   };
   textList.push(text0);
   seriesData.map(function(item) {
-    if (index == 0 && item.data[1] - item.data[0] < 0) {
-      color[1] = downColor;
+    if (index == 0) {
+      if(item.data[1] - item.data[0] < 0){
+      	color[1] = downColor;
+      }else{
+      	color[1] = upColor;
+      }
     } else {
       if (item.data[0] < series[index - 1][1]) {
         color[0] = downColor;
@@ -671,14 +673,8 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
   var spacing = opts.chartData.eachSpacing/2;
 	let xAxisPoints=[];
 	if(calPoints.length>0){
-		if(opts.type=='candle'){
-			for(let i=0;i<calPoints[0].length;i++){
-				xAxisPoints.push(calPoints[0][i][0].x)
-			}
-		}else{
-			for(let i=0;i<calPoints[0].length;i++){
-				xAxisPoints.push(calPoints[0][i].x)
-			}
+		for(let i=1;i<opts.chartData.xAxisPoints.length;i++){
+				xAxisPoints.push(opts.chartData.xAxisPoints[i]-spacing)
 		}
 		if((opts.type=='line' || opts.type=='area') && opts.xAxis.boundaryGap=='justify'){
 		  spacing = opts.chartData.eachSpacing/2;
@@ -1020,7 +1016,7 @@ function getXAxisTextList(series, opts, config) {
   data = data.filter(function(item) {
     //return item !== null;
     if (typeof item === 'object' && item !== null) {
-      if (item.constructor == Array) {
+      if (item.constructor.toString().indexOf('Array')>-1) {
         return item !== null;
       } else {
         return item.value !== null;
@@ -1031,7 +1027,7 @@ function getXAxisTextList(series, opts, config) {
   });
   data.map(function(item) {
     if (typeof item === 'object') {
-      if (item.constructor == Array) {
+      if (item.constructor.toString().indexOf('Array')>-1) {
 				if(opts.type=='candle'){
 					item.map(function(subitem) {
 					  sorted.push(subitem);
@@ -1451,7 +1447,7 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
       point.x = xAxisPoints[index];
       var value = item;
       if (typeof item === 'object' && item !== null) {
-				if (item.constructor == Array) {
+				if (item.constructor.toString().indexOf('Array')>-1) {
 					let xranges,xminRange,xmaxRange;
 					xranges = [].concat(opts.chartData.xAxisData.ranges);
 					xminRange = xranges.shift();
@@ -1526,7 +1522,7 @@ function getYAxisTextList(series, opts, config, stack) {
   data = data.filter(function(item) {
     //return item !== null;
     if (typeof item === 'object' && item !== null) {
-      if (item.constructor == Array) {
+      if (item.constructor.toString().indexOf('Array')>-1) {
         return item !== null;
       } else {
         return item.value !== null;
@@ -1537,7 +1533,7 @@ function getYAxisTextList(series, opts, config, stack) {
   });
   data.map(function(item) {
     if (typeof item === 'object') {
-      if (item.constructor == Array) {
+      if (item.constructor.toString().indexOf('Array')>-1) {
 				if(opts.type=='candle'){
 					item.map(function(subitem) {
 					  sorted.push(subitem);
@@ -2498,7 +2494,7 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
   }
 
   //画均线
-  if (candleOption.average.show) {
+  if (candleOption.average.show || seriesMA) { //Merge pull request !12 from 邱贵翔
     seriesMA.forEach(function(eachSeries, seriesIndex) {
       let ranges,minRange,maxRange;
       ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
@@ -2831,7 +2827,8 @@ function drawLineDataPoints(series, opts, config, context) {
               context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y,item.x, item.y);
             }
           };
-        } else {
+        } 
+				if (lineOption.type === 'straight') {
           for(let j=0;j<points.length;j++){
           	let item=points[j];
           	if(startPoint==0 && item.x > leftSpace){
@@ -2843,6 +2840,19 @@ function drawLineDataPoints(series, opts, config, context) {
             }
           };
         }
+				if (lineOption.type === 'step') {
+				  for(let j=0;j<points.length;j++){
+				  	let item=points[j];
+				  	if(startPoint==0 && item.x > leftSpace){
+				  		context.moveTo(item.x, item.y);
+				  		startPoint=1;
+				  	}
+				    if (j > 0 && item.x > leftSpace && item.x < rightSpace) {
+							context.lineTo(item.x, points[j-1].y);
+				      context.lineTo(item.x, item.y);
+				    }
+				  };
+				}
         context.moveTo(points[0].x, points[0].y);
       }
       
@@ -3992,6 +4002,7 @@ function drawRadarDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
   var radarOption = assign({},{
     gridColor: '#cccccc',
+		gridType: 'radar',
     labelColor: '#666666',
     opacity: 0.2,
 		gridCount:3
@@ -4004,12 +4015,11 @@ function drawRadarDataPoints(series, opts, config, context) {
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
   };
 
-  var radius = Math.min(centerPosition.x - (getMaxTextListLength(opts.categories) + config.radarLabelTextMargin),
-    centerPosition.y - config.radarLabelTextMargin);
+  var radius = Math.min(centerPosition.x - (getMaxTextListLength(opts.categories) + config.radarLabelTextMargin),centerPosition.y - config.radarLabelTextMargin);
   //TODO逻辑不对
   radius -= opts.padding[1];
 
-  // draw grid
+  // 画分割线
   context.beginPath();
   context.setLineWidth(1 * opts.pixelRatio);
   context.setStrokeStyle(radarOption.gridColor);
@@ -4020,23 +4030,28 @@ function drawRadarDataPoints(series, opts, config, context) {
   });
   context.stroke();
   context.closePath();
-  // draw split line grid
-
+	
+  // 画背景网格
   var _loop = function _loop(i) {
     var startPos = {};
     context.beginPath();
     context.setLineWidth(1 * opts.pixelRatio);
     context.setStrokeStyle(radarOption.gridColor);
-    coordinateAngle.forEach(function(angle, index) {
-      var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(angle), radius / radarOption.gridCount * i * Math.sin(angle), centerPosition);
-      if (index === 0) {
-        startPos = pos;
-        context.moveTo(pos.x, pos.y);
-      } else {
-        context.lineTo(pos.x, pos.y);
-      }
-    });
-    context.lineTo(startPos.x, startPos.y);
+		if(radarOption.gridType=='radar'){
+			coordinateAngle.forEach(function(angle, index) {
+			  var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(angle), radius / radarOption.gridCount * i * Math.sin(angle), centerPosition);
+			  if (index === 0) {
+			    startPos = pos;
+			    context.moveTo(pos.x, pos.y);
+			  } else {
+			    context.lineTo(pos.x, pos.y);
+			  }
+			});
+			context.lineTo(startPos.x, startPos.y);
+		}else{
+			var pos = convertCoordinateOrigin(radius / radarOption.gridCount * i * Math.cos(1.5), radius / radarOption.gridCount * i * Math.sin(1.5), centerPosition);
+			context.arc(centerPosition.x, centerPosition.y, centerPosition.y - pos.y, 0, 2 * Math.PI, false);
+		}
     context.stroke();
     context.closePath();
   };
@@ -5174,6 +5189,7 @@ var Charts = function Charts(opts) {
   opts.rotate = opts.rotate ? true : false;
   opts.animation = opts.animation ? true : false;
 	opts.rotate = opts.rotate ? true : false;
+	opts.canvas2d = opts.canvas2d ? true : false;
 
   let config$$1 = JSON.parse(JSON.stringify(config));
   config$$1.colors = opts.colors ? opts.colors : config$$1.colors;
@@ -5215,7 +5231,16 @@ var Charts = function Charts(opts) {
   config$$1.columePadding = config.columePadding * opts.pixelRatio;
   opts.$this = opts.$this ? opts.$this : this;
   
-  this.context = qq.createCanvasContext(opts.canvasId, opts.$this);
+  this.context = opts.context ? opts.context : qq.createCanvasContext(opts.canvasId, opts.$this);
+	
+	if(opts.canvas2d){
+		this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }
+		this.context.setLineWidth = function(e){ return this.lineWidth=e; }
+		this.context.setLineCap = function(e){ return this.lineCap=e; }
+		this.context.setFontSize = function(e){ return this.font=e+"px sans-serif"; }
+		this.context.setFillStyle = function(e){ return this.fillStyle=e; }
+		this.context.draw = function(){ }
+	}
   /* 兼容原生H5
   this.context = document.getElementById(opts.canvasId).getContext("2d");
   this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }

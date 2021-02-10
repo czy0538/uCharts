@@ -5,19 +5,25 @@
 			<view class="qiun-title-dot-light">页面地址</view>
 		</view>
 		<view class="qiun-bg-white qiun-padding">
-		    <text>pages/basic/line/curve</text>
+		    <text>pages/basic/line/step</text>
 		</view>
 		<!--#endif-->
 		<view class="qiun-bg-white qiun-title-bar qiun-common-mt" >
-			<view class="qiun-title-dot-light">基本曲线图</view>
+			<view class="qiun-title-dot-light">基本折线图</view>
+		</view>
+		<view class="qiun-bg-white qiun-padding">
+		    <text>交互数据：{{Interactive}}</text>
 		</view>
 		<view class="qiun-charts" >
 			<!--#ifdef MP-ALIPAY -->
-			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchLineA"></canvas>
+			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" :width="cWidth*pixelRatio" :height="cHeight*pixelRatio" :style="{'width':cWidth+'px','height':cHeight+'px'}" @touchstart="touchLineA" @touchmove="moveLineA" @touchend="touchEndLineA"></canvas>
 			<!--#endif-->
 			<!--#ifndef MP-ALIPAY -->
-			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" @touchstart="touchLineA"></canvas>
+			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" @touchstart="touchLineA" @touchmove="moveLineA" @touchend="touchEndLineA"></canvas>
 			<!--#endif-->
+		</view>
+		<view class="qiun-common-mt" style="font-size:14px;text-align: center;">
+			请在图表上左右移动
 		</view>
 		<!-- #ifdef MP-WEIXIN -->
 		<ad unit-id="adunit-908b0a16e90e2a5f" ad-type="grid" grid-count="8" ad-theme="white"></ad>
@@ -38,16 +44,17 @@
 <script>
 	import uCharts from '@/js_sdk/u-charts/u-charts.js';
 	import  { isJSON } from '@/common/checker.js';
-	
 	var _self;
 	var canvaLineA=null;
+	var lastMoveTime=null;//最后执行移动的时间戳
 	export default {
 		data() {
 			return {
 				cWidth:'',
 				cHeight:'',
 				pixelRatio:1,
-				textarea:''
+				textarea:'',
+				Interactive:'',//交互显示的数据
 			}
 		},
 		onShareAppMessage(){
@@ -84,6 +91,7 @@
 						//这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
 						LineA.categories=res.data.data.LineA.categories;
 						LineA.series=res.data.data.LineA.series;
+						
 						_self.textarea = JSON.stringify(res.data.data.LineA);
 						_self.showLineA("canvasLineA",LineA);
 					},
@@ -98,14 +106,14 @@
 					canvasId: canvasId,
 					type: 'line',
 					fontSize:11,
-					padding:[15,20,0,15],
+					padding:[15,15,0,15],
 					legend:{
 						show:true,
 						padding:5,
 						lineHeight:11,
 						margin:0,
 					},
-					dataLabel:true,
+					dataLabel:false,
 					dataPointShape:true,
 					background:'#FFFFFF',
 					pixelRatio:_self.pixelRatio,
@@ -117,37 +125,53 @@
 						gridColor:'#CCCCCC',
 						gridType:'dash',
 						dashLength:8,
-            boundaryGap:'justify'
+						//disableGrid:true
 					},
 					yAxis: {
 						gridType:'dash',
 						gridColor:'#CCCCCC',
 						dashLength:8,
-						splitNumber:5,
-						format:(val)=>{return val.toFixed(0)+'元'}
 					},
 					width: _self.cWidth*_self.pixelRatio,
 					height: _self.cHeight*_self.pixelRatio,
 					extra: {
 						line:{
-							type: 'curve'
+							type: 'step'
 						}
 					}
 				});
-				//下面是默认选中索引
-				let cindex=3;
-				//下面是自定义文案
-				let textList=[{text:'我是一个标题',color:null},{text:'自定义1：值1',color:'#2fc25b'},{text:'自定义2：值2',color:'#facc14'},{text:'自定义3：值3',color:'#f04864'}];
-				//下面是event的模拟,tooltip的Y坐标值通过这个mp.changedTouches[0].y控制
-				let tmpevent={mp:{changedTouches:[{x: 0, y: 80}]}};
-				setTimeout(()=>{
-					canvaLineA.showToolTip( tmpevent , {
-						index:cindex,
-						textList:textList
-					});
-				},200)
+				
 			},
 			touchLineA(e) {
+				lastMoveTime=Date.now();
+			},
+			moveLineA(e){
+				let currMoveTime = Date.now();
+				let duration = currMoveTime - lastMoveTime;
+				if (duration < Math.floor(1000 / 60)) return;//每秒60帧
+				lastMoveTime = currMoveTime;
+				
+				let currIndex=canvaLineA.getCurrentDataIndex(e);
+				if(currIndex>-1&&currIndex<canvaLineA.opts.categories.length){
+					let riqi=canvaLineA.opts.categories[currIndex];
+					let leibie=canvaLineA.opts.series[0].name;
+					let shuju=canvaLineA.opts.series[0].data[currIndex];
+					this.Interactive=leibie+':'+riqi+'-'+shuju+'元';
+				}
+				canvaLineA.showToolTip(e, {
+					format: function (item, category) {
+						return category + ' ' + item.name + ':' + item.data 
+					}
+				});
+			},
+			touchEndLineA(e){
+				let currIndex=canvaLineA.getCurrentDataIndex(e);
+				if(currIndex>-1&&currIndex<canvaLineA.opts.categories.length){
+					let riqi=canvaLineA.opts.categories[currIndex];
+					let leibie=canvaLineA.opts.series[0].name;
+					let shuju=canvaLineA.opts.series[0].data[currIndex];
+					this.Interactive=leibie+':'+riqi+'-'+shuju+'元';
+				}
 				canvaLineA.touchLegend(e);
 				canvaLineA.showToolTip(e, {
 					format: function (item, category) {

@@ -36,7 +36,7 @@
 </template>
 
 <script>
-	import uCharts from '@/components/u-charts/u-charts.js';
+	import uCharts from '@/js_sdk/u-charts/u-charts.js';
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
 	var canvaRadar=null;
@@ -113,7 +113,8 @@
 					height: _self.cHeight*_self.pixelRatio,
 					extra: {
 						radar: {
-							max: 200//雷达数值的最大值
+							max: 200,//雷达数值的最大值
+							gridType:'radar'//radar或者circle可选，网格样式，默认radar
 						}
 					}
 				});

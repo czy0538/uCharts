@@ -42,7 +42,7 @@
 </template>
 
 <script>
-	import uCharts from '@/components/u-charts/u-charts.js';
+	import uCharts from '@/js_sdk/u-charts/u-charts.js';
 	import  { isJSON } from '@/common/checker.js';
 	var _self;
 	var canvaLineA=null;
