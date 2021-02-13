@@ -672,7 +672,7 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
   var currentIndex = -1;
   var spacing = opts.chartData.eachSpacing/2;
 	let xAxisPoints=[];
-	if(calPoints.length>0){
+	if(calPoints && calPoints.length>0){
 		for(let i=1;i<opts.chartData.xAxisPoints.length;i++){
 				xAxisPoints.push(opts.chartData.xAxisPoints[i]-spacing)
 		}
