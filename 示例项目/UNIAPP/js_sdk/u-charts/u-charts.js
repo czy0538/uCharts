@@ -20,8 +20,8 @@
 var config = {
   yAxisWidth: 15,
   yAxisSplit: 5,
-  xAxisHeight: 15,
-  xAxisLineHeight: 15,
+  xAxisHeight: 22,
+  xAxisLineHeight: 22,
   legendHeight: 15,
   yAxisTitleWidth: 15,
   padding: [10, 10, 10, 10],
@@ -5116,6 +5116,10 @@ Event.prototype.addEventListener = function(type, listener) {
   this.events[type].push(listener);
 };
 
+Event.prototype.delEventListener = function(type) {
+	delete this.events.type;
+};
+
 Event.prototype.trigger = function() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
@@ -5229,9 +5233,7 @@ var Charts = function Charts(opts) {
   config$$1.toolTipPadding = config.toolTipPadding * opts.pixelRatio;
   config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pixelRatio;
   config$$1.columePadding = config.columePadding * opts.pixelRatio;
-  opts.$this = opts.$this ? opts.$this : this;
-  
-  this.context = opts.context ? opts.context : uni.createCanvasContext(opts.canvasId, opts.$this);
+  this.context = opts.context;
 	
 	if(opts.canvas2d){
 		this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }
@@ -5356,6 +5358,10 @@ Charts.prototype.stopAnimation = function() {
 
 Charts.prototype.addEventListener = function(type, listener) {
   this.event.addEventListener(type, listener);
+};
+
+Charts.prototype.delEventListener = function(type) {
+  this.event.delEventListener(type);
 };
 
 Charts.prototype.getCurrentDataIndex = function(e) {
@@ -5561,8 +5567,7 @@ Charts.prototype.showToolTip = function(e) {
       });
       var seriesData = this.opts._series_[index];
       var textList = [{
-        text: option.format ? option.format(seriesData) : seriesData.properties.name ,
-        color: seriesData.color
+        text: option.format ? option.format(seriesData) : seriesData.properties.name ,color: seriesData.color
       }];
       var offset = {
         x: _touches$.x,
@@ -5590,8 +5595,7 @@ Charts.prototype.showToolTip = function(e) {
       if (seriesData.length !== 0) {
         var textList = seriesData.map(function(item) {
           return {
-            text: option.format ? option.format(item) : item.name + ': ' + item.data,
-            color: item.color
+            text: option.format ? option.format(item) : item.name + ': ' + item.data,color: item.color
           };
         });
         var offset = {
