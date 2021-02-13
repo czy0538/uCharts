@@ -84,6 +84,9 @@ export default {
 		};
 	},
 	mounted() {
+		if(this.canvasId=='uchartsid'){
+			console.warn("注意：请在uCharts组件传入canvasId，以免单页多图产生图表错乱！")
+		}
 		if (this.type && config.type.includes(this.type)) {
 			this.defaultOpts = Object.assign({},config[this.type])
 			this.load()
