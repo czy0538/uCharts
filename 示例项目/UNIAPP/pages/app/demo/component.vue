@@ -13,7 +13,7 @@
 </template>
 
 <script>
-	import uCharts from '@/components/u-charts/u-charts.vue';
+	import uCharts from '@/components/u-charts/u-charts-old.vue';
 	import {
 		isJSON
 	} from '@/common/checker.js';

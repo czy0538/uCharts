@@ -5233,7 +5233,7 @@ var Charts = function Charts(opts) {
   config$$1.toolTipPadding = config.toolTipPadding * opts.pixelRatio;
   config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pixelRatio;
   config$$1.columePadding = config.columePadding * opts.pixelRatio;
-  this.context = opts.context;
+  this.context = opts.context ? opts.context : uni.createCanvasContext(opts.canvasId, opts.$this);
 	
 	if(opts.canvas2d){
 		this.context.setStrokeStyle = function(e){ return this.strokeStyle=e; }

@@ -264,6 +264,13 @@
 			}
 		},
 		{
+			"path": "pages/app/demo/componentnew",
+			"style": {
+				"navigationBarTitleText": "全新uCharts组件调用",
+				"navigationBarTextStyle":"black"
+			}
+		},
+		{
 			"path": "pages/user/about",
 			"style": {
 				"navigationBarTitleText": "关于uCharts",
