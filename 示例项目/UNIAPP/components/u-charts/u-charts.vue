@@ -16,11 +16,8 @@
 			@touchmove="touchMove"
 			@touchend="touchEnd"
 			@mousemove="mouseMove"
-<<<<<<< HEAD
 			@mousedown="mousedown"
 			@mouseup="mouseup"
-=======
->>>>>>> 2e9ff810e9bebf550fdffc112230c6121d95a613
 			@error="error"
 			v-show="showchart"
 		/>
@@ -190,7 +187,6 @@ export default {
 				if(item.type!=undefined && !temp[item.type]){
 					series.push({name:item.type,data:[]})
 					temp[item.type] = true;
-<<<<<<< HEAD
 				}
 			})
 			if(series.length==0){
@@ -198,15 +194,6 @@ export default {
 				if(this.chartData.series.length>0){
 					seriesname=this.chartData.series[0].name
 				}
-=======
-				}
-			})
-			if(series.length==0){
-				let seriesname="默认分组"
-				if(this.chartData.series.length>0){
-					seriesname=this.chartData.series[0].name
-				}
->>>>>>> 2e9ff810e9bebf550fdffc112230c6121d95a613
 				series=[{name:seriesname,data:[]}]
 				for (let j = 0; j < categories.length; j++) {
 					let seriesdata = 0;
@@ -344,7 +331,6 @@ export default {
 			canvases[this.canvasId].scrollEnd(e)
 			this.$emit("touchEnd",{event:e,charts:canvases[this.canvasId]})
 		},
-<<<<<<< HEAD
 		mousedown(e){
 			if(options[this.canvasId].enableScroll){
 				chartdom = uni.createSelectorQuery().in(this).select('.chartsview')
@@ -357,13 +343,10 @@ export default {
 				}).exec();
 			}
 		},
-=======
->>>>>>> 2e9ff810e9bebf550fdffc112230c6121d95a613
 		mouseMove(e) {
 			if (options[this.canvasId].series.length > 0) {
 				chartdom = uni.createSelectorQuery().in(this).select('.chartsview')
 				chartdom.boundingClientRect(data => {
-<<<<<<< HEAD
 					e.changedTouches.unshift({ x: e.pageX - data.left, y: e.clientY-data.top })
 					e.mp.changedTouches.unshift({ x: e.pageX - data.left, y: e.clientY-data.top })
 					if(options[this.canvasId].enableScroll && options[this.canvasId].mousedown){
@@ -391,19 +374,6 @@ export default {
 				}).exec();
 			}
 		},
-=======
-					e.changedTouches.unshift({ x: e.pageX - data.left, y: e.pageY - data.top })
-					e.mp.changedTouches.unshift({ x: e.pageX - data.left, y: e.pageY - data.top })
-					canvases[this.canvasId].showToolTip(e, {
-						format: function(item, category) {
-							return category + ' ' + item.name + ':' + item.data;
-						}
-					});
-					canvases[this.canvasId].scrollStart(e)
-				}).exec()
-			}
-		},
->>>>>>> 2e9ff810e9bebf550fdffc112230c6121d95a613
 		error(e) {
 			console.log(e)
 		}
