@@ -5117,7 +5117,7 @@ Event.prototype.addEventListener = function(type, listener) {
 };
 
 Event.prototype.delEventListener = function(type) {
-	delete this.events.type;
+	this.events[type] = [];
 };
 
 Event.prototype.trigger = function() {
