@@ -15,6 +15,14 @@
 			return {
 				info: [
 					{
+					  title: '全新uCharts组件调用',
+						texts:'本示例为演示使用uChart的组件极简调用，支持跨全端、支持PC、支持mousemove操作，无需传入宽高等信息，只需一个图表类型及图表数据即可。',
+						images:'rect.png',
+						url:'demo/componentnew',
+						demo:null,
+						tips:'点击查看示例'
+					},
+					{
 					  title: 'canvas2d同层渲染示例',
 						texts:'本示例为演示使用uChart的canvas2d同层渲染示例。',
 						images:'bubble.png',
