@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0.20210307',
+  version: 'v2.0.0.20210308',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -2310,7 +2310,7 @@ function drawColumnDataPoints(series, opts, config, context) {
     meterBorder: 4,
     meterFillColor: '#FFFFFF',
     barBorderCircle: false,
-    barBorderRadius: [0, 0, 0, 0],
+    barBorderRadius: [],
     seriesGap: 2,
     linearType: 'none',
     linearOpacity: 1,
@@ -2366,7 +2366,7 @@ function drawColumnDataPoints(series, opts, config, context) {
               fillColor = grd
             }
             // 圆角边框
-            if ((columnOption.barBorderRadius && columnOption.barBorderRadius.length === 4) || columnOption.barBorderCircle) {
+            if ((columnOption.barBorderRadius && columnOption.barBorderRadius.length === 4) || columnOption.barBorderCircle === true) {
               const left = startX;
               const top = item.y;
               const width = item.width;
@@ -2920,7 +2920,7 @@ function drawMixDataPoints(series, opts, config, context) {
   let columnOption = assign({}, {
     width: eachSpacing / 2,
     barBorderCircle: false,
-    barBorderRadius: [0, 0, 0, 0],
+    barBorderRadius: [],
     seriesGap: 2,
     linearType: 'none',
     linearOpacity: 1,
