@@ -2339,8 +2339,7 @@ function drawColumnDataPoints(series, opts, config, context) {
     switch (columnOption.type) {
       case 'group':
         var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-        var tooltipPoints = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config,
-          seriesIndex, series, process);
+        var tooltipPoints = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex, series, process);
         calPoints.push(tooltipPoints);
         points = fixColumeData(points, eachSpacing, series.length, seriesIndex, config, opts);
         for (let i = 0; i < points.length; i++) {
@@ -2387,6 +2386,10 @@ function drawColumnDataPoints(series, opts, config, context) {
                 r1 = width / 2;
                 r3 = 0;
               }
+              r0 = r0 < 0 ? 0 : r0;
+              r1 = r1 < 0 ? 0 : r1;
+              r2 = r2 < 0 ? 0 : r2;
+              r3 = r3 < 0 ? 0 : r3;
               context.arc(left + r0, top + r0, r0, -Math.PI, -Math.PI / 2);
               context.arc(left + width - r1, top + r1, r1, -Math.PI / 2, 0);
               context.arc(left + width - r2, top + height - r2, r2, 0, Math.PI / 2);
@@ -3006,6 +3009,10 @@ function drawMixDataPoints(series, opts, config, context) {
               r1 = width / 2;
               r3 = 0;
             }
+            r0 = r0 < 0 ? 0 : r0;
+            r1 = r1 < 0 ? 0 : r1;
+            r2 = r2 < 0 ? 0 : r2;
+            r3 = r3 < 0 ? 0 : r3;
             context.arc(left + r0, top + r0, r0, -Math.PI, -Math.PI / 2);
             context.arc(left + width - r1, top + r1, r1, -Math.PI / 2, 0);
             context.arc(left + width - r2, top + height - r2, r2, 0, Math.PI / 2);
