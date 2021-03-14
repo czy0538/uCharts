@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0.20210308',
+  version: 'v2.0.0.20210314',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -401,12 +401,12 @@ function fillSeries(series, opts, config) {
   return series;
 }
 
-function fillCoustomColor(linearType, coustomColor, series, config) {
-  var newcolor = coustomColor || [];
-  if (linearType == 'coustom' && newcolor.length == 0 ) {
+function fillCustomColor(linearType, customColor, series, config) {
+  var newcolor = customColor || [];
+  if (linearType == 'custom' && newcolor.length == 0 ) {
     newcolor = config.linearColor
   }
-  if (linearType == 'coustom' && newcolor.length < series.length) {
+  if (linearType == 'custom' && newcolor.length < series.length) {
     let chazhi = series.length - newcolor.length
     for (var i = 0; i < chazhi; i++) {
       newcolor.push(config.linearColor[(i + 1) % config.linearColor.length])
@@ -1864,7 +1864,7 @@ function drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, conte
       x: radius * Math.cos(nowAngle * Math.PI),
       y: radius * Math.sin(nowAngle * Math.PI)
     };
-    var labelText = gaugeOption.labelFormat ? gaugeOption.labelFormat(nowNumber) : nowNumber;
+    var labelText = gaugeOption.format ? gaugeOption.format(nowNumber) : nowNumber;
     pos.x += centerPosition.x - measureText(labelText, config.fontSize, context) / 2;
     pos.y += centerPosition.y;
     var startX = pos.x;
@@ -2314,7 +2314,7 @@ function drawColumnDataPoints(series, opts, config, context) {
     seriesGap: 2,
     linearType: 'none',
     linearOpacity: 1,
-    coustomColor: [],
+    customColor: [],
     colorStop: 0,
   }, opts.extra.column);
   let calPoints = [];
@@ -2329,7 +2329,7 @@ function drawColumnDataPoints(series, opts, config, context) {
   if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
     drawToolTipSplitArea(opts.tooltip.offset.x, opts, config, context, eachSpacing);
   }
-  columnOption.coustomColor = fillCoustomColor(columnOption.linearType, columnOption.coustomColor, series, config);
+  columnOption.customColor = fillCustomColor(columnOption.linearType, columnOption.customColor, series, config);
   series.forEach(function(eachSeries, seriesIndex) {
     let ranges, minRange, maxRange;
     ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
@@ -2358,8 +2358,8 @@ function drawColumnDataPoints(series, opts, config, context) {
                 grd.addColorStop(0, hexToRgb(fillColor, columnOption.linearOpacity));
                 grd.addColorStop(1, hexToRgb(fillColor, 1));
               } else {
-                grd.addColorStop(0, hexToRgb(columnOption.coustomColor[eachSeries.linearIndex], columnOption.linearOpacity));
-                grd.addColorStop(columnOption.colorStop, hexToRgb(columnOption.coustomColor[eachSeries.linearIndex],columnOption.linearOpacity));
+                grd.addColorStop(0, hexToRgb(columnOption.customColor[eachSeries.linearIndex], columnOption.linearOpacity));
+                grd.addColorStop(columnOption.colorStop, hexToRgb(columnOption.customColor[eachSeries.linearIndex],columnOption.linearOpacity));
                 grd.addColorStop(1, hexToRgb(fillColor, 1));
               }
               fillColor = grd
@@ -2927,7 +2927,7 @@ function drawMixDataPoints(series, opts, config, context) {
     seriesGap: 2,
     linearType: 'none',
     linearOpacity: 1,
-    coustomColor: [],
+    customColor: [],
     colorStop: 0,
   }, opts.extra.mix.column);
   let xAxisData = opts.chartData.xAxisData,
@@ -2954,7 +2954,7 @@ function drawMixDataPoints(series, opts, config, context) {
     leftSpace = -opts._scrollDistance_ - eachSpacing + opts.area[3];
     rightSpace = leftSpace + (opts.xAxis.itemCount + 4) * eachSpacing;
   }
-  columnOption.coustomColor = fillCoustomColor(columnOption.linearType, columnOption.coustomColor, series, config);
+  columnOption.customColor = fillCustomColor(columnOption.linearType, columnOption.customColor, series, config);
   series.forEach(function(eachSeries, seriesIndex) {
     let ranges, minRange, maxRange;
     ranges = [].concat(opts.chartData.yAxisData.ranges[eachSeries.index]);
@@ -2981,8 +2981,8 @@ function drawMixDataPoints(series, opts, config, context) {
               grd.addColorStop(0, hexToRgb(fillColor, columnOption.linearOpacity));
               grd.addColorStop(1, hexToRgb(fillColor, 1));
             } else {
-              grd.addColorStop(0, hexToRgb(columnOption.coustomColor[eachSeries.linearIndex], columnOption.linearOpacity));
-              grd.addColorStop(columnOption.colorStop, hexToRgb(columnOption.coustomColor[eachSeries.linearIndex], columnOption.linearOpacity));
+              grd.addColorStop(0, hexToRgb(columnOption.customColor[eachSeries.linearIndex], columnOption.linearOpacity));
+              grd.addColorStop(columnOption.colorStop, hexToRgb(columnOption.customColor[eachSeries.linearIndex], columnOption.linearOpacity));
               grd.addColorStop(1, hexToRgb(fillColor, 1));
             }
             fillColor = grd
@@ -3324,8 +3324,7 @@ function drawXAxis(categories, opts, config, context) {
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
-        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize /
-            2 + 5, opts.height),
+        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
           transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
@@ -3650,12 +3649,12 @@ function drawPieDataPoints(series, opts, config, context) {
     offsetAngle: 0,
     labelWidth: 15 * opts.pix,
     ringWidth: 30,
-    coustomRadius: 0,
+    customRadius: 0,
     border: false,
     borderWidth: 2,
     borderColor: '#FFFFFF',
     linearType: 'none',
-    coustomColor: [],
+    customColor: [],
   }, opts.type == "pie" ? opts.extra.pie : opts.extra.ring);
   var centerPosition = {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
@@ -3666,12 +3665,12 @@ function drawPieDataPoints(series, opts, config, context) {
   }
 
   var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
-  if (pieOption.coustomRadius > 0) {
-    radius = pieOption.coustomRadius;
+  if (pieOption.customRadius > 0) {
+    radius = pieOption.customRadius;
   }
   series = getPieDataPoints(series, radius, process);
   var activeRadius = pieOption.activeRadius;
-  pieOption.coustomColor = fillCoustomColor(pieOption.linearType, pieOption.coustomColor, series, config);
+  pieOption.customColor = fillCustomColor(pieOption.linearType, pieOption.customColor, series, config);
   series = series.map(function(eachSeries) {
     eachSeries._start_ += (pieOption.offsetAngle) * Math.PI / 180;
     return eachSeries;
@@ -3692,14 +3691,14 @@ function drawPieDataPoints(series, opts, config, context) {
     context.lineJoin = "round";
     context.setStrokeStyle(pieOption.borderColor);
     var fillcolor = eachSeries.color;
-    if (pieOption.linearType == 'coustom') {
+    if (pieOption.linearType == 'custom') {
       var grd;
       if(context.createCircularGradient){
         grd = context.createCircularGradient(centerPosition.x, centerPosition.y, eachSeries._radius_)
       }else{
         grd = context.createRadialGradient(centerPosition.x, centerPosition.y, 0,centerPosition.x, centerPosition.y, eachSeries._radius_)
       }
-      grd.addColorStop(0, hexToRgb(pieOption.coustomColor[eachSeries.linearIndex], 1))
+      grd.addColorStop(0, hexToRgb(pieOption.customColor[eachSeries.linearIndex], 1))
       grd.addColorStop(1, hexToRgb(eachSeries.color, 1))
       fillcolor = grd
     }
@@ -3758,7 +3757,7 @@ function drawRoseDataPoints(series, opts, config, context) {
     borderWidth: 2,
     borderColor: '#FFFFFF',
     linearType: 'none',
-    coustomColor: [],
+    customColor: [],
   }, opts.extra.rose);
   if (config.pieChartLinePadding == 0) {
     config.pieChartLinePadding = roseOption.activeRadius;
@@ -3771,7 +3770,7 @@ function drawRoseDataPoints(series, opts, config, context) {
   var minRadius = roseOption.minRadius || radius * 0.5;
   series = getRoseDataPoints(series, roseOption.type, minRadius, radius, process);
   var activeRadius = roseOption.activeRadius;
-  roseOption.coustomColor = fillCoustomColor(roseOption.linearType, roseOption.coustomColor, series, config);
+  roseOption.customColor = fillCustomColor(roseOption.linearType, roseOption.customColor, series, config);
   series = series.map(function(eachSeries) {
     eachSeries._start_ += (roseOption.offsetAngle || 0) * Math.PI / 180;
     return eachSeries;
@@ -3792,14 +3791,14 @@ function drawRoseDataPoints(series, opts, config, context) {
     context.lineJoin = "round";
     context.setStrokeStyle(roseOption.borderColor);
     var fillcolor = eachSeries.color;
-    if (roseOption.linearType == 'coustom') {
+    if (roseOption.linearType == 'custom') {
       var grd;
       if(context.createCircularGradient){
         grd = context.createCircularGradient(centerPosition.x, centerPosition.y, eachSeries._radius_)
       }else{
         grd = context.createRadialGradient(centerPosition.x, centerPosition.y, 0,centerPosition.x, centerPosition.y, eachSeries._radius_)
       }
-      grd.addColorStop(0, hexToRgb(roseOption.coustomColor[eachSeries.linearIndex], 1))
+      grd.addColorStop(0, hexToRgb(roseOption.customColor[eachSeries.linearIndex], 1))
       grd.addColorStop(1, hexToRgb(eachSeries.color, 1))
       fillcolor = grd
     }
@@ -3841,7 +3840,7 @@ function drawArcbarDataPoints(series, opts, config, context) {
     width: 12 * opts.pix,
     gap: 2 * opts.pix,
     linearType: 'none',
-    coustomColor: [],
+    customColor: [],
   }, opts.extra.arcbar);
   series = getArcbarDataPoints(series, arcbarOption, process);
   var centerPosition;
@@ -3864,7 +3863,7 @@ function drawArcbarDataPoints(series, opts, config, context) {
     radius -= 5 * opts.pix;
     radius -= arcbarOption.width / 2;
   }
-  arcbarOption.coustomColor = fillCoustomColor(arcbarOption.linearType, arcbarOption.coustomColor, series, config);
+  arcbarOption.customColor = fillCustomColor(arcbarOption.linearType, arcbarOption.customColor, series, config);
   
   for (let i = 0; i < series.length; i++) {
     let eachSeries = series[i];
@@ -3881,9 +3880,9 @@ function drawArcbarDataPoints(series, opts, config, context) {
     context.stroke();
     //进度条
     var fillColor = eachSeries.color
-    if(arcbarOption.linearType == 'coustom'){
+    if(arcbarOption.linearType == 'custom'){
       var grd = context.createLinearGradient(centerPosition.x - radius, centerPosition.y, centerPosition.x + radius, centerPosition.y);
-      grd.addColorStop(1, hexToRgb(arcbarOption.coustomColor[eachSeries.linearIndex], 1))
+      grd.addColorStop(1, hexToRgb(arcbarOption.customColor[eachSeries.linearIndex], 1))
       grd.addColorStop(0, hexToRgb(eachSeries.color, 1))
       fillColor = grd;
     }
@@ -4110,7 +4109,9 @@ function drawRadarDataPoints(series, opts, config, context) {
     gridType: 'radar',
     labelColor: '#666666',
     opacity: 0.2,
-    gridCount: 3
+    gridCount: 3,
+    border:false,
+    borderWidth:2
   }, opts.extra.radar);
   var coordinateAngle = getRadarCoordinateSeries(opts.categories.length);
   var centerPosition = {
@@ -4165,6 +4166,8 @@ function drawRadarDataPoints(series, opts, config, context) {
   radarDataPoints.forEach(function(eachSeries, seriesIndex) {
     // 绘制区域数据
     context.beginPath();
+    context.setLineWidth(radarOption.borderWidth * opts.pix);
+    context.setStrokeStyle(eachSeries.color);
     context.setFillStyle(hexToRgb(eachSeries.color, radarOption.opacity));
     eachSeries.data.forEach(function(item, index) {
       if (index === 0) {
@@ -4175,6 +4178,10 @@ function drawRadarDataPoints(series, opts, config, context) {
     });
     context.closePath();
     context.fill();
+    if(radarOption.border === true){
+      context.stroke();
+    }
+    context.closePath();
     if (opts.dataPointShape !== false) {
       var points = eachSeries.data.map(function(item) {
         return item.position;
@@ -4569,7 +4576,7 @@ function drawFunnelDataPoints(series, opts, config, context) {
     fillOpacity: 1,
     labelAlign: 'right',
     linearType: 'none',
-    coustomColor: [],
+    customColor: [],
   }, opts.extra.funnel);
   let eachSpacing = (opts.height - opts.area[0] - opts.area[2]) / series.length;
   let centerPosition = {
@@ -4581,7 +4588,7 @@ function drawFunnelDataPoints(series, opts, config, context) {
   series = getFunnelDataPoints(series, radius, process);
   context.save();
   context.translate(centerPosition.x, centerPosition.y);
-  funnelOption.coustomColor = fillCoustomColor(funnelOption.linearType, funnelOption.coustomColor, series, config);
+  funnelOption.customColor = fillCustomColor(funnelOption.linearType, funnelOption.customColor, series, config);
   for (let i = 0; i < series.length; i++) {
     if (i == 0) {
       if (opts.tooltip) {
@@ -4602,10 +4609,10 @@ function drawFunnelDataPoints(series, opts, config, context) {
       context.setLineWidth(funnelOption.borderWidth * opts.pix);
       context.setStrokeStyle(funnelOption.borderColor);
       var fillColor = hexToRgb(series[i].color, funnelOption.fillOpacity);
-      if (funnelOption.linearType == 'coustom') {
+      if (funnelOption.linearType == 'custom') {
         var grd = context.createLinearGradient(series[i].radius, -eachSpacing, -series[i].radius, -eachSpacing);
         grd.addColorStop(0, hexToRgb(series[i].color, funnelOption.fillOpacity));
-        grd.addColorStop(0.5, hexToRgb(funnelOption.coustomColor[series[i].linearIndex], funnelOption.fillOpacity));
+        grd.addColorStop(0.5, hexToRgb(funnelOption.customColor[series[i].linearIndex], funnelOption.fillOpacity));
         grd.addColorStop(1, hexToRgb(series[i].color, funnelOption.fillOpacity));
         fillColor = grd
       }
@@ -4639,10 +4646,10 @@ function drawFunnelDataPoints(series, opts, config, context) {
       context.setLineWidth(funnelOption.borderWidth * opts.pix);
       context.setStrokeStyle(funnelOption.borderColor);
       var fillColor = hexToRgb(series[i].color, funnelOption.fillOpacity);
-      if (funnelOption.linearType == 'coustom') {
+      if (funnelOption.linearType == 'custom') {
         var grd = context.createLinearGradient(series[i].radius, -eachSpacing, -series[i].radius, -eachSpacing);
         grd.addColorStop(0, hexToRgb(series[i].color, funnelOption.fillOpacity));
-        grd.addColorStop(0.5, hexToRgb(funnelOption.coustomColor[series[i].linearIndex], funnelOption.fillOpacity));
+        grd.addColorStop(0.5, hexToRgb(funnelOption.customColor[series[i].linearIndex], funnelOption.fillOpacity));
         grd.addColorStop(1, hexToRgb(series[i].color, funnelOption.fillOpacity));
         fillColor = grd
       }
