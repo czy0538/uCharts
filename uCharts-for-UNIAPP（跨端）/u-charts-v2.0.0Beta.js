@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0.20210314',
+  version: 'v2.0.0.20210320',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -567,7 +567,7 @@ function getRadarCoordinateSeries(length) {
 
 function getToolTipData(seriesData, opts, index, categories) {
   var option = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
-  var calPoints = opts.chartData.calPoints
+  var calPoints = opts.chartData.calPoints?opts.chartData.calPoints:[];
   var textList = seriesData.map(function(item) {
     let titleText = [];
     if (categories) {
@@ -731,7 +731,7 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
       xAxisPoints.push(opts.chartData.xAxisPoints[i] - spacing)
     }
     if ((opts.type == 'line' || opts.type == 'area') && opts.xAxis.boundaryGap == 'justify') {
-      spacing = opts.chartData.eachSpacing / 2;
+      xAxisPoints = opts.chartData.xAxisPoints;
     }
     if (!opts.categories) {
       spacing = 0
@@ -5374,8 +5374,12 @@ var uCharts = function uCharts(opts) {
   config$$1.toolTipPadding = config.toolTipPadding * opts.pix;
   config$$1.toolTipLineHeight = config.toolTipLineHeight * opts.pix;
   config$$1.columePadding = config.columePadding * opts.pix;
-  this.context = opts.context ? opts.context : uni.createCanvasContext(opts.canvasId, opts.$this);
-
+  //this.context = opts.context ? opts.context : uni.createCanvasContext(opts.canvasId, opts.$this);
+  //v2.0版本后需要自行获取context并传入opts进行初始化，这么做是为了确保uCharts可以跨更多端使用，并保证了自定义组件this实例不被循环嵌套。如果您觉得不便请取消上面注释，采用v1.0版本的方式使用，对此给您带来的不便敬请谅解！
+  if(!opts.context){
+    throw new Error('[uCharts] 未获取到context！注意：v2.0版本后，需要自行获取canvas的绘图上下文并传入opts.context！');
+  }
+  this.context = opts.context;
   if (!this.context.setTextAlign) {
     this.context.setStrokeStyle = function(e) {
       return this.strokeStyle = e;
