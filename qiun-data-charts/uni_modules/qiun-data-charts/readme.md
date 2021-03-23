@@ -255,9 +255,9 @@ tooltipCustom属性如下：
 │ ── └──u-charts-v2.0.0.js──────# uCharts基础库v2.0.0版本，部分API与之前版本不同
 ├── static
 │ └── app-plus──────────────────# 条件编译目录，仅编译到APP端
-│ ── └──echarts.min.js──────────# Echarts基础库
+│ ── └──echarts.min.js──────────# Echarts基础库v5.0.2
 │ └── h5────────────────────────# 条件编译目录，仅编译到H5端
-│ ── └──echarts.min.js──────────# Echarts基础库
+│ ── └──echarts.min.js──────────# Echarts基础库v5.0.2
 ```
 
 
