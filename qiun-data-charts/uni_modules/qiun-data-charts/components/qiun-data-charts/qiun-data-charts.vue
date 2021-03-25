@@ -330,7 +330,7 @@ export default {
         this.getCloudData();
       } else {
         this.mixinDatacomLoading = true;
-        if (typeof this.chartData === 'object' && this.chartData.series !== undefined && this.chartData.series.length > 0) {
+        if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
           this.init();
         }
       }
@@ -605,6 +605,19 @@ export default {
                 this.eopts.id = cid
                 this.eopts.echartData = uchartData
                 this.echartsOpts = deepCloneAssign({},this.eopts);
+				if(this.echartsOpts.xAxis)
+					this.echartsOpts.xAxis.data = this.echartsOpts.echartData.categories
+				let series = deepCloneAssign({},this.echartsOpts.series);
+				this.echartsOpts.series = [];
+				if(this.echartsOpts.echartData.series && this.echartsOpts.echartData.series.length >0){
+					this.echartsOpts.echartData.series.map(x=>{
+						let s = deepCloneAssign({},series);
+						for(let key in x){
+							s[key] = x[key];
+						}
+						this.echartsOpts.series.push(s)
+					})
+				}
                 this.echartData = uchartData;
                 this.mixinDatacomLoading = false;
                 this.showchart = true;
