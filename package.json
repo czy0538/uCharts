@@ -1,6 +1,6 @@
 {
   "name": "ucharts",
-  "version": "1.9.5.20201214",
+  "version": "1.9.5-20201214",
   "description": "",
   "main": "index.js",
   "scripts": {
