@@ -39,11 +39,11 @@ uCharts的开源图表组件的开发，付出了大量的个人时间与精力�
 
 ## 基本用法
 
-- template代码：
+- template代码（[建议使用在线工具生成](https://demo.ucharts.cn)）：
 
 ```
 <view class='charts-box'>
-	<qiun-data-charts type='column' :chartData='chartData' ⁄>
+	<qiun-data-charts type='column' :chartData='chartData' />
 </view>
 ```
 
@@ -65,18 +65,37 @@ chartData:{
 }
 ```
 
-- 示例文件地址：`强烈建议先看本页帮助，再看下面示例文件源码！`
+
+## localdata数据渲染用法
+
+- template代码（[建议使用在线工具生成](https://demo.ucharts.cn)）：
 
 ```
-/pages/ucharts/ucharts.vue（展示用uCharts全端运行的例子）
-
-/pages/echarts/echarts.vue（展示H5和App用ECharts，小程序端用uCharts的例子）
-
-/pages/unicloud/unicloud.vue（展示读取uniCloud数据库后直接渲染图表的例子）
-
-/pages/other/other.vue（其他图表高级应用的例子）
+<view class='charts-box'>
+	<qiun-data-charts type='column' :localdata='localdata' />
+</view>
 ```
 
+- 标准数据格式：
+
+```
+localdata:[
+  {"value":35, "text":"2016", "group":"目标值"},
+  {"value":18, "text":"2016", "group":"完成量"},
+  {"value":36, "text":"2017", "group":"目标值"},
+  {"value":27, "text":"2017", "group":"完成量"},
+  {"value":31, "text":"2018", "group":"目标值"},
+  {"value":21, "text":"2018", "group":"完成量"},
+  {"value":33, "text":"2019", "group":"目标值"},
+  {"value":24, "text":"2019", "group":"完成量"},
+  {"value":13, "text":"2020", "group":"目标值"},
+  {"value":6, "text":"2020", "group":"完成量"},
+  {"value":34, "text":"2021", "group":"目标值"},
+  {"value":28, "text":"2021", "group":"完成量"}
+]
+```
+
+- 注意，localdata的数据格式需要符合datacom组件规范[【详见datacom组件】](https://uniapp.dcloud.io/component/datacom?id=mixindatacom)，其中value代表数据的数值，text代表X轴的categories数据点，group代表series分组的类型名称即series[i].name。
 
 ## 进阶用法读取uniCloud数据库并渲染图表
 
@@ -94,17 +113,41 @@ chartData:{
 />
 ```
 
-- 标准数据格式：
+- 标准结果数据格式：
 
 ```
-chartData:{
- categories:['2016','2017','2018','2019','2020','2021'],
- series:[]
-}
+[
+  {"value":35, "text":"2016", "group":"目标值"},
+  {"value":18, "text":"2016", "group":"完成量"},
+  {"value":36, "text":"2017", "group":"目标值"},
+  {"value":27, "text":"2017", "group":"完成量"},
+  {"value":31, "text":"2018", "group":"目标值"},
+  {"value":21, "text":"2018", "group":"完成量"},
+  {"value":33, "text":"2019", "group":"目标值"},
+  {"value":24, "text":"2019", "group":"完成量"},
+  {"value":13, "text":"2020", "group":"目标值"},
+  {"value":6, "text":"2020", "group":"完成量"},
+  {"value":34, "text":"2021", "group":"目标值"},
+  {"value":28, "text":"2021", "group":"完成量"}
+]
 ```
 
-- 注意，读取uniCloud数据不需要拼接series数据，但目前暂时需要自行拼接categories传入组件，后期版本会规范标准数据属性后自动拼接，届时开发者只需查询到相应数据后即可渲染图表，大大缩减开发时间与开发难度。
+- 注意，从uniCloud读取出的数据，需要符合localdata的数据规范，其中value代表数据的数值，text代表X轴的categories数据点，group代表series分组的类型名称即series[i].name。
 
+
+## 示例文件地址：
+
+`强烈建议先看本页帮助，再看下面示例文件源码！`
+
+```
+/pages/ucharts/ucharts.vue（展示用uCharts全端运行的例子）
+
+/pages/echarts/echarts.vue（展示H5和App用ECharts，小程序端用uCharts的例子）
+
+/pages/unicloud/unicloud.vue（展示读取uniCloud数据库后直接渲染图表的例子）
+
+/pages/other/other.vue（其他图表高级应用的例子）
+```
 
 
 ## 组件基本API参数
@@ -115,7 +158,7 @@ chartData:{
 | -- | -- | -- | -- | -- |
 |type|String|null|`是`|图表类型，如全端用uCharts，可选值为pie、ring、rose、word、funnel、map、arcbar、line、column、area、radar、gauge、candle、mix|
 |chartData|Object|见说明|`是`|图表数据，常用的标准数据格式为{categories: [],series: []}，请按不同图表类型传入对应的标准数据，具体见下面【chartData数据属性】。|
-|opts|Object|{}|否|uCharts图表配置参数(option)，请参考[【在线生成工具】](https://demo.ucharts.cn)传入opts。注：传入的opts会覆盖默认config-ucharts.js中的配置，以实现同类型的图表显示不同的样式。|
+|opts|Object|{}|否|uCharts图表配置参数(option)，请参考[【在线生成工具】](https://demo.ucharts.cn)注：传入的opts会覆盖默认config-ucharts.js中的配置，只需传入与config-ucharts.js中属性不一致的opts即可实现**重点**`【同类型的图表显示不同的样式】`。|
 |eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。注：传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。|
 |loadingType|Number|2|否|加载动画样式，0为不显示加载动画，1-5为不同的样式，见下面示例。|
 |errorShow|Boolean|true|否|是否在页面上显示错误提示，true为显示错误提示图片，false时会显示空白区域|
@@ -134,8 +177,8 @@ chartData:{
 |tooltipShow|Boolean|true|否|点击或者鼠标经过图表时，是否显示tooltip提示窗，默认显示|
 |tooltipFormat|String|undefined|否|自定义格式化Tooltip显示内容，详见下面【tooltipFormat格式化】|
 |tooltipCustom|Object|undefined|否|如果以上系统自带的Tooltip格式化方案仍然不满足您，您可以用此属性实现更多需求，详见下面【tooltipCustom自定义】|
-|startDate|Object| |否|需为标准时间格式，【暂未启用】，用于配合uniClinetDB自动生成categories使用|
-|endDate|Object| |否|需为标准时间格式，【暂未启用】，用于配合uniClinetDB自动生成categories使用|
+|startDate|String| |否|需为标准时间格式。用于配合uniClinetDB自动生成categories使用|
+|endDate|String| |否|需为标准时间格式。用于配合uniClinetDB自动生成categories使用|
 |ontap|Boolean|true|否|是否监听@tap@cilck事件，禁用后不会触发组件点击事件|
 |ontouch|Boolean|false|否|是否监听@touchstart@touchmove@touchend事件（赋值为true时，非PC端在图表区域内无法拖动页面滚动）|
 |onmouse|Boolean|true|否|是否监听@mousedown@mousemove@mouseup事件，禁用后鼠标经过图表上方不会显示tooltip|

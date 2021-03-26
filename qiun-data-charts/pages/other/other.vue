@@ -1,8 +1,8 @@
 <template>
   <view class="content">
-    <qiun-title-bar title="基本饼状图"/>
+    <qiun-title-bar title="使用localdata渲染图表"/>
     <view class="charts-box">
-      <qiun-data-charts type="pie" :chartData="chartsData.Pie1"/>
+      <qiun-data-charts type="column" :localdata="chartsData.localdata"/>
     </view>
     <qiun-title-bar title="渲染完成后显示自定义tooltip" />
     <view class="charts-box">
@@ -72,6 +72,7 @@ export default {
       setTimeout(() => {
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
+        this.chartsData.localdata=JSON.parse(JSON.stringify(demodata.localdata))
       	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsData.Column2=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsData.Column3=JSON.parse(JSON.stringify(demodata.Column))

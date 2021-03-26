@@ -156,6 +156,22 @@ function formatterAssign(args) {
   return args;
 }
 
+// 时间转换函数，为了匹配uniClinetDB读取出的时间与categories不同
+function getFormatDate(date) {
+	var seperator = "-";
+	var year = date.getFullYear();
+	var month = date.getMonth() + 1;
+	var strDate = date.getDate();
+	if (month >= 1 && month <= 9) {
+			month = "0" + month;
+	}
+	if (strDate >= 0 && strDate <= 9) {
+			strDate = "0" + strDate;
+	}
+	var currentdate = year + seperator + month + seperator + strDate;
+	return currentdate;
+}
+
 var lastMoveTime = null;
 
 export default {
@@ -283,10 +299,6 @@ export default {
       echartsResize:false,
       uchartsOpts: {},
       echartsOpts: {},
-      echartData: {
-        categories: [],
-        series: [],
-      },
     };
   },
   mounted() {
@@ -323,21 +335,26 @@ export default {
       console.log('[uCharts]:开启canvas2d模式，必须指定canvasId，否则会出现偶尔获取不到dom节点的问题！');
     }
     this.disScroll = this.disableScroll
-    if (this.type && cfu.type.includes(this.type)) {
-      cfu.option[this.cid] = deepCloneAssign({}, cfu[this.type], this.opts);
-      cfu.option[this.cid].lastDrawTime = Date.now();
-      if (this.collection !== '') {
-        this.getCloudData();
-      } else {
-        this.mixinDatacomLoading = true;
-        if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
-          this.init();
-        }
+    if(this.echarts === true){
+      if (this.type && cfe.type.includes(this.type)) {
+        cfe.option[this.cid] = deepCloneAssign({}, cfe[this.type], this.eopts);
+      }else{
+        cfe.option[this.cid] = deepCloneAssign({}, this.eopts);
       }
-    } else {
-      this.mixinDatacomLoading = false;
-      this.showchart = false;
-      this.mixinDatacomErrorMessage = '参数错误：props参数中type类型不正确';
+      cfe.option[this.cid].id = this.cid;
+      cfe.option[this.cid].seriesTemplate = deepCloneAssign({}, cfe.option[this.cid].series);
+      cfe.option[this.cid].lastDrawTime = Date.now();
+      this.beforeInit();
+    }else{
+      if (this.type && cfu.type.includes(this.type)) {
+        cfu.option[this.cid] = deepCloneAssign({}, cfu[this.type], this.opts);
+        cfu.option[this.cid].lastDrawTime = Date.now();
+        this.beforeInit();
+      } else {
+        this.mixinDatacomLoading = false;
+        this.showchart = false;
+        this.mixinDatacomErrorMessage = '参数错误：props参数中type类型不正确';
+      }
     }
     uni.onWindowResize(res => {
       setTimeout(() => {
@@ -350,8 +367,13 @@ export default {
     });
   },
   destroyed(){
-    delete cfu.option[this.cid]
-    delete cfu.instance[this.cid]
+    if(this.echarts === true){
+      delete cfe.option[this.cid]
+      delete cfe.instance[this.cid]
+    }else{
+      delete cfu.option[this.cid]
+      delete cfu.instance[this.cid]
+    }
     uni.offWindowResize(()=>{})
   },
   watch: {
@@ -365,6 +387,15 @@ export default {
           this.mixinDatacomLoading = false;
           this.showchart = false;
           this.mixinDatacomErrorMessage = '参数错误：chartData数据类型错误';
+        }
+      },
+      immediate: false,
+      deep: true
+    },
+    localdata:{
+      handler(val, oldval) {
+        if (JSON.stringify(val) !== JSON.stringify(oldval)) {
+          this.localdataInit(val);
         }
       },
       immediate: false,
@@ -385,6 +416,27 @@ export default {
           this.mixinDatacomLoading = false;
           this.showchart = false;
           this.mixinDatacomErrorMessage = '参数错误：opts数据类型错误';
+        }
+      },
+      immediate: false,
+      deep: true
+    },
+    eoptsProps: {
+      handler(val, oldval) {
+        //渲染防抖
+        // let currTime = Date.now();
+        // let duration = currTime - cfe.option[this.cid].lastDrawTime;
+        // if (cfe.option[this.cid].animation==true && duration < 1000) return;
+        if (typeof val === 'object') {
+          if (JSON.stringify(val) !== JSON.stringify(oldval)) {
+            cfe.option[this.cid] = deepCloneAssign({}, cfe[this.type], val);
+            cfe.option[this.cid].seriesTemplate = deepCloneAssign({}, cfe.option[this.cid].series);
+            this.checkData(this.chartData);
+          }
+        } else {
+          this.mixinDatacomLoading = false;
+          this.showchart = false;
+          this.mixinDatacomErrorMessage = '参数错误：eopts数据类型错误';
         }
       },
       immediate: false,
@@ -420,11 +472,111 @@ export default {
     optsProps() {
       return JSON.parse(JSON.stringify(this.opts));
     },
+    eoptsProps() {
+      return JSON.parse(JSON.stringify(this.eopts));
+    },
     chartDataProps() {
       return JSON.parse(JSON.stringify(this.chartData));
-    }
+    },
   },
   methods: {
+    beforeInit(){
+      if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
+        this.mixinDatacomLoading = true;
+        this.checkData(this.chartData);
+      }else if(this.localdata.length>0){
+        this.mixinDatacomLoading = true;
+        this.localdataInit(this.localdata);
+      }else if(this.collection !== ''){
+        this.getCloudData();
+      }else{
+        this.mixinDatacomLoading = true;
+      }
+    },
+    localdataInit(resdata){
+      let needCategories = false;
+      let tmpData = {categories:[], series:[]}
+      let tmpcategories = []
+      let tmpseries = [];
+      //拼接categories
+      if(this.echarts === true){
+        needCategories = cfe.categories.includes(this.type)
+      }else{
+        needCategories = cfu.categories.includes(this.type)
+      }
+      if(needCategories === true){
+        //如果props中的chartData带有categories，则优先使用chartData的categories
+        if(this.chartData && this.chartData.categories && this.chartData.categories.length>0){
+          tmpcategories = this.chartData.categories
+        }else{
+          //如果是日期类型的数据，不管是本地数据还是云数据，都按起止日期自动拼接categories
+          if(this.startDate && this.endDate){
+            let idate=this.startDate
+            while (idate <= this.endDate) {
+            	tmpcategories.push(getFormatDate(idate))
+            	idate = idate.setDate(idate.getDate() + 1)
+            	idate = new Date(idate)
+            }
+          //否则从结果中去重并拼接categories
+          }else{
+            let tempckey = {};
+            resdata.map(function(item, index) {
+              if (item.text != undefined && !tempckey[item.text]) {
+                tmpcategories.push(item.text)
+                tempckey[item.text] = true
+              }
+            });
+          }
+        }
+        tmpData.categories = tmpcategories
+      }
+      //拼接series
+      let tempskey = {};
+      resdata.map(function(item, index) {
+        if (item.group != undefined && !tempskey[item.group]) {
+          tmpseries.push({ name: item.group, data: [] });
+          tempskey[item.group] = true;
+        }
+      });
+      //如果没有获取到分组名称
+      if (tmpseries.length == 0) {
+        tmpseries = [{ name: '默认分组', data: [] }];
+        for (let j = 0; j < tmpcategories.length; j++) {
+          let seriesdata = 0;
+          for (let i = 0; i < resdata.length; i++) {
+            if (resdata[i].text == tmpcategories[j]) {
+              seriesdata = resdata[i].value;
+            }
+          }
+          tmpseries[0].data.push(seriesdata);
+        }
+      //如果有分组名
+      } else {
+        for (let k = 0; k < tmpseries.length; k++) {
+          //如果有categories
+          if (tmpcategories.length > 0) {
+            for (let j = 0; j < tmpcategories.length; j++) {
+              let seriesdata = 0;
+              for (let i = 0; i < resdata.length; i++) {
+                if (tmpseries[k].name == resdata[i].group && resdata[i].text == tmpcategories[j]) {
+                  seriesdata = resdata[i].value;
+                }
+              }
+              tmpseries[k].data.push(seriesdata);
+            }
+          //如果没有categories
+          } else {
+            for (let i = 0; i < resdata.length; i++) {
+              if (tmpseries[k].name == resdata[i].group) {
+                tmpseries[k].data.push(resdata[i].value);
+              }
+            }
+          }
+        }
+      }
+      tmpData.series = tmpseries
+      this.checkData(tmpData)
+    },
     reloading() {
       this.showchart = false;
       this.mixinDatacomErrorMessage = null;
@@ -437,28 +589,34 @@ export default {
       }
     },
     checkData(chartData, reshow) {
-      if (this.collection !== '') {
-        if (cfu.categories.includes(this.type) && (chartData.categories == undefined || chartData.categories.length == 0)) {
-          this.mixinDatacomLoading = false;
-          this.showchart = false;
-          this.mixinDatacomErrorMessage = '数据错误：chartData中缺少categories';
-        } else {
-          if (reshow === true) {
-            this.mixinDatacomErrorMessage = null;
-            this.init();
+      let cid = this.cid
+      let drawData = deepCloneAssign({}, chartData);
+      if (drawData.series !== undefined && drawData.series.length > 0) {
+        if (this.echarts === true) {
+          if(cfe.option[cid].xAxis && cfe.option[cid].xAxis.type && cfe.option[cid].xAxis.type === 'category'){
+            cfe.option[cid].xAxis.data = drawData.categories
           }
-        }
-      } else {
-        if (chartData.series !== undefined) {
-          if (chartData.series.length > 0) {
-            this.mixinDatacomErrorMessage = null;
-            this._clearChart();
-            this.init();
-          } else {
-            this.mixinDatacomLoading = true;
-            this.mixinDatacomErrorMessage = null;
-            this.showchart = false;
+          if(cfe.option[cid].yAxis && cfe.option[cid].yAxis.type && cfe.option[cid].yAxis.type === 'category'){
+            cfe.option[cid].yAxis.data = drawData.categories
           }
+          cfe.option[cid].series = []
+          if(drawData.series.length >0){
+            drawData.series.map(item=>{
+              let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate);
+              for(let key in item){
+                Template[key] = item[key];
+              }
+              cfe.option[cid].series.push(Template)
+            })
+          }
+          this.mixinDatacomErrorMessage = null;
+          this.init();
+        }else{
+          cfu.option[cid].categories = drawData.categories;
+          cfu.option[cid].series = drawData.series;
+          this.mixinDatacomErrorMessage = null;
+          this._clearChart();
+          this.init();
         }
       }
     },
@@ -478,7 +636,7 @@ export default {
           if (data.width > 0 && data.height > 0) {
             if (data.width !== this.cWidth || data.height !== this.cHeight) {
               cfu.option[this.cid].lastDrawTime = currTime;
-              this.init();
+              this.beforeInit();
             }
           } else {
             this.mixinDatacomLoading = false;
@@ -495,8 +653,8 @@ export default {
       this.mixinDatacomLoading = true;
       this.mixinDatacomGet()
         .then(res => {
-          this.mixinDatacomResData = data;
-          this.checkData(this.chartData, true);
+          this.mixinDatacomResData = res.result.data;
+          this.localdataInit(this.mixinDatacomResData);
         })
         .catch(err => {
           this.mixinDatacomLoading = false;
@@ -505,64 +663,15 @@ export default {
         });
     },
     onMixinDatacomPropsChange(needReset, changed) {
-      if (needReset) {
+      if (needReset == true && this.collection !== '') {
         this.showchart = false;
         this._clearChart();
         this.getCloudData();
       }
     },
-    cloudDataInit() {
-      let temp = {};
-      let series = [];
-      let resdata = this.mixinDatacomResData;
-      let categories = cfu.option[this.cid].categories;
-      resdata.map(function(item, index) {
-        if (item.type != undefined && !temp[item.type]) {
-          series.push({ name: item.type, data: [] });
-          temp[item.type] = true;
-        }
-      });
-      if (series.length == 0) {
-        let seriesname = '默认分组';
-        if (this.chartData.series.length > 0) {
-          seriesname = this.chartData.series[0].name;
-        }
-        series = [{ name: seriesname, data: [] }];
-        for (let j = 0; j < categories.length; j++) {
-          let seriesdata = 0;
-          for (let i = 0; i < resdata.length; i++) {
-            if (resdata[i].label == categories[j]) {
-              seriesdata = resdata[i].value;
-            }
-          }
-          series[0].data.push(seriesdata);
-        }
-      } else {
-        for (let k = 0; k < series.length; k++) {
-          if (categories.length > 0) {
-            for (let j = 0; j < categories.length; j++) {
-              let seriesdata = 0;
-              for (let i = 0; i < resdata.length; i++) {
-                if (series[k].name == resdata[i].type && resdata[i].label == categories[j]) {
-                  seriesdata = resdata[i].value;
-                }
-              }
-              series[k].data.push(seriesdata);
-            }
-          } else {
-            for (let i = 0; i < resdata.length; i++) {
-              if (series[k].name == resdata[i].type) {
-                series[k].data.push(resdata[i].type);
-              }
-            }
-          }
-        }
-      }
-      return series;
-    },
     _clearChart() {
       let cid = this.cid
-      if (cfu.option[cid] !== undefined && cfu.option[cid].canvasId && cfu.option[cid].context && cfu.option[cid].context.draw) {
+      if (this.echrts !== true && cfu.option[cid] !== undefined && cfu.option[cid].canvasId && cfu.option[cid].context && cfu.option[cid].context.draw) {
         cfu.option[cid].context.clearRect(0, 0, cfu.option[cid].width, cfu.option[cid].height);
         cfu.option[cid].context.draw();
       }
@@ -579,46 +688,26 @@ export default {
           if (data.width > 0 && data.height > 0) {
             this.cWidth = data.width;
             this.cHeight = data.height;
-            cfu.option[cid].canvasId = cid;
-            cfu.option[cid].categories = uchartData.categories;
-            if (this.collection == '') {
-              cfu.option[cid].series = uchartData.series;
-            } else {
-              cfu.option[cid].series = this.cloudDataInit();
+            if(this.echarts !== true){
+              cfu.option[cid].canvasId = cid;
+              cfu.option[cid].background = this.background == 'none' ? '#FFFFFF' : this.background;
+              cfu.option[cid].canvas2d = this.type2d;
+              cfu.option[cid].pixelRatio = this.pixel;
+              cfu.option[cid].animation = this.animation;
+              cfu.option[cid].width = data.width * this.pixel;
+              cfu.option[cid].height = data.height * this.pixel;
+              cfu.option[cid].ontap = this.ontap;
+              cfu.option[cid].ontouch = this.ontouch;
+              cfu.option[cid].onmouse = this.onmouse;
+              cfu.option[cid].onmovetip = this.onmovetip;
+              cfu.option[cid].tooltipShow = this.tooltipShow;
+              cfu.option[cid].tooltipFormat = this.tooltipFormat;
+              cfu.option[cid].tooltipCustom = this.tooltipCustom;
             }
-            cfu.option[cid].background = this.background == 'none' ? '#FFFFFF' : this.background;
-            cfu.option[cid].canvas2d = this.type2d;
-            cfu.option[cid].pixelRatio = this.pixel;
-            cfu.option[cid].animation = this.animation;
-            cfu.option[cid].width = data.width * this.pixel;
-            cfu.option[cid].height = data.height * this.pixel;
-            cfu.option[cid].ontap = this.ontap;
-            cfu.option[cid].ontouch = this.ontouch;
-            cfu.option[cid].onmouse = this.onmouse;
-            cfu.option[cid].onmovetip = this.onmovetip;
-            cfu.option[cid].tooltipShow = this.tooltipShow;
-            cfu.option[cid].tooltipFormat = this.tooltipFormat;
-            cfu.option[cid].tooltipCustom = this.tooltipCustom;
             //如果是H5或者App端，采用renderjs渲染图表
             if (this.inH5 || this.inApp) {
               if (this.echarts == true) {
-                this.eopts.id = cid
-                this.eopts.echartData = uchartData
-                this.echartsOpts = deepCloneAssign({},this.eopts);
-				if(this.echartsOpts.xAxis)
-					this.echartsOpts.xAxis.data = this.echartsOpts.echartData.categories
-				let series = deepCloneAssign({},this.echartsOpts.series);
-				this.echartsOpts.series = [];
-				if(this.echartsOpts.echartData.series && this.echartsOpts.echartData.series.length >0){
-					this.echartsOpts.echartData.series.map(x=>{
-						let s = deepCloneAssign({},series);
-						for(let key in x){
-							s[key] = x[key];
-						}
-						this.echartsOpts.series.push(s)
-					})
-				}
-                this.echartData = uchartData;
+                this.echartsOpts = cfe.option[cid];
                 this.mixinDatacomLoading = false;
                 this.showchart = true;
               } else {
@@ -645,10 +734,8 @@ export default {
                       canvas.height = data.height * this.pixel;
                       canvas._width = data.width * this.pixel;
                       canvas._height = data.height * this.pixel;
-                      this.mixinDatacomLoading = false;
                       this._formatter(cid);
                     } else {
-                      this.mixinDatacomLoading = false;
                       this.showchart = false;
                       this.mixinDatacomErrorMessage = '参数错误：未获取到dom节点，请检查是否传入canvasID';
                     }

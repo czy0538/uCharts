@@ -22,12 +22,13 @@
 const color = ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'];
 
 module.exports = {
-	"type": ["pie", "ring", "rose", "word", "funnel", "map", "arcbar", "line", "column", "area", "radar", "gauge",
-		"candle", "mix"
-	],
-	"categories": ["line", "column", "area", "radar", "gauge", "candle", "mix"],
+	"type": ["pie", "ring", "rose", "funnel", "line", "column", "area", "radar", "gauge","candle"],
+	"categories": ["line", "column", "area", "radar", "gauge", "candle"],
 	"instance": {},
 	"option": {},
+  //以上数据请勿改动
+  //下面是自定义format配置，因除H5端外的其他端无法通过props传递函数，只能通过此属性对应下标的方式来替换
+  "formatter":{},
 	"column": {
 		color: color,
 		title: {
