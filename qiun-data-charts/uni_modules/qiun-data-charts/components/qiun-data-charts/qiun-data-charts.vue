@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v1.0.0.20210323
+ * qiun-data-charts 秋云高性能跨全端图表组件 v1.0.0.20210327
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -466,6 +466,9 @@ export default {
     },
     reshow(val, oldval) {
       if (val === true) {
+        if(this.echarts === true){
+            this.echartsResize = !this.echartsResize
+        }
         this._clearChart();
         this.checkData(this.chartData, true);
       }
@@ -635,7 +638,7 @@ export default {
         this.onMixinDatacomPropsChange(true);
       } else {
         this.mixinDatacomLoading = true;
-        this.checkData(this.chartData);
+        this.beforeInit();
       }
     },
     checkData(chartData, reshow) {
@@ -675,7 +678,8 @@ export default {
         return;
       }
       let currTime = Date.now();
-      let duration = currTime - cfu.option[this.cid].lastDrawTime;
+      let lastDrawTime = cfu.option[this.cid].lastDrawTime?cfu.option[this.cid].lastDrawTime:currTime-2000;
+      let duration = currTime - lastDrawTime;
       if (duration < 1000) return;
       let chartdom = uni
         .createSelectorQuery()
