@@ -203,8 +203,7 @@ export default {
       default() {
         return {
           categories: [],
-          series: [],
-          updata: false
+          series: []
         };
       }
     },
@@ -277,10 +276,31 @@ export default {
       default: true
     },
     tooltipFormat: {
+      type: String,
       default: undefined
     },
     tooltipCustom: {
       default: undefined
+    },
+    startDate: {
+      type: String,
+      default: undefined
+    },
+    endDate: {
+      type: String,
+      default: undefined
+    },
+    textEnum: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    groupEnum: {
+      type: Array,
+      default () {
+        return []
+      }
     }
   },
   data() {
@@ -342,7 +362,6 @@ export default {
         cfe.option[this.cid] = deepCloneAssign({}, this.eopts);
       }
       cfe.option[this.cid].id = this.cid;
-      cfe.option[this.cid].seriesTemplate = deepCloneAssign({}, cfe.option[this.cid].series);
       cfe.option[this.cid].lastDrawTime = Date.now();
       this.beforeInit();
     }else{
@@ -429,8 +448,11 @@ export default {
         // if (cfe.option[this.cid].animation==true && duration < 1000) return;
         if (typeof val === 'object') {
           if (JSON.stringify(val) !== JSON.stringify(oldval)) {
-            cfe.option[this.cid] = deepCloneAssign({}, cfe[this.type], val);
-            cfe.option[this.cid].seriesTemplate = deepCloneAssign({}, cfe.option[this.cid].series);
+            if (this.type && cfe.type.includes(this.type)) {
+              cfe.option[this.cid] = deepCloneAssign({}, cfe[this.type], val);
+            }else{
+              cfe.option[this.cid] = deepCloneAssign({}, val);
+            }
             this.checkData(this.chartData);
           }
         } else {
@@ -494,6 +516,25 @@ export default {
       }
     },
     localdataInit(resdata){
+      //替换enum类型为正确的描述
+      if(this.groupEnum.length>0){
+        for (let i = 0; i < resdata.length; i++) {
+          for (let j = 0; j < this.groupEnum.length; j++) {
+            if(resdata[i].group === this.groupEnum[j].value){
+              resdata[i].group = this.groupEnum[j].text
+            }
+          }
+        }
+      }
+      if(this.textEnum.length>0){
+        for (let i = 0; i < resdata.length; i++) {
+          for (let j = 0; j < this.textEnum.length; j++) {
+            if(resdata[i].text === this.textEnum[j].value){
+              resdata[i].text = this.textEnum[j].text
+            }
+          }
+        }
+      }
       let needCategories = false;
       let tmpData = {categories:[], series:[]}
       let tmpcategories = []
@@ -511,8 +552,9 @@ export default {
         }else{
           //如果是日期类型的数据，不管是本地数据还是云数据，都按起止日期自动拼接categories
           if(this.startDate && this.endDate){
-            let idate=this.startDate
-            while (idate <= this.endDate) {
+            let idate = new Date(this.startDate)
+            let edate = new Date(this.endDate)
+            while (idate <= edate) {
             	tmpcategories.push(getFormatDate(idate))
             	idate = idate.setDate(idate.getDate() + 1)
             	idate = new Date(idate)
@@ -538,17 +580,25 @@ export default {
           tempskey[item.group] = true;
         }
       });
-      //如果没有获取到分组名称
+      //如果没有获取到分组名称(可能是带categories的数据，也可能是不带的饼图类)
       if (tmpseries.length == 0) {
         tmpseries = [{ name: '默认分组', data: [] }];
-        for (let j = 0; j < tmpcategories.length; j++) {
-          let seriesdata = 0;
-          for (let i = 0; i < resdata.length; i++) {
-            if (resdata[i].text == tmpcategories[j]) {
-              seriesdata = resdata[i].value;
+        //如果是需要categories的图表类型
+        if(needCategories === true){
+          for (let j = 0; j < tmpcategories.length; j++) {
+            let seriesdata = 0;
+            for (let i = 0; i < resdata.length; i++) {
+              if (resdata[i].text == tmpcategories[j]) {
+                seriesdata = resdata[i].value;
+              }
             }
+            tmpseries[0].data.push(seriesdata);
           }
-          tmpseries[0].data.push(seriesdata);
+        //如果是饼图类的图表类型
+        }else{
+          for (let i = 0; i < resdata.length; i++) {
+            tmpseries[0].data.push({"name": resdata[i].text,"value": resdata[i].value});
+          }
         }
       //如果有分组名
       } else {
@@ -564,7 +614,7 @@ export default {
               }
               tmpseries[k].data.push(seriesdata);
             }
-          //如果没有categories
+          //如果传了group而没有传text，即没有categories（正常情况下这种数据是不符合数据要求规范的）
           } else {
             for (let i = 0; i < resdata.length; i++) {
               if (tmpseries[k].name == resdata[i].group) {

@@ -1,8 +1,12 @@
 <template>
   <view class="content">
-    <qiun-title-bar title="使用localdata渲染图表"/>
+    <qiun-title-bar title="使用localdata渲染图表1"/>
     <view class="charts-box">
       <qiun-data-charts type="column" :localdata="chartsData.localdata"/>
+    </view>
+    <qiun-title-bar title="使用localdata渲染图表2"/>
+    <view class="charts-box">
+      <qiun-data-charts type="pie" :localdata="chartsData.localdataB"/>
     </view>
     <qiun-title-bar title="渲染完成后显示自定义tooltip" />
     <view class="charts-box">
@@ -73,30 +77,9 @@ export default {
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
         this.chartsData.localdata=JSON.parse(JSON.stringify(demodata.localdata))
+        this.chartsData.localdataB=JSON.parse(JSON.stringify(demodata.localdataB))
       	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsData.Column2=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column3=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column4=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column6=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Line1=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Line2=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Line3=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Line4=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Area1=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Area2=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Mix1=JSON.parse(JSON.stringify(demodata.Mix))
-      	this.chartsData.Pie1=JSON.parse(JSON.stringify(demodata.PieA))
-      	this.chartsData.Ring1=JSON.parse(JSON.stringify(demodata.Pie))
-      	this.chartsData.Rose1=JSON.parse(JSON.stringify(demodata.Pie))
-      	this.chartsData.Rose2=JSON.parse(JSON.stringify(demodata.Pie))
-      	this.chartsData.Arcbar1=JSON.parse(JSON.stringify(demodata.Arcbar1))
-      	this.chartsData.Arcbar2=JSON.parse(JSON.stringify(demodata.Arcbar2))
-      	this.chartsData.Gauge1=JSON.parse(JSON.stringify(demodata.Gauge))
-      	this.chartsData.Gauge2=JSON.parse(JSON.stringify(demodata.Gauge))
-      	this.chartsData.Radar1=JSON.parse(JSON.stringify(demodata.Radar))
-      	this.chartsData.Radar2=JSON.parse(JSON.stringify(demodata.Radar))
-      	this.chartsData.Word1=JSON.parse(JSON.stringify(demodata.Word))
-      	this.chartsData.Funnel1=JSON.parse(JSON.stringify(demodata.Pie))
       	//这里的chartsData原本是空对象，因Vue不允许在已经创建的实例上动态添加新的根级响应式属性，所以这里使用this.$forceUpdate()强制视图更新。当然也可以使用this.$set()方法将相应属性添加到嵌套的对象上。
       	//所以，不建议我这样的做法，建议直接把数据绑定到this上
       	this.$forceUpdate();

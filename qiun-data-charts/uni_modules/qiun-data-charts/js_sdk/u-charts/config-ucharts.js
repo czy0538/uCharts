@@ -377,32 +377,7 @@ module.exports = {
 			"gridColor": "#CCCCCC",
 			"padding": 10,
 			"showTitle": true,
-			"data": [
-				{
-					"calibration": true,
-					"position": "left",
-					"title": "折线",
-					"titleFontSize": 12
-				},
-				{
-					"calibration": true,
-					"position": "right",
-					"min": 0,
-					"max": 200,
-					"title": "柱状图",
-					"titleFontSize": 12,
-					"textAlign": "left"
-				},
-				{
-					"calibration": true,
-					"position": "right",
-					"min": 0,
-					"max": 200,
-					"title": "点",
-					"titleFontSize": 12,
-					"textAlign": "left"
-				}
-			]
+			"data": []
 		},
 		"legend": {
 		},

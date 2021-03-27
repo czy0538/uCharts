@@ -13,7 +13,8 @@
 - 根据父容器尺寸`弹性显示图表`，再也不必为宽高匹配及多端适配问题发愁。
 - 支持`加载状态loading及error展示`，避免数据读取显示空白的尴尬。
 - chartData`配置与数据解耦`，即便使用ECharts引擎也不必担心拼接option的困扰。
-- 小程序端不必担心包体积过大问题，ECharts引擎将不会编译到各小程序端。
+- localdata`后端数据直接渲染`，无需自行拼接chartData的categories及series，从后端拿回的数据简单处理即可生成图表。
+- 小程序端不必担心包体积过大问题，ECharts引擎将不会编译到各小程序端，u-charts.js编译后`仅为93kb`。
 - 未来将支持通过uniCloud的`DB Schema自动生成`全端全平台图表，敬请期待！！！
 - uCharts官方拥有3个2000人的QQ群支持，庞大的用户量证明我们一直在努力，本组件将持续更新，请各位放心使用，本组件问题请在`QQ3群`反馈，您的宝贵建议是我们努力的动力！！
 
@@ -33,7 +34,7 @@ uCharts的开源图表组件的开发，付出了大量的个人时间与精力�
 ## 快速上手
 ### <font color=#FF0000> 注意前提条件【版本要求：HBuilderX 3.1.0+】 </font> 
 - 1、插件市场点击右侧绿色按钮【使用HBuilderX导入插件】，或者【使用HBuilderX导入示例项目】查看完整示例工程
-- 2、如果通过其他方式获取本组件，请将uni_modules目录复制到您项目的根目录（注：vue-cli项目请将uni_modules目录复制到src目录，即src/uni_modules）
+- 2、如果通过其他方式获取本组件，请将 `uni_modules` 目录复制到您项目的根目录（注：vue-cli项目请将 `uni_modules` 目录复制到src目录，即 `src/uni_modules`）
 - 3、页面中直接按下面用法直接调用即可，无需在页面中注册组件qiun-data-charts
 - 4、注意父元素class='charts-box'这个样式需要有宽高
 
@@ -42,60 +43,106 @@ uCharts的开源图表组件的开发，付出了大量的个人时间与精力�
 - template代码（[建议使用在线工具生成](https://demo.ucharts.cn)）：
 
 ```
-<view class='charts-box'>
-	<qiun-data-charts type='column' :chartData='chartData' />
+<view class="charts-box">
+	<qiun-data-charts type="column" :chartData="chartData" />
 </view>
 ```
 
-- 标准数据格式：
+- 标准数据格式1：（折线图、柱状图、区域图等需要categories的直角坐标系图表类型）
 
 ```
 chartData:{
- categories:['2016','2017','2018','2019','2020','2021'],
- series:[{
-  name:'类别1',
-  data:[35,8,25,37,4,20]
- },{
-  name:'类别2',
-  data:[70,40,65,100,44,68]
- },{
-  name:'类别3',
-  data:[100,80,95,150,112,132]
- }]
+  categories: ["2016", "2017", "2018", "2019", "2020", "2021"],
+  series: [{
+    name: "目标值",
+    data: [35, 36, 31, 33, 13, 34]
+  }, {
+    name: "完成量",
+    data: [18, 27, 21, 24, 6, 28]
+  }]
 }
 ```
 
+- 标准数据格式2：（饼图、圆环图、漏斗图等不需要categories的图表类型）
+
+```
+chartData:{
+  series: [{
+    name: "groupA",
+    data: [
+      {
+        name: "一班",
+        value: 50
+      }, {
+        name: "二班",
+        value: 30
+      }, {
+        name: "三班",
+        value: 20
+      }, {
+        name: "四班",
+        value: 18
+      }, {
+        name: "五班",
+        value: 8
+      }
+    ]
+  }]
+}
+```
+
+注：其他特殊图表类型，请参考mockdata文件夹下的数据格式，v2.0版本的uCharts已兼容ECharts的数据格式，v2.0版本仍然支持v1.0版本的数据格式。
 
 ## localdata数据渲染用法
+
+- 使用localdata数据格式渲染图表的优势：数据结构简单，无需自行拼接chartData的categories及series，从后端拿回的数据简单处理即可生成图表。
+- localdata数据的缺点：并不是所有的图表类型均可通过localdata渲染图表，例如混合图，组件并不能识别哪个series分组需要渲染成折线还是柱状图，涉及到复杂的图表，仍需要由chartData传入。
 
 - template代码（[建议使用在线工具生成](https://demo.ucharts.cn)）：
 
 ```
-<view class='charts-box'>
-	<qiun-data-charts type='column' :localdata='localdata' />
+<view class="charts-box">
+	<qiun-data-charts type="column" :localdata="localdata" />
 </view>
 ```
 
-- 标准数据格式：
+
+- 标准数据格式1：（折线图、柱状图、区域图等需要categories的直角坐标系图表类型）
+
+其中value代表数据的数值，text代表X轴的categories数据点，group代表series分组的类型名称即series[i].name。
 
 ```
 localdata:[
-  {"value":35, "text":"2016", "group":"目标值"},
-  {"value":18, "text":"2016", "group":"完成量"},
-  {"value":36, "text":"2017", "group":"目标值"},
-  {"value":27, "text":"2017", "group":"完成量"},
-  {"value":31, "text":"2018", "group":"目标值"},
-  {"value":21, "text":"2018", "group":"完成量"},
-  {"value":33, "text":"2019", "group":"目标值"},
-  {"value":24, "text":"2019", "group":"完成量"},
-  {"value":13, "text":"2020", "group":"目标值"},
-  {"value":6, "text":"2020", "group":"完成量"},
-  {"value":34, "text":"2021", "group":"目标值"},
-  {"value":28, "text":"2021", "group":"完成量"}
+  {value:35, text:"2016", group:"目标值"},
+  {value:18, text:"2016", group:"完成量"},
+  {value:36, text:"2017", group:"目标值"},
+  {value:27, text:"2017", group:"完成量"},
+  {value:31, text:"2018", group:"目标值"},
+  {value:21, text:"2018", group:"完成量"},
+  {value:33, text:"2019", group:"目标值"},
+  {value:24, text:"2019", group:"完成量"},
+  {value:13, text:"2020", group:"目标值"},
+  {value:6, text:"2020", group:"完成量"},
+  {value:34, text:"2021", group:"目标值"},
+  {value:28, text:"2021", group:"完成量"}
 ]
 ```
 
-- 注意，localdata的数据格式需要符合datacom组件规范[【详见datacom组件】](https://uniapp.dcloud.io/component/datacom?id=mixindatacom)，其中value代表数据的数值，text代表X轴的categories数据点，group代表series分组的类型名称即series[i].name。
+- 标准数据格式2：（饼图、圆环图、漏斗图等不需要categories的图表类型）
+
+其中value代表数据的数值，text代表value数值对应的描述。
+
+```
+localdata:[
+  {value:50, text:"一班"},
+  {value:30, text:"二班"},
+  {value:20, text:"三班"},
+  {value:18, text:"四班"},
+  {value:8, text:"五班"},
+]
+```
+
+- 注意，localdata的数据格式必需要符合datacom组件规范[【详见datacom组件】](https://uniapp.dcloud.io/component/datacom?id=mixindatacom)。
 
 ## 进阶用法读取uniCloud数据库并渲染图表
 
@@ -103,36 +150,17 @@ localdata:[
 
 ```
 <qiun-data-charts
-	type="line"
-	:chartData="demoData"
-	collection="uni-id-users"
-	field="register_date"
-	:where="'register_date >= ' + startdate.getTime() + ' && register_date <= ' + enddate.getTime()"
-	groupby="dateToString(add(new Date(0),register_date),'%Y-%m-%d','+0800') as label,status as type"
-	group-field="count(*) as value"
+  type="line"
+  :chartData="demoData"
+  collection="uni-id-users"
+  field="register_date,status"
+  :where="'publish_date >= ' + new Date(startDate).getTime() + ' && publish_date <= ' + new Date(endDate).getTime()"
+  groupby="dateToString(add(new Date(0),register_date),'%Y-%m-%d','+0800') as text,status as group"
+  group-field="count(*) as value"
 />
 ```
 
-- 标准结果数据格式：
-
-```
-[
-  {"value":35, "text":"2016", "group":"目标值"},
-  {"value":18, "text":"2016", "group":"完成量"},
-  {"value":36, "text":"2017", "group":"目标值"},
-  {"value":27, "text":"2017", "group":"完成量"},
-  {"value":31, "text":"2018", "group":"目标值"},
-  {"value":21, "text":"2018", "group":"完成量"},
-  {"value":33, "text":"2019", "group":"目标值"},
-  {"value":24, "text":"2019", "group":"完成量"},
-  {"value":13, "text":"2020", "group":"目标值"},
-  {"value":6, "text":"2020", "group":"完成量"},
-  {"value":34, "text":"2021", "group":"目标值"},
-  {"value":28, "text":"2021", "group":"完成量"}
-]
-```
-
-- 注意，从uniCloud读取出的数据，需要符合localdata的数据规范，其中value代表数据的数值，text代表X轴的categories数据点，group代表series分组的类型名称即series[i].name。
+- 注意，从uniCloud读取出的数据，需要符合localdata的标准结果数据格式（参考上部分localdata），并需要把输出的字段as成规定的别名（value、text、group）。
 
 
 ## 示例文件地址：
@@ -152,12 +180,11 @@ localdata:[
 
 ## 组件基本API参数
 
-`别看配置多就头疼，常用的就最上面四个！`
-
 |属性名|类型|默认值|必填|说明|
 | -- | -- | -- | -- | -- |
 |type|String|null|`是`|图表类型，如全端用uCharts，可选值为pie、ring、rose、word、funnel、map、arcbar、line、column、area、radar、gauge、candle、mix|
-|chartData|Object|见说明|`是`|图表数据，常用的标准数据格式为{categories: [],series: []}，请按不同图表类型传入对应的标准数据，具体见下面【chartData数据属性】。|
+|chartData|Object|见说明|`是`|图表数据，常用的标准数据格式为{categories: [],series: []}，请按不同图表类型传入对应的标准数据。|
+|localdata|Array|[]|`是`|图表数据，如果您觉得拼接上面chartData比较繁琐，可以通过使用localdata渲染，组件会根据传入的type类型，自动拼接categories或series数据（使用localdata就不必再传入chartData，详见 /pages/other/other.vue 中使用localdata渲染图表的例子）。【localdata和collection（uniCloud数据库）同时存在，优先使用localdata；如果localdata和chartData同时存在，优先使用chartData。即chartData>localdata>collection的优先级渲染图表】。|
 |opts|Object|{}|否|uCharts图表配置参数(option)，请参考[【在线生成工具】](https://demo.ucharts.cn)注：传入的opts会覆盖默认config-ucharts.js中的配置，只需传入与config-ucharts.js中属性不一致的opts即可实现**重点**`【同类型的图表显示不同的样式】`。|
 |eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。注：传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。|
 |loadingType|Number|2|否|加载动画样式，0为不显示加载动画，1-5为不同的样式，见下面示例。|
@@ -177,18 +204,14 @@ localdata:[
 |tooltipShow|Boolean|true|否|点击或者鼠标经过图表时，是否显示tooltip提示窗，默认显示|
 |tooltipFormat|String|undefined|否|自定义格式化Tooltip显示内容，详见下面【tooltipFormat格式化】|
 |tooltipCustom|Object|undefined|否|如果以上系统自带的Tooltip格式化方案仍然不满足您，您可以用此属性实现更多需求，详见下面【tooltipCustom自定义】|
-|startDate|String| |否|需为标准时间格式。用于配合uniClinetDB自动生成categories使用|
-|endDate|String| |否|需为标准时间格式。用于配合uniClinetDB自动生成categories使用|
+|startDate|String|undefined|否|需为标准时间格式，例如"2021-02-14"。用于配合uniClinetDB自动生成categories使用|
+|endDate|String|undefined|否|需为标准时间格式，例如"2021-03-31"。用于配合uniClinetDB自动生成categories使用|
+|groupEnum|Array|[]|否|当使用到uniCloud数据库时，group字段属性如果遇到统计枚举属性的字段，需要通过将DB Schema中的enum的描述定义指派给该属性，具体格式为[{value: 1,text: "男"},{value: 2,text: "女"}]|
+|textEnum|Array|[]|否|当使用到uniCloud数据库时，text字段属性如果遇到统计枚举属性的字段，需要通过将DB Schema中的enum的描述定义指派给该属性，具体格式为[{value: 1,text: "男"},{value: 2,text: "女"}]|
 |ontap|Boolean|true|否|是否监听@tap@cilck事件，禁用后不会触发组件点击事件|
 |ontouch|Boolean|false|否|是否监听@touchstart@touchmove@touchend事件（赋值为true时，非PC端在图表区域内无法拖动页面滚动）|
 |onmouse|Boolean|true|否|是否监听@mousedown@mousemove@mouseup事件，禁用后鼠标经过图表上方不会显示tooltip|
 |onmovetip|Boolean|false|否|是否开启跟手显示tooltip功能（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
-
-## chartData数据属性
-|属性名|类型|默认值|说明|
-| -- | -- | -- | -- |
-|categories|Array|[]|一般为X轴的数据点显示的类别名称，如时间或者类别|
-|series|Array.Object|[]|多对象数组，一般为Y轴的数据点及相关数据点的配置，具体配置参数，请参考[【在线生成工具】](https://demo.ucharts.cn)中的定义，此处不更新属性。|
 
 ## tooltipFormat格式化
 
@@ -196,9 +219,9 @@ tooltipFormat类型为string字符串类型，需要指定config-ucharts.js中fo
 
 ```
 <qiun-data-charts
-  type='column'
-  :chartData='chartData'
-  :tooltipFormat='tooltipDemo1'
+  type="column"
+  :chartData="chartData"
+  tooltipFormat="tooltipDemo1"
 ⁄>
 ==================
 config-ucharts.js
@@ -273,15 +296,8 @@ tooltipCustom属性如下：
 |@getTouchStart|拖动开始监听事件。返回数据：{event: {…},charts:uCharts}|
 |@getTouchMove|拖动中监听事件。返回数据：{event: {…},charts:uCharts}|
 |@getTouchEnd|拖动结束监听事件。返回数据：{event: {…},charts:uCharts}|
-|@getTouchCancel|手指触摸动作被打断事件，如来电提醒，弹窗。返回数据：{event: {…},charts:uCharts}|
-|@getLongTap|手指长按500ms之后触发，触发了长按事件后进行移动不会触发屏幕的滚动。返回数据：{event: {…},charts:uCharts}|
 |@scrollLeft|开启滚动条后，滚动条到最左侧触发的事件，用于动态打点，需要自行编写防抖方法。返回数据：{scrollLeft:true,charts:uCharts}|
 |@scrollRight|开启滚动条后，滚动条到最右侧触发的事件，用于动态打点，需要自行编写防抖方法。返回数据：{scrollRight:true,charts:uCharts}|
-
-## 组件内未包含的uCharts方法
-|事件名|说明|
-| --| --|
-|zoom(val)|开启滚动条后，单屏幕视图内缩放数据密度的方法。此方法同改变opts.xAxis.itemCount的效果一样，可以动态改变组件绑定的opts来实现数据密度缩放，也可以通过@complete或者其他方法获取到uCharts实例后，通过e.charts.zoom(val)来实现图表x轴数据密度的动态缩放。|
 
 
 ## uni_modules目录说明
@@ -314,21 +330,26 @@ tooltipCustom属性如下：
 
 ## 配置文件说明
 
+- <font color=#FF0000>注意，config-echarts.js和config-ucharts.js内只需要配置符合您项目整体UI的整体默认配置，根据需求，先用[【在线工具】](http://demo.ucharts.cn)调试好默认配置，并粘贴到配置文件中。</font>
+- <font color=#FF0000>如果需要与configjs中不同的配置，只需要在组件上绑定:opts或者:eopts传入与默认配置不同的某个属性及值即可覆盖默认配置，极大降低了代码量。</font>
+
 - ECharts默认配置文件：config-echarts.js
 
-	i、`如您修改了默认配置文件，请务必在升级前备份您的配置文件，以免被覆盖！！！`
+	i、<font color=#FF0000>如您修改了默认配置文件，请务必在升级前备份您的配置文件，以免被覆盖！！！</font>
 	
 	ii、ECharts配置手册：[https://echarts.apache.org/zh/option.html](https://echarts.apache.org/zh/option.html)
 	
 	iii、"type"及"categories"属性为支持的图表属性，您可参照ECharts配置手册，配置您更多的图表类型，并将对应的图表配置添加至下面
 	
-	iv、"formatter"属性因各小程序及app端通过组件均不能传递function类型参数，因此请先在此属性下定义您想格式化的数据，组件会自动匹配与其对应的function
+	iv、"formatter"属性，因各小程序及app端通过组件均不能传递function类型参数，因此请先在此属性下定义您想格式化的数据，组件会自动匹配与其对应的function
+	
+	v、"seriesTemplate"属性，因ECharts的大部分配置均在series内，seriesTemplate作为series的模板，这样只需要在这里做好模板配置，组件的数组层chartData（或者localdata或者collection）的series会自动挂载模板配置。如需临时或动态改变seriesTemplate，可在:eopts中传递seriesTemplate，详见pages/echarts/echarts.vue中的曲线图。
 
-	v、ECharts配置仅可用于H5或者APP端，并且配置`echartsH5`或`echartsApp`为`true`时可用
+	vi、ECharts配置仅可用于H5或者APP端，并且配置`echartsH5`或`echartsApp`为`true`时可用
 
 - uCharts默认配置文件：config-ucharts.js
 
-	i、`如您修改了默认配置文件，请务必在升级前备份您的配置文件，以免被覆盖！！！`
+	i、<font color=#FF0000>如您修改了默认配置文件，请务必在升级前备份您的配置文件，以免被覆盖！！！</font>
 	
 	ii、v2版本后的uCharts基础库不提供配置手册，您可以使用在线配置生成工具来快速生成配置：[http://demo.ucharts.cn](http://demo.ucharts.cn)
 	
@@ -337,46 +358,6 @@ tooltipCustom属性如下：
 	iv、"formatter"属性因各小程序及app端通过组件均不能传递function类型参数，因此请先在此属性下定义您想格式化的数据，组件会自动匹配与其对应的function
 	
 	v、uCharts配置可跨全端使用
-
-## 如何运行图表组件示例Demo
-
-- `***因本示例涉及到使用uniCloud数据，并有uni-id-users统计，请先查看以下说明运行示例：`
-- `***注意：并不是所有项目均需要uniCloud admin环境，只是示例demo的环境需要依赖！！！`
-- 前提条件
-
-	i、确保电脑上已经有uniCloud admin项目，如果还没有，在这里下载一个：https://ext.dcloud.net.cn/plugin?id=3268
-	
-	ii、关联uniCloud admin项目到服务空间。如果是第一次用，要在HBuilderX的uniCloud初始化向导里做初始化，把云函数上传到服务空间，通过db_init.json进行数据库初始化
-
-- 本插件安装
-
-	i、将本插件导入到已存在的uniCloud admin项目
-	
-	ii、示例项目引用了栅格组件，请再导入该插件：https://ext.dcloud.net.cn/plugin?id=3958
-	
-	iii、在项目根目录的pages.json中注册demo页面
-
-```
-{
- "path": "uni_modules/qiun-data-charts/pages/chartsdemo/chartsdemo",
- "style":{"navigationBarTitleText":"图表示例"}
-},
-```
-
-- 运行uniCloud admin项目
-
-	i、如果是第一次运行需要根据登录界面的提示注册一个管理员账户
-	
-	ii、在运行后的uniCloud admin的左侧找到菜单管理，添加图表示例菜单，路径分别配为/uni_modules/qiun-data-charts/pages/chartsdemo/chartsdemo，然后刷新页面，左侧的菜单就会出现图表示例
-
-```
-标识*：chartsdemo
-名称*：图表示例
-图标：uni-icons-map-filled
-URL：/uni_modules/qiun-data-charts/pages/chartsdemo/chartsdemo
-序号：100
-父菜单标识：留空，不填写
-```
 
 ## 图表应用=>读取uniClinetDB示例说明
 - 本示例基于uniCloud的[clientDB](https://uniapp.dcloud.net.cn/uniCloud/clientdb)技术，无需云函数，在前端对数据库进行group和count，进行按天的计数统计。
@@ -410,12 +391,13 @@ URL：/uni_modules/qiun-data-charts/pages/chartsdemo/chartsdemo
 - 口令`uniapp`
 
 ## 相关链接
-- DCloud插件市场地址
+- [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)
 - [uCharts官网](https://www.ucharts.cn)
 - [uCharts在线生成工具](http://demo.ucharts.cn)<font color=#FF0000>（注：v2.0版本后将不提供配置手册，请通过在线生成工具生成图表配置）</font>
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 - [uCharts基础库更新记录](https://gitee.com/uCharts/uCharts/wikis/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95?sort_id=1535998)
 - [uCharts改造教程](https://gitee.com/uCharts/uCharts/wikis/%E6%94%B9%E9%80%A0uCharts%E6%89%93%E9%80%A0%E4%B8%93%E5%B1%9E%E5%9B%BE%E8%A1%A8?sort_id=1535997)
+- [`烈阳`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4373)
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
 - [ECharts配置手册](https://echarts.apache.org/zh/option.html)
 - [`wkiwi`提供的w-loading组件地址](https://ext.dcloud.net.cn/plugin?id=504)

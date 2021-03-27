@@ -58,7 +58,7 @@
     </view>
     <qiun-title-bar title="多坐标系混合图"/>
     <view class="charts-box" style="height: 400px;">
-      <qiun-data-charts type="mix" :chartData="chartsData.Mix1"/>
+      <qiun-data-charts type="mix" :opts="{yAxis:{data:[{position: 'left',title: '折线'},{position: 'right',min: 0,max: 200,title: '柱状图',textAlign: 'left'},{position: 'right',min: 0,max: 200,title: '点',textAlign: 'left'}]}}" :chartData="chartsData.Mix1"/>
     </view>
     <qiun-title-bar title="基本饼状图"/>
     <view class="charts-box">

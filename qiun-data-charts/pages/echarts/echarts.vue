@@ -10,7 +10,7 @@
     </view>
 		<qiun-title-bar title="曲线图" />
     <view class="charts-box">
-      <qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :chartData="chartsData.Line1" :echartsH5="true" :echartsApp="true"/>
+      <qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :eopts="{seriesTemplate:{smooth:true}}" :chartData="chartsData.Line1" :echartsH5="true" :echartsApp="true"/>
     </view>
 		<qiun-title-bar title="区域图" />
     <view class="charts-box">

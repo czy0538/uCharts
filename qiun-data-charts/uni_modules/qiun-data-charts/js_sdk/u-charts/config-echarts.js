@@ -30,450 +30,388 @@ module.exports = {
   //下面是自定义format配置，因除H5端外的其他端无法通过props传递函数，只能通过此属性对应下标的方式来替换
   "formatter":{},
 	"column": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'axis'
+		"tooltip": {
+			"trigger": 'axis'
 		},
-		grid: {
-			top: 30,
-			bottom: 50,
-			right: 15,
-			left: 30
+		"grid": {
+			"top": 30,
+			"bottom": 50,
+			"right": 15,
+			"left": 30
 		},
-		legend: {
-			bottom: 'left',
+		"legend": {
+			"bottom": 'left',
 		},
-		toolbox: {
-			show: false,
+		"toolbox": {
+			"show": false,
 		},
-		xAxis: {
-			type: 'category',
-			axisLabel: {
-				color: '#666666'
+		"xAxis": {
+			"type": 'category',
+			"axisLabel": {
+				"color": '#666666'
 			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
+			"axisLine": {
+				"lineStyle": {
+					"color": '#CCCCCC'
 				}
 			},
-			boundaryGap: true,
-			data: []
+			"boundaryGap": true,
+			"data": []
 		},
-		yAxis: {
-			type: 'value',
-			axisTick: {
-				show: false,
+		"yAxis": {
+			"type": 'value',
+			"axisTick": {
+				"show": false,
 			},
-			axisLabel: {
-				color: '#666666'
+			"axisLabel": {
+				"color": '#666666'
 			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
+			"axisLine": {
+				"lineStyle": {
+					"color": '#CCCCCC'
 				}
 			},
 		},
-		series: {
-			name: '',
-			type: 'bar',
-			data: [],
-			barWidth: 20,
-			label: {
-				show: true,
-				position: 'top',
+		"seriesTemplate": {
+			"name": '',
+			"type": 'bar',
+			"data": [],
+			"barwidth": 20,
+			"label": {
+				"show": true,
+				"position": 'top',
 			},
 		},
 	},
 	"line": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'axis'
+		"tooltip": {
+			"trigger": 'axis'
 		},
-		grid: {
-			top: 30,
-			bottom: 50,
-			right: 15,
-			left: 30
+		"grid": {
+			"top": 30,
+			"bottom": 50,
+			"right": 15,
+			"left": 30
 		},
-		legend: {
-			bottom: 'left',
+		"legend": {
+			"bottom": 'left',
 		},
-		toolbox: {
-			show: false,
+		"toolbox": {
+			"show": false,
 		},
-		xAxis: {
-			type: 'category',
-			axisLabel: {
-				color: '#666666'
+		"xAxis": {
+			"type": 'category',
+			"axisLabel": {
+				"color": '#666666'
 			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
+			"axisLine": {
+				"lineStyle": {
+					"color": '#CCCCCC'
 				}
 			},
-			boundaryGap: true,
-			data: []
+			"boundaryGap": true,
+			"data": []
 		},
-		yAxis: {
-			type: 'value',
-			axisTick: {
-				show: false,
+		"yAxis": {
+			"type": 'value',
+			"axisTick": {
+				"show": false,
 			},
-			axisLabel: {
-				color: '#666666'
+			"axisLabel": {
+				"color": '#666666'
 			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
-				}
-			},
-		},
-		series: {
-			name: '',
-			type: 'line',
-			data: [],
-			barWidth: 20,
-			label: {
-				show: true,
-				position: 'top',
-			},
-		},
-	},
-	"curve": {
-		color: color,
-		title: {
-			text: ''
-		},
-		tooltip: {
-			trigger: 'axis'
-		},
-		grid: {
-			top: 30,
-			bottom: 50,
-			right: 15,
-			left: 30
-		},
-		legend: {
-			bottom: 'left',
-		},
-		toolbox: {
-			show: false,
-		},
-		xAxis: {
-			type: 'category',
-			axisLabel: {
-				color: '#666666'
-			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
-				}
-			},
-			boundaryGap: true,
-			data: []
-		},
-		yAxis: {
-			type: 'value',
-			axisTick: {
-				show: false,
-			},
-			axisLabel: {
-				color: '#666666'
-			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
+			"axisLine": {
+				"lineStyle": {
+					"color": '#CCCCCC'
 				}
 			},
 		},
-		series: {
-			name: '',
-			type: 'line',
-			data: [],
-			barWidth: 20,
-			smooth: true,
-			label: {
-				show: true,
-				position: 'top',
+		"seriesTemplate": {
+			"name": '',
+			"type": 'line',
+			"data": [],
+			"barwidth": 20,
+			"label": {
+				"show": true,
+				"position": 'top',
 			},
 		},
 	},
 	"area": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'axis'
+		"tooltip": {
+			"trigger": 'axis'
 		},
-		grid: {
-			top: 30,
-			bottom: 50,
-			right: 15,
-			left: 30
+		"grid": {
+			"top": 30,
+			"bottom": 50,
+			"right": 15,
+			"left": 30
 		},
-		legend: {
-			bottom: 'left',
+		"legend": {
+			"bottom": 'left',
 		},
-		toolbox: {
-			show: false,
+		"toolbox": {
+			"show": false,
 		},
-		xAxis: {
-			type: 'category',
-			axisLabel: {
-				color: '#666666'
+		"xAxis": {
+			"type": 'category',
+			"axisLabel": {
+				"color": '#666666'
 			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
+			"axisLine": {
+				"lineStyle": {
+					"color": '#CCCCCC'
 				}
 			},
-			boundaryGap: true,
-			data: []
+			"boundaryGap": true,
+			"data": []
 		},
-		yAxis: {
-			type: 'value',
-			axisTick: {
-				show: false,
+		"yAxis": {
+			"type": 'value',
+			"axisTick": {
+				"show": false,
 			},
-			axisLabel: {
-				color: '#666666'
+			"axisLabel": {
+				"color": '#666666'
 			},
-			axisLine: {
-				lineStyle: {
-					color: '#CCCCCC'
+			"axisLine": {
+				"lineStyle": {
+					"color": '#CCCCCC'
 				}
 			},
 		},
-		series: {
-			name: '',
-			type: 'line',
-			data: [],
-			areaStyle: {},
-			label: {
-				show: true,
-				position: 'top',
+		"seriesTemplate": {
+			"name": '',
+			"type": 'line',
+			"data": [],
+			"areaStyle": {},
+			"label": {
+				"show": true,
+				"position": 'top',
 			},
 		},
 	},
 	"pie": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'item'
+		"tooltip": {
+			"trigger": 'item'
 		},
-		grid: {
-			top: 40,
-			bottom: 30,
-			right: 15,
-			left: 30
+		"grid": {
+			"top": 40,
+			"bottom": 30,
+			"right": 15,
+			"left": 30
 		},
-		legend: {
-			bottom: 'left',
+		"legend": {
+			"bottom": 'left',
 		},
-		series: {
-			name: '',
-			type: 'pie',
-			data: [],
-			radius: '50%',
-			label: {
-				show: true,
-				position: 'top',
+		"seriesTemplate": {
+			"name": '',
+			"type": 'pie',
+			"data": [],
+			"radius": '50%',
+			"label": {
+				"show": true,
+				"position": 'top',
 			},
 		},
 	},
 	"ring": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'item'
+		"tooltip": {
+			"trigger": 'item'
 		},
-		grid: {
-			top: 40,
-			bottom: 30,
-			right: 15,
-			left: 30
+		"grid": {
+			"top": 40,
+			"bottom": 30,
+			"right": 15,
+			"left": 30
 		},
-		legend: {
-			bottom: 'left',
+		"legend": {
+			"bottom": 'left',
 		},
-		series: {
-			name: '',
-			type: 'pie',
-			data: [],
-			radius: ['40%', '70%'],
-			avoidLabelOverlap: false,
-			label: {
-				show: true,
-				position: 'center',
+		"seriesTemplate": {
+			"name": '',
+			"type": 'pie',
+			"data": [],
+			"radius": ['40%', '70%'],
+			"avoidLabelOverlap": false,
+			"label": {
+				"show": true,
+				"position": 'center',
 			},
-			labelLine: {
-				show: false
+			"labelLine": {
+				"show": false
 			},
 		},
 	},
 	"rose": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'item'
+		"tooltip": {
+			"trigger": 'item'
 		},
-		legend: {
-			top: 'bottom'
+		"legend": {
+			"top": 'bottom'
 		},
-		series: {
-			name: '',
-			type: 'pie',
-			data: [],
-			radius: "55%",
-			center: ['50%', '50%'],
-			roseType: 'area',
+		"seriesTemplate": {
+			"name": '',
+			"type": 'pie',
+			"data": [],
+			"radius": "55%",
+			"center": ['50%', '50%'],
+			"rosetype": 'area',
 		},
 	},
 	"funnel": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		tooltip: {
-			trigger: 'item',
-			formatter: "{b} : {c}%"
+		"tooltip": {
+			"trigger": 'item',
+			"formatter": "{b} : {c}%"
 		},
-		legend: {
-			top: 'bottom'
+		"legend": {
+			"top": 'bottom'
 		},
-		series: {
-			name: '',
-			type: 'funnel',
-			left: '10%',
-			top: 60,
-			//x2: 80,
-			bottom: 60,
-			width: '80%',
-			// height: {totalHeight} - y - y2,
-			min: 0,
-			max: 100,
-			minSize: '0%',
-			maxSize: '100%',
-			sort: 'descending',
-			gap: 2,
-			label: {
-				show: true,
-				position: 'inside'
+		"seriesTemplate": {
+			"name": '',
+			"type": 'funnel',
+			"left": '10%',
+			"top": 60,
+			"bottom": 60,
+			"width": '80%',
+			"min": 0,
+			"max": 100,
+			"minSize": '0%',
+			"maxSize": '100%',
+			"sort": 'descending',
+			"gap": 2,
+			"label": {
+				"show": true,
+				"position": 'inside'
 			},
-			labelLine: {
-				length: 10,
-				lineStyle: {
-					width: 1,
-					type: 'solid'
+			"labelLine": {
+				"length": 10,
+				"lineStyle": {
+					"width": 1,
+					"type": 'solid'
 				}
 			},
-			itemStyle: {
-				borderColor: '#fff',
-				borderWidth: 1
+			"itemStyle": {
+				"bordercolor": '#fff',
+				"borderwidth": 1
 			},
-			emphasis: {
-				label: {
-					fontSize: 20
+			"emphasis": {
+				"label": {
+					"fontSize": 20
 				}
 			},
-			data: [],
+			"data": [],
 		},
 	},
 	"gauge": {
-		color: color,
-		title: {
-			text: ''
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		series: {
-			name: '',
-			type: 'gauge',
-			axisLine: {
-				lineStyle: {
-					width: 30,
-					color: [
+		"seriesTemplate": {
+			"name": '',
+			"type": 'gauge',
+			"axisLine": {
+				"lineStyle": {
+					"width": 30,
+					"color": [
 						[0.3, '#67e0e3'],
 						[0.7, '#37a2da'],
 						[1, '#fd666d']
 					]
 				}
 			},
-			pointer: {
-				itemStyle: {
-					color: 'auto'
+			"pointer": {
+				"itemStyle": {
+					"color": 'auto'
 				}
 			},
-			axisTick: {
-				distance: -30,
-				length: 8,
-				lineStyle: {
-					color: '#fff',
-					width: 2
+			"axisTick": {
+				"distance": -30,
+				"length": 8,
+				"lineStyle": {
+					"color": '#fff',
+					"width": 2
 				}
 			},
-			splitLine: {
-				distance: -30,
-				length: 30,
-				lineStyle: {
-					color: '#fff',
-					width: 4
+			"splitLine": {
+				"distance": -30,
+				"length": 30,
+				"lineStyle": {
+					"color": '#fff',
+					"width": 4
 				}
 			},
-			axisLabel: {
-				color: 'auto',
-				distance: 40,
-				fontSize: 10
+			"axisLabel": {
+				"color": 'auto',
+				"distance": 40,
+				"fontSize": 10
 			},
-			detail: {
-				valueAnimation: true,
-				formatter: '{value} km/h',
-				color: 'auto',
-				fontSize: 16
+			"detail": {
+				"valueAnimation": true,
+				"formatter": '{value} km/h',
+				"color": 'auto',
+				"fontSize": 16
 			},
-			data: [],
+			"data": [],
 		},
 	},
 	"candle": {
-		xAxis: {
-			data: []
+		"xAxis": {
+			"data": []
 		},
-		yAxis: {},
-		color: color,
-		title: {
-			text: ''
+		"yAxis": {},
+		"color": color,
+		"title": {
+			"text": ''
 		},
-		dataZoom: [{
-				type: 'inside',
-				xAxisIndex: [0, 1],
-				start: 10,
-				end: 100
+		"dataZoom": [{
+				"type": 'inside',
+				"xAxisIndex": [0, 1],
+				"start": 10,
+				"end": 100
 			},
 			{
-				show: true,
-				xAxisIndex: [0, 1],
-				type: 'slider',
-				bottom: 10,
-				start: 10,
-				end: 100
+				"show": true,
+				"xAxisIndex": [0, 1],
+				"type": 'slider',
+				"bottom": 10,
+				"start": 10,
+				"end": 100
 			}
 		],
-		series: {
-			name: '',
-			type: 'k',
-			data: [],
-
+		"seriesTemplate": {
+			"name": '',
+			"type": 'k',
+			"data": [],
 		},
 	}
 }
