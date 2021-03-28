@@ -30,14 +30,21 @@ module.exports = {
   "formatter":{
     "yAxisDemo1":function(val){return val+'元'},
     "yAxisDemo2":function(val){return val.toFixed(2)},
-    "seriesDemo1":function(val){return val+'元'},
+    "seriesDemo1":function(val){
+      return val+'元'
+    },
     "tooltipDemo1":function(item, category, index, opts){
-      if(item.name=='成交量A'){
+      if(index==0){
       	return '随便用'+item.data+'年'
       }else{
-      	return '这俩我没改'+item.data+'天'
+      	return '其他我没改'+item.data+'天'
       }
-    }
+    },
+    "pieDemo":function(val, index, series){
+      if(index !== undefined){
+        return series[index].name+'：'+series[index].data+'元'
+      }
+    },
   },
   //下面是自定义配置，请添加项目所需的通用配置
 	"pie":{

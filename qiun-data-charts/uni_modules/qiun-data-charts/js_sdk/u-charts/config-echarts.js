@@ -83,6 +83,7 @@ module.exports = {
 			"barwidth": 20,
 			"label": {
 				"show": true,
+        "color": "#666666",
 				"position": 'top',
 			},
 		},
@@ -141,6 +142,7 @@ module.exports = {
 			"barwidth": 20,
 			"label": {
 				"show": true,
+        "color": "#666666",
 				"position": 'top',
 			},
 		},
@@ -199,6 +201,7 @@ module.exports = {
 			"areaStyle": {},
 			"label": {
 				"show": true,
+        "color": "#666666",
 				"position": 'top',
 			},
 		},
@@ -227,6 +230,7 @@ module.exports = {
 			"radius": '50%',
 			"label": {
 				"show": true,
+        "color": "#666666",
 				"position": 'top',
 			},
 		},
@@ -256,10 +260,11 @@ module.exports = {
 			"avoidLabelOverlap": false,
 			"label": {
 				"show": true,
-				"position": 'center',
+        "color": "#666666",
+				"position": 'top',
 			},
 			"labelLine": {
-				"show": false
+				"show": true
 			},
 		},
 	},
@@ -333,55 +338,14 @@ module.exports = {
 	},
 	"gauge": {
 		"color": color,
-		"title": {
-			"text": ''
-		},
+		"tooltip": {
+        "formatter": '{a} <br/>{b} : {c}%'
+    },
 		"seriesTemplate": {
-			"name": '',
-			"type": 'gauge',
-			"axisLine": {
-				"lineStyle": {
-					"width": 30,
-					"color": [
-						[0.3, '#67e0e3'],
-						[0.7, '#37a2da'],
-						[1, '#fd666d']
-					]
-				}
-			},
-			"pointer": {
-				"itemStyle": {
-					"color": 'auto'
-				}
-			},
-			"axisTick": {
-				"distance": -30,
-				"length": 8,
-				"lineStyle": {
-					"color": '#fff',
-					"width": 2
-				}
-			},
-			"splitLine": {
-				"distance": -30,
-				"length": 30,
-				"lineStyle": {
-					"color": '#fff',
-					"width": 4
-				}
-			},
-			"axisLabel": {
-				"color": 'auto',
-				"distance": 40,
-				"fontSize": 10
-			},
-			"detail": {
-				"valueAnimation": true,
-				"formatter": '{value} km/h',
-				"color": 'auto',
-				"fontSize": 16
-			},
-			"data": [],
+			"name": '业务指标',
+      "type": 'gauge',
+      "detail": {"formatter": '{value}%'},
+      "data": [{"value": 50, "name": '完成率'}]
 		},
 	},
 	"candle": {

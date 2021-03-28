@@ -9,7 +9,7 @@
       <qiun-data-charts type="pie" :localdata="chartsData.localdataB"/>
     </view>
     <qiun-title-bar title="渲染完成后显示自定义tooltip" />
-    <view class="charts-box">
+    <view class="charts-box"> 
       <!-- 这个demo演示在config-ucharts.js里事先定义好的formatter 渲染完成后显示tooltip-->
       <qiun-data-charts
         type="column"
@@ -41,6 +41,10 @@
         :ontouch="true"
         :onmovetip="true"
       />
+    </view>
+    <qiun-title-bar title="饼状图format用法"/>
+    <view class="charts-box">
+      <qiun-data-charts type="pie" :chartData="chartsData.Pie1"/>
     </view>
   </view>
 </template>
@@ -79,7 +83,22 @@ export default {
         this.chartsData.localdata=JSON.parse(JSON.stringify(demodata.localdata))
         this.chartsData.localdataB=JSON.parse(JSON.stringify(demodata.localdataB))
       	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column2=JSON.parse(JSON.stringify(demodata.Column))
+        
+        //数据点格式化示例
+      	let columnFormatDemo=JSON.parse(JSON.stringify(demodata.Column))
+        for (var i = 0; i < columnFormatDemo.series.length; i++) {
+          columnFormatDemo.series[i].format="seriesDemo1"
+        }
+        this.chartsData.Column2=columnFormatDemo
+        
+        //饼图格式化示例
+        let pieFormatDemo=JSON.parse(JSON.stringify(demodata.Pie))
+        for (var i = 0; i < pieFormatDemo.series.length; i++) {
+          pieFormatDemo.series[i].format="pieDemo"
+        }
+        this.chartsData.Pie1=pieFormatDemo
+        
+        
       	//这里的chartsData原本是空对象，因Vue不允许在已经创建的实例上动态添加新的根级响应式属性，所以这里使用this.$forceUpdate()强制视图更新。当然也可以使用this.$set()方法将相应属性添加到嵌套的对象上。
       	//所以，不建议我这样的做法，建议直接把数据绑定到this上
       	this.$forceUpdate();

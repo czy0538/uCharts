@@ -141,16 +141,12 @@ function deepCloneAssign(origin = {}, ...args) {
   return origin;
 }
 
-function formatterAssign(args) {
-  for (let i in args) {
-    for (let key in args[i]) {
-      if (args[i].hasOwnProperty(key)) {
-        if(typeof args[i][key] === 'object'){
-          formatterAssign(args[i][key])
-        }else if(key === 'format' && typeof args[i][key] === 'string'){
-          args[i]['formatter'] = cfu.formatter[args[i][key]] ? cfu.formatter[args[i][key]] : undefined;
-        }
-      }
+function formatterAssign(args,formatter) {
+  for (let key in args) {
+    if(typeof args[key] === 'object'){
+      formatterAssign(args[key],formatter)
+    }else if(key === 'format' && typeof args[key] === 'string'){
+      args['formatter'] = formatter[args[key]] ? formatter[args[key]] : undefined;
     }
   }
   return args;
@@ -653,14 +649,10 @@ export default {
             cfe.option[cid].yAxis.data = drawData.categories
           }
           cfe.option[cid].series = []
-          if(drawData.series.length >0){
-            drawData.series.map(item=>{
-              let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate);
-              for(let key in item){
-                Template[key] = item[key];
-              }
-              cfe.option[cid].series.push(Template)
-            })
+          for (var i = 0; i < drawData.series.length; i++) {
+            cfe.option[cid].seriesTemplate = cfe.option[cid].seriesTemplate ? cfe.option[cid].seriesTemplate : {}
+            let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate,drawData.series[i])
+            cfe.option[cid].series.push(Template)
           }
           this.mixinDatacomErrorMessage = null;
           this.init();
@@ -761,6 +753,11 @@ export default {
             //如果是H5或者App端，采用renderjs渲染图表
             if (this.inH5 || this.inApp) {
               if (this.echarts == true) {
+                cfe.option[cid].ontap = this.ontap;
+                cfe.option[cid].onmouse = this.onmouse;
+                cfe.option[cid].tooltipShow = this.tooltipShow;
+                cfe.option[cid].tooltipFormat = this.tooltipFormat;
+                cfe.option[cid].tooltipCustom = this.tooltipCustom;
                 this.echartsOpts = cfe.option[cid];
                 this.mixinDatacomLoading = false;
                 this.showchart = true;
@@ -771,6 +768,7 @@ export default {
               }
             //如果是小程序端，采用uCharts渲染
             } else {
+              cfu.option[cid] = formatterAssign(cfu.option[cid],cfu.formatter)
               this.mixinDatacomErrorMessage = null;
               this.mixinDatacomLoading = false;
               this.showchart = true;
@@ -788,7 +786,7 @@ export default {
                       canvas.height = data.height * this.pixel;
                       canvas._width = data.width * this.pixel;
                       canvas._height = data.height * this.pixel;
-                      this._formatter(cid);
+                      this._newChart(cid);
                     } else {
                       this.showchart = false;
                       this.mixinDatacomErrorMessage = '参数错误：未获取到dom节点，请检查是否传入canvasID';
@@ -797,7 +795,7 @@ export default {
               } else {
                 this.$nextTick(() => {
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
-                  this._formatter(cid);
+                  this._newChart(cid);
                 });
               }
             }
@@ -812,10 +810,6 @@ export default {
         .exec();
     },
     // #ifndef APP-PLUS || H5
-    _formatter(cid){
-      cfu.option[cid] = formatterAssign(cfu.option[cid])
-      this._newChart(cid);
-    },
     _newChart(cid) {
       if (this.mixinDatacomLoading == true) {
         return;
@@ -982,21 +976,16 @@ import cfe from '../../js_sdk/u-charts/config-echarts.js';
 var that = {};
 var rootdom = null;
 
-function formatterAssign(args) {
-  for (let i in args) {
-    for (let key in args[i]) {
-      if (args[i].hasOwnProperty(key)) {
-        if(typeof args[i][key] === 'object'){
-          formatterAssign(args[i][key])
-        }else if(key === 'format' && typeof args[i][key] === 'string'){
-          args[i]['formatter'] = cfu.formatter[args[i][key]] ? cfu.formatter[args[i][key]] : undefined;
-        }
-      }
+function rdformatterAssign(args,formatter) {
+  for (let key in args) {
+    if(typeof args[key] === 'object'){
+      rdformatterAssign(args[key],formatter)
+    }else if(key === 'format' && typeof args[key] === 'string'){
+      args['formatter'] = formatter[args[key]] ? formatter[args[key]] : undefined;
     }
   }
   return args;
 }
-
 
 export default {
   data() {
@@ -1017,6 +1006,13 @@ export default {
   methods: {
     //==============以下是ECharts的方法====================
     ecinit(newVal, oldVal, owner, instance){
+      // #ifdef H5
+      let dm = document.querySelectorAll('uni-main')[0]
+      if(dm === undefined){
+        dm = document.querySelectorAll('uni-page-wrapper')[0]
+      }
+      rootdom = {top:dm.offsetTop,left:dm.offsetLeft}
+      // #endif
       let cid = JSON.parse(JSON.stringify(newVal.id))
       this.rid = cid
       that[cid] = this.$ownerInstance
@@ -1035,31 +1031,70 @@ export default {
         document.head.appendChild(script)
       }
     },
+    ecresize(newVal, oldVal, owner, instance){
+      if(cfe.instance[this.rid]){
+        cfe.instance[this.rid].resize()
+      }
+    },
     newEChart(){
       let cid = this.rid
       if(cfe.instance[cid] === undefined){
         cfe.instance[cid] = echarts.init(that[cid].$el.children[0])
-        cfe.instance[cid].on('click', resdata => {
-          let event = JSON.parse(JSON.stringify({
-            x:resdata.event.offsetX,y:resdata.event.offsetY
-          }))
-          that[cid].callMethod('emitMsg',{name:"getIndex", params:{type:"getIndex", event:event, currentIndex:resdata.dataIndex, value:resdata.data, seriesName: resdata.seriesName,id:cid}})
-        })
+        //ontap开启后才触发click事件
+        if(cfe.option[cid].ontap === true){
+          cfe.instance[cid].on('click', resdata => {
+            let event = JSON.parse(JSON.stringify({
+              x:resdata.event.offsetX,y:resdata.event.offsetY
+            }))
+            that[cid].callMethod('emitMsg',{name:"getIndex", params:{type:"getIndex", event:event, currentIndex:resdata.dataIndex, value:resdata.data, seriesName: resdata.seriesName,id:cid}})
+          })
+        }
         this.updataEChart(cid,cfe.option[cid])
       }else{
         this.updataEChart(cid,cfe.option[cid])
       }
     },
     updataEChart(cid,option){
+      if(option.tooltip){
+        option.tooltip.show = option.tooltipShow?true:false;
+        option.tooltip.position = this.tooltipPosition()
+        //tooltipFormat方法，替换组件的tooltipFormat为config-echarts.js内对应的方法
+        if (typeof option.tooltipFormat === 'string' && cfe.formatter[option.tooltipFormat]) {
+          option.tooltip.formatter = option.tooltip.formatter ? option.tooltip.formatter : cfe.formatter[option.tooltipFormat]
+        }
+      }
+      // 颜色渐变添加的方法
+      if (option.series) {
+      	for (let i in option.series) {
+      		let linearGradient = option.series[i].linearGradient
+      		if (linearGradient) {
+      			option.series[i].color = new echarts.graphic.LinearGradient(linearGradient[0],linearGradient[1],linearGradient[2],linearGradient[3],linearGradient[4])
+      		}
+      	}
+      }
+      //替换option内format属性为formatter的预定义方法
+      option = rdformatterAssign(option,cfe.formatter)
       cfe.instance[cid].setOption(option, option.notMerge)
     },
-    ecresize(newVal, oldVal, owner, instance){
-      if(cfe.instance[this.rid]){
-        cfe.instance[this.rid].resize()
+    tooltipPosition(){
+      return (point, params, dom, rect, size) => {
+      	let x = point[0]
+      	let y = point[1]
+      	let viewWidth = size.viewSize[0]
+      	let viewHeight = size.viewSize[1]
+      	let boxWidth = size.contentSize[0]
+      	let boxHeight = size.contentSize[1]
+      	let posX = x + 30 
+      	let posY = y + 30 
+      	if (posX + boxWidth > viewWidth) { 
+      		posX = x - boxWidth - 30
+      	}
+      	if (posY + boxHeight > viewHeight) {
+      		posY = y - boxHeight - 30
+      	}
+      	return [posX, posY]
       }
     },
-    
-    
     //==============以下是uCharts的方法====================
     ucinit(newVal, oldVal, owner, instance){
       // #ifdef H5
@@ -1073,12 +1108,9 @@ export default {
       this.rid = cid
       that[cid] = this.$ownerInstance
       cfu.option[cid] = JSON.parse(JSON.stringify(newVal))
+      cfu.option[cid] = rdformatterAssign(cfu.option[cid],cfu.formatter)
       let canvasdom = document.getElementById(cid)
       cfu.option[cid].context = canvasdom.children[0].getContext("2d")
-      this.formatter(cid)
-    },
-    formatter(cid){
-      cfu.option[cid] = formatterAssign(cfu.option[cid])
       this.newUChart(cid)
     },
     newUChart(cid) {

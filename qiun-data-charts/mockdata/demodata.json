@@ -107,7 +107,6 @@
 	},
   "PieA": {
   	"series": [{
-  		"name": "groupA",
   		"data": [
         {
         	"name": "一班",

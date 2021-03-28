@@ -359,7 +359,7 @@ function avoidCollision(obj, target) {
 
 function fixPieSeries(series, opts, config){
   let pieSeriesArr = [];
-  if(opts._pieSeries_ === undefined && typeof series[0].data === "object"){
+  if(series[0].data.constructor.toString().indexOf('Array') > -1){
     opts._pieSeries_ = series;
     let oldseries = series[0].data;
     for (var i = 0; i < oldseries.length; i++) {
@@ -1930,9 +1930,8 @@ function drawPieText(series, opts, config, context, radius, center) {
   var lineRadius = config.pieChartLinePadding;
   var textObjectCollection = [];
   var lastTextObject = null;
-  var seriesConvert = series.map(function(item) {
-    var text = item.formatter ? item.formatter(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_.toFixed(
-      4) * 100) + '%';
+  var seriesConvert = series.map(function(item,index,series) {
+    var text = item.formatter ? item.formatter(item,index,series) : util.toFixed(item._proportion_.toFixed(4) * 100) + '%';
     if (item._rose_proportion_) item._proportion_ = item._rose_proportion_;
     var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
     var color = item.color;
@@ -4694,7 +4693,7 @@ function drawFunnelText(series, opts, context, eachSpacing, labelAlign, activeWi
   for (let i = 0; i < series.length; i++) {
     let item = series[i];
     let startX, endX, startY, fontSize;
-    let text = item.formatter ? item.formatter(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
+    let text = item.formatter ? item.formatter(item,i,series) : util.toFixed(item._proportion_ * 100) + '%';
     if (labelAlign == 'right') {
       if (i == 0) {
         startX = (item.funnelArea[2] + centerPosition.x) / 2;
