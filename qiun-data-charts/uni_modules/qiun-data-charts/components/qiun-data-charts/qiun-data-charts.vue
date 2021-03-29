@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v1.0.0.20210327
+ * qiun-data-charts 秋云高性能跨全端图表组件 v1.0.0.20210330
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -315,6 +315,7 @@ export default {
       echartsResize:false,
       uchartsOpts: {},
       echartsOpts: {},
+      drawData:{}
     };
   },
   mounted() {
@@ -350,27 +351,8 @@ export default {
     if (this.type2d === true && this.canvasId === 'uchartsid') {
       console.log('[uCharts]:开启canvas2d模式，必须指定canvasId，否则会出现偶尔获取不到dom节点的问题！');
     }
-    this.disScroll = this.disableScroll
-    if(this.echarts === true){
-      if (this.type && cfe.type.includes(this.type)) {
-        cfe.option[this.cid] = deepCloneAssign({}, cfe[this.type], this.eopts);
-      }else{
-        cfe.option[this.cid] = deepCloneAssign({}, this.eopts);
-      }
-      cfe.option[this.cid].id = this.cid;
-      cfe.option[this.cid].lastDrawTime = Date.now();
-      this.beforeInit();
-    }else{
-      if (this.type && cfu.type.includes(this.type)) {
-        cfu.option[this.cid] = deepCloneAssign({}, cfu[this.type], this.opts);
-        cfu.option[this.cid].lastDrawTime = Date.now();
-        this.beforeInit();
-      } else {
-        this.mixinDatacomLoading = false;
-        this.showchart = false;
-        this.mixinDatacomErrorMessage = '参数错误：props参数中type类型不正确';
-      }
-    }
+    this.disScroll = this.disableScroll;
+    this.beforeInit();
     uni.onWindowResize(res => {
       setTimeout(() => {
         if(this.echarts){
@@ -396,7 +378,7 @@ export default {
       handler(val, oldval) {
         if (typeof val === 'object') {
           if (JSON.stringify(val) !== JSON.stringify(oldval)) {
-            this.checkData(val);
+            this.beforeInit();
           }
         } else {
           this.mixinDatacomLoading = false;
@@ -410,7 +392,7 @@ export default {
     localdata:{
       handler(val, oldval) {
         if (JSON.stringify(val) !== JSON.stringify(oldval)) {
-          this.localdataInit(val);
+          this.beforeInit();
         }
       },
       immediate: false,
@@ -418,14 +400,9 @@ export default {
     },
     optsProps: {
       handler(val, oldval) {
-        //渲染防抖
-        // let currTime = Date.now();
-        // let duration = currTime - cfu.option[this.cid].lastDrawTime;
-        // if (cfu.option[this.cid].animation==true && duration < 1000) return;
         if (typeof val === 'object') {
-          if (JSON.stringify(val) !== JSON.stringify(oldval)) {
-            cfu.option[this.cid] = deepCloneAssign({}, cfu[this.type], val);
-            this.checkData(this.chartData);
+          if (JSON.stringify(val) !== JSON.stringify(oldval) && this.echarts === false) {
+            this.checkData(this.drawData);
           }
         } else {
           this.mixinDatacomLoading = false;
@@ -438,18 +415,9 @@ export default {
     },
     eoptsProps: {
       handler(val, oldval) {
-        //渲染防抖
-        // let currTime = Date.now();
-        // let duration = currTime - cfe.option[this.cid].lastDrawTime;
-        // if (cfe.option[this.cid].animation==true && duration < 1000) return;
         if (typeof val === 'object') {
-          if (JSON.stringify(val) !== JSON.stringify(oldval)) {
-            if (this.type && cfe.type.includes(this.type)) {
-              cfe.option[this.cid] = deepCloneAssign({}, cfe[this.type], val);
-            }else{
-              cfe.option[this.cid] = deepCloneAssign({}, val);
-            }
-            this.checkData(this.chartData);
+          if (JSON.stringify(val) !== JSON.stringify(oldval) && this.echarts === true) {
+            this.checkData(this.drawData);
           }
         } else {
           this.mixinDatacomLoading = false;
@@ -461,12 +429,14 @@ export default {
       deep: true
     },
     reshow(val, oldval) {
-      if (val === true) {
+      if (val === true && this.mixinDatacomLoading === false) {
+        this.showchart = true;
+        this.mixinDatacomErrorMessage = null;
         if(this.echarts === true){
             this.echartsResize = !this.echartsResize
         }
         this._clearChart();
-        this.checkData(this.chartData, true);
+        this.init();
       }
     },
     reload(val, oldval) {
@@ -502,13 +472,18 @@ export default {
   },
   methods: {
     beforeInit(){
+      this.showchart = false;
+      this.mixinDatacomErrorMessage = null;
       if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
         this.mixinDatacomLoading = true;
+        //拷贝一下chartData，为了opts变更后统一数据来源
+        this.drawData = deepCloneAssign({}, this.chartData);
         this.checkData(this.chartData);
       }else if(this.localdata.length>0){
         this.mixinDatacomLoading = true;
         this.localdataInit(this.localdata);
       }else if(this.collection !== ''){
+        this.mixinDatacomLoading = false;
         this.getCloudData();
       }else{
         this.mixinDatacomLoading = true;
@@ -624,41 +599,61 @@ export default {
         }
       }
       tmpData.series = tmpseries
+      //拷贝一下chartData，为了opts变更后统一数据来源
+      this.drawData = deepCloneAssign({}, tmpData);
       this.checkData(tmpData)
     },
     reloading() {
-      this.showchart = false;
-      this.mixinDatacomErrorMessage = null;
       if (this.collection !== '') {
         this.mixinDatacomLoading = false;
         this.onMixinDatacomPropsChange(true);
       } else {
-        this.mixinDatacomLoading = true;
         this.beforeInit();
       }
     },
-    checkData(chartData, reshow) {
+    checkData(anyData) {
       let cid = this.cid
-      let drawData = deepCloneAssign({}, chartData);
-      if (drawData.series !== undefined && drawData.series.length > 0) {
+      //复位opts或eopts
+      if(this.echarts === true){
+        if (this.type && cfe.type.includes(this.type)) {
+          cfe.option[cid] = deepCloneAssign({}, cfe[this.type], this.eopts);
+        }else{
+          cfe.option[cid] = deepCloneAssign({}, this.eopts);
+        }
+        cfe.option[cid].id = cid;
+        cfe.option[cid].lastDrawTime = Date.now();
+      }else{
+        if (this.type && cfu.type.includes(this.type)) {
+          cfu.option[cid] = deepCloneAssign({}, cfu[this.type], this.opts);
+          cfu.option[cid].canvasId = cid;
+          cfu.option[cid].lastDrawTime = Date.now();
+        } else {
+          this.mixinDatacomLoading = false;
+          this.showchart = false;
+          this.mixinDatacomErrorMessage = '参数错误：props参数中type类型不正确';
+        }
+      }
+      //挂载categories和series
+      let newData = deepCloneAssign({}, anyData);
+      if (newData.series !== undefined && newData.series.length > 0) {
         if (this.echarts === true) {
           if(cfe.option[cid].xAxis && cfe.option[cid].xAxis.type && cfe.option[cid].xAxis.type === 'category'){
-            cfe.option[cid].xAxis.data = drawData.categories
+            cfe.option[cid].xAxis.data = newData.categories
           }
           if(cfe.option[cid].yAxis && cfe.option[cid].yAxis.type && cfe.option[cid].yAxis.type === 'category'){
-            cfe.option[cid].yAxis.data = drawData.categories
+            cfe.option[cid].yAxis.data = newData.categories
           }
           cfe.option[cid].series = []
-          for (var i = 0; i < drawData.series.length; i++) {
+          for (var i = 0; i < newData.series.length; i++) {
             cfe.option[cid].seriesTemplate = cfe.option[cid].seriesTemplate ? cfe.option[cid].seriesTemplate : {}
-            let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate,drawData.series[i])
+            let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate,newData.series[i])
             cfe.option[cid].series.push(Template)
           }
           this.mixinDatacomErrorMessage = null;
           this.init();
         }else{
-          cfu.option[cid].categories = drawData.categories;
-          cfu.option[cid].series = drawData.series;
+          cfu.option[cid].categories = newData.categories;
+          cfu.option[cid].series = newData.series;
           this.mixinDatacomErrorMessage = null;
           this._clearChart();
           this.init();
@@ -724,8 +719,6 @@ export default {
     },
     init() {
       let cid = this.cid
-      //为了防止uCharts改变chartData对象导致意外的更新图表
-      let uchartData = deepCloneAssign({}, this.chartData);
       let chartdom = uni
         .createSelectorQuery()
         .in(this)
@@ -735,7 +728,6 @@ export default {
             this.cWidth = data.width;
             this.cHeight = data.height;
             if(this.echarts !== true){
-              cfu.option[cid].canvasId = cid;
               cfu.option[cid].background = this.background == 'none' ? '#FFFFFF' : this.background;
               cfu.option[cid].canvas2d = this.type2d;
               cfu.option[cid].pixelRatio = this.pixel;
@@ -995,6 +987,13 @@ export default {
   },
   mounted() {
     rootdom = {top:0,left:0}
+    // #ifdef H5
+    let dm = document.querySelectorAll('uni-main')[0]
+    if(dm === undefined){
+      dm = document.querySelectorAll('uni-page-wrapper')[0]
+    }
+    rootdom = {top:dm.offsetTop,left:dm.offsetLeft}
+    // #endif
   },
   destroyed(){
     delete cfu.option[this.rid]
@@ -1006,13 +1005,6 @@ export default {
   methods: {
     //==============以下是ECharts的方法====================
     ecinit(newVal, oldVal, owner, instance){
-      // #ifdef H5
-      let dm = document.querySelectorAll('uni-main')[0]
-      if(dm === undefined){
-        dm = document.querySelectorAll('uni-page-wrapper')[0]
-      }
-      rootdom = {top:dm.offsetTop,left:dm.offsetLeft}
-      // #endif
       let cid = JSON.parse(JSON.stringify(newVal.id))
       this.rid = cid
       that[cid] = this.$ownerInstance
@@ -1022,10 +1014,10 @@ export default {
       }else{
         const script = document.createElement('script')
         // #ifdef APP-PLUS
-        script.src = './uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
+        script.src = '/uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
         // #endif
         // #ifdef H5
-        script.src = './uni_modules/qiun-data-charts/static/h5/echarts.min.js'
+        script.src = '/uni_modules/qiun-data-charts/static/h5/echarts.min.js'
         // #endif
         script.onload = this.newEChart
         document.head.appendChild(script)
@@ -1049,12 +1041,17 @@ export default {
             that[cid].callMethod('emitMsg',{name:"getIndex", params:{type:"getIndex", event:event, currentIndex:resdata.dataIndex, value:resdata.data, seriesName: resdata.seriesName,id:cid}})
           })
         }
+        cfe.instance[cid].on('finished', function(){
+          that[cid].callMethod('emitMsg',{name:"complete",params:{type:"complete",complete:true,id:cid}})
+        })
         this.updataEChart(cid,cfe.option[cid])
       }else{
         this.updataEChart(cid,cfe.option[cid])
       }
     },
     updataEChart(cid,option){
+      //替换option内format属性为formatter的预定义方法
+      option = rdformatterAssign(option,cfe.formatter)
       if(option.tooltip){
         option.tooltip.show = option.tooltipShow?true:false;
         option.tooltip.position = this.tooltipPosition()
@@ -1072,8 +1069,6 @@ export default {
       		}
       	}
       }
-      //替换option内format属性为formatter的预定义方法
-      option = rdformatterAssign(option,cfe.formatter)
       cfe.instance[cid].setOption(option, option.notMerge)
     },
     tooltipPosition(){
@@ -1097,13 +1092,6 @@ export default {
     },
     //==============以下是uCharts的方法====================
     ucinit(newVal, oldVal, owner, instance){
-      // #ifdef H5
-      let dm = document.querySelectorAll('uni-main')[0]
-      if(dm === undefined){
-        dm = document.querySelectorAll('uni-page-wrapper')[0]
-      }
-      rootdom = {top:dm.offsetTop,left:dm.offsetLeft}
-      // #endif
       let cid = JSON.parse(JSON.stringify(newVal.canvasId))
       this.rid = cid
       that[cid] = this.$ownerInstance

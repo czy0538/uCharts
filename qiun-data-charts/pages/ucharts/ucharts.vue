@@ -11,7 +11,7 @@
     4、我的class="charts-box"这个样式，指定了高度，如果你的父元素有固定高度，请修改为height:100%
     -->
     <view class="charts-box">
-      <qiun-data-charts type="column" :chartData="chartsData.Column1" />
+      <qiun-data-charts type="column" :chartData="column1" />
     </view>
     <qiun-title-bar title="堆叠柱状图"/>
     <!-- 只需要在:opts中传入与config-ucharts.js中默认配置不同的属性即可覆盖默认配置，既保证了全局图表样式的统一性，也减少了代码量与包体积 -->
@@ -125,12 +125,11 @@
 //下面是演示数据，您的项目不需要引用，数据需要您从服务器自行获取
 import demodata from '@/mockdata/demodata.json';
 import mapdata from '@/mockdata/mapdata.json'
-//下面是uCharts的配置文件及qiun-data-charts组件的公用中转参数，可以从本配置文件中获取uCharts实例、opts配置、format配置（APP端因采用renderjs无法从此配置文件获取uCharts实例）
-import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
 
 export default {
   data() {
     return {
+      column1:{},
       chartsData: {},
     };
   },
@@ -141,9 +140,10 @@ export default {
   methods: {
     getServerData() {
       setTimeout(() => {
+        this.column1=JSON.parse(JSON.stringify(demodata.Column))
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
-      	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
+      	//***注意***我是为了演示数据看起来有条理，才把chartData挂载到一个对象中，您实际项目一定不要这么做，应该每个图形一个根节点属性，***例如上面this.column1这种做法***
       	this.chartsData.Column2=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsData.Column3=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsData.Column4=JSON.parse(JSON.stringify(demodata.Column))

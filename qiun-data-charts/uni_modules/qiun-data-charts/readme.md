@@ -40,7 +40,7 @@ uCharts的开源图表组件的开发，付出了大量的个人时间与精力�
 
 ## 基本用法
 
-- template代码（[建议使用在线工具生成](https://demo.ucharts.cn)）：
+- template代码：（[建议使用在线工具生成](https://demo.ucharts.cn)）
 
 ```
 <view class="charts-box">
@@ -98,7 +98,7 @@ chartData:{
 - 使用localdata数据格式渲染图表的优势：数据结构简单，无需自行拼接chartData的categories及series，从后端拿回的数据简单处理即可生成图表。
 - localdata数据的缺点：并不是所有的图表类型均可通过localdata渲染图表，例如混合图，组件并不能识别哪个series分组需要渲染成折线还是柱状图，涉及到复杂的图表，仍需要由chartData传入。
 
-- template代码（[建议使用在线工具生成](https://demo.ucharts.cn)）：
+- template代码：（[建议使用在线工具生成](https://demo.ucharts.cn)）
 
 ```
 <view class="charts-box">
@@ -211,11 +211,23 @@ localdata:[
 |ontap|Boolean|true|否|是否监听@tap@cilck事件，禁用后不会触发组件点击事件|
 |ontouch|Boolean|false|否|是否监听@touchstart@touchmove@touchend事件（赋值为true时，非PC端在图表区域内无法拖动页面滚动）|
 |onmouse|Boolean|true|否|是否监听@mousedown@mousemove@mouseup事件，禁用后鼠标经过图表上方不会显示tooltip|
-|onmovetip|Boolean|false|否|是否开启跟手显示tooltip功能（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
+|onmovetip|Boolean|false|否|是否开启跟手显示tooltip功能（前提条件，1、需要开启touch功能，即:ontouch="true"；2、并且opts.enableScroll=false即关闭图表的滚动条功能）（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
 
-## tooltipFormat格式化
+## 组件事件及方法
 
-tooltipFormat类型为string字符串类型，需要指定config-ucharts.js中formatter下的属性值。因各小程序及app端通过组件均不能传递function类型参数，因此请先在config-ucharts.js内定义您想格式化的数据，然后在这里传入formatter下的key值，组件会自动匹配与其对应的function。如不定义该属性，组件会调用默认的tooltip方案，标准的tooltipFormat使用姿势如下：
+|事件名|说明|
+| --| --|
+|@complete|图表渲染完成事件，渲染完成会返回图表实例{complete: true, id:"xxxxx"(canvasId), type:"complete"}。可以引入config-ucharts.js/config-echarts.js来根据返回的id，调用uCharts或者ECharts实例的相关方法，详见other.vue其他图表高级应用。|
+|@getIndex|获取点击数据索引，点击后返回图表索引currentIndex，图例索引（仅uCharts）legendIndex，等信息。返回数据：{type: "getIndex", currentIndex: 3, legendIndex: -1, id:"xxxxx"(canvasId), event: {x: 100, y: 100}（点击坐标值）}|
+|@getTouchStart|（仅uCharts）拖动开始监听事件。返回数据：{type:"touchStart",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
+|@getTouchMove|（仅uCharts）拖动中监听事件。返回数据：{type:"touchMove",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
+|@getTouchEnd|（仅uCharts）拖动结束监听事件。返回数据：{type:"touchEnd",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
+|@scrollLeft|（仅uCharts）开启滚动条后，滚动条到最左侧触发的事件，用于动态打点，需要自行编写防抖方法。返回数据：{type:"scrollLeft", scrollLeft: true, id: "xxxxx"(canvasId)}|
+|@scrollRight|（仅uCharts）开启滚动条后，滚动条到最右侧触发的事件，用于动态打点，需要自行编写防抖方法。返回数据：返回数据：{type:"scrollRight", scrollRight: true, id: "xxxxx"(canvasId)}|
+
+## tooltipFormat格式化（uCharts和ECharts）
+
+tooltipFormat类型为string字符串类型，需要指定config-ucharts.js/config-echarts.js中formatter下的属性值。因各小程序及app端通过组件均不能传递function类型参数，因此请先在config-ucharts.js/config-echarts.js内定义您想格式化的数据，然后在这里传入formatter下的key值，组件会自动匹配与其对应的function。如不定义该属性，组件会调用默认的tooltip方案，标准的tooltipFormat使用姿势如下：
 
 ```
 <qiun-data-charts
@@ -228,6 +240,13 @@ config-ucharts.js
 formatter:{
   tooltipDemo1:function(item, category, index, opts){return item.data+'天'}
 }
+==================
+config-echarts.js
+formatter:{
+  tooltipDemo1:function(){
+    
+  }
+}
 ```
 
 注意，config-ucharts.js内的formatter下的function需要携带(item, category, index, opts)参数，这4个参数都是uCharts实例内传递过来的数据，具体定义如下：
@@ -239,7 +258,7 @@ formatter:{
 |index|当前点位的索引值|
 |opts|全部uCharts的opts配置，包含categories、series等一切你需要的都在里面，可以根据index索引值获取其他相关数据。您可以在渲染完成后打印一下opts，看看里面都有什么，也可以自定义一些你需要的挂载到opts上，这样就可以根据需求更方便的显示自定义内容了。|
 
-## tooltipCustom自定义
+## tooltipCustom自定义（仅uCharts）
 
 上面仅仅展示了Tooltip的自定义格式化，如果仍然仍然还不能还不能满足您的需求，只能看这里的方法了。tooltipCustom可以自定义在任何位置显示任何内容的文本，当然tooltipCustom可以和tooltipFormat格式化同时使用以达到更多不同的需求，下面展示了tooltip固定位置显示的方法：
 
@@ -285,21 +304,6 @@ tooltipCustom属性如下：
 |startwith|String|''|gettree的第一层级条件，此初始条件可以省略，不传startWith时默认从最顶级开始查询|
 |limitlevel|Number|10|gettree查询返回的树的最大层级。超过设定层级的节点不会返回。默认10级，最大15，最小1|
 
-## 组件事件及方法
-
-`全部监听事件都会返回uCharts的图表实例，通过e.charts可以直接调用图表方法，也可以直接调用uCharts的全部数据。`
-
-|事件名|说明|
-| --| --|
-|@complete|图表渲染完成事件，渲染完成会返回图表实例{complete: true, charts: uCharts}`***强烈注意，调用此方法后，需要移除监听事件，避免其他动作时触发该事件***`移除监听事件方法：e.charts.delEventListener('renderComplete')|
-|@getIndex|获取点击数据索引，点击后返回图表索引currentIndex，图例索引legendIndex，图表实例等信息。返回数据：{event: {…}, currentIndex: 3, legendIndex: -1, charts: uCharts}|
-|@getTouchStart|拖动开始监听事件。返回数据：{event: {…},charts:uCharts}|
-|@getTouchMove|拖动中监听事件。返回数据：{event: {…},charts:uCharts}|
-|@getTouchEnd|拖动结束监听事件。返回数据：{event: {…},charts:uCharts}|
-|@scrollLeft|开启滚动条后，滚动条到最左侧触发的事件，用于动态打点，需要自行编写防抖方法。返回数据：{scrollLeft:true,charts:uCharts}|
-|@scrollRight|开启滚动条后，滚动条到最右侧触发的事件，用于动态打点，需要自行编写防抖方法。返回数据：{scrollRight:true,charts:uCharts}|
-
-
 ## uni_modules目录说明
 
 ```
@@ -309,8 +313,8 @@ tooltipCustom属性如下：
 │ └── qiun-loading──────────────# 加载动画组件文件目录
 ├── js_skd
 │ └── u-charts
-│ ── └──config-echarts.js ──────# ECharts默认配置文件
-│ ── └──config-ucharts.js ──────# uCharts默认配置文件
+│ ── └──config-echarts.js ──────# ECharts默认配置文件（非APP端内可作为实例公用中转）
+│ ── └──config-ucharts.js ──────# uCharts默认配置文件（非APP端内可作为实例公用中转）
 │ ── └──u-charts-v2.0.0.js──────# uCharts基础库v2.0.0版本，部分API与之前版本不同
 ├── static
 │ └── app-plus──────────────────# 条件编译目录，仅编译到APP端

@@ -1,10 +1,10 @@
 <template>
   <view class="content">
-    <qiun-title-bar title="使用localdata渲染图表1"/>
+    <qiun-title-bar title="localdata渲染图表1+点击获取索引"/>
     <view class="charts-box">
-      <qiun-data-charts type="column" :localdata="chartsData.localdata"/>
+      <qiun-data-charts type="column" :localdata="chartsData.localdata" @getIndex="getIndex"/>
     </view>
-    <qiun-title-bar title="使用localdata渲染图表2"/>
+    <qiun-title-bar title="localdata渲染图表2"/>
     <view class="charts-box">
       <qiun-data-charts type="pie" :localdata="chartsData.localdataB"/>
     </view>
@@ -21,8 +21,6 @@
         }"
         :chartData="chartsData.Column1"
         tooltipFormat="tooltipDemo1"
-        :inScrollView="false"
-        :canvas2d="true"
         :ontouch="true"
         @complete="complete"
       />
@@ -37,14 +35,14 @@
         :tooltipFormat="tooltipFormat"
         :chartData="chartsData.Column2"
         :canvas2d="true"
-        :inScrollView="false"
         :ontouch="true"
         :onmovetip="true"
       />
     </view>
-    <qiun-title-bar title="饼状图format用法"/>
+    <qiun-title-bar title="饼状图format+动态更新数据"/>
     <view class="charts-box">
-      <qiun-data-charts type="pie" :chartData="chartsData.Pie1"/>
+      <!-- 如果使用chartData.series=[]的方法展示重新加载数据，chartData绑定的变量一定要挂到this实例上！！！否则可能会导致监听不到数据变化的问题！！！ -->
+      <qiun-data-charts type="pie" :chartData="Pie1"/>
     </view>
   </view>
 </template>
@@ -52,13 +50,20 @@
 <script>
 //下面是演示数据，您的项目不需要引用，数据需要您从服务器自行获取
 import demodata from '@/mockdata/demodata.json';
+
 //下面是uCharts的配置文件及qiun-data-charts组件的公用中转参数，可以从本配置文件中获取uCharts实例、opts配置、format配置（APP端因采用renderjs无法从此配置文件获取uCharts实例）
+//***并不是所有的页面都需要引用这个文件***引入这个configjs是为了获取组件的uCharts实例，从而操作uCharts的一些方法，例如手动显示tooltip及一些其他uCharts包含的方法及事件。
+//再说一遍，只能在H5内使用，APP不行，APP不行，APP不行
 import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
+
+
+
 
 export default {
   data() {
     return {
       chartsData: {},
+      Pie1:{},
       tooltipFormat: 'tooltipDemo2',
     };
   },
@@ -74,12 +79,32 @@ export default {
     };
     //模拟从服务器获取数据
     this.getServerData()
+    
+    //演示变更数据后显示loading状态
+    setTimeout(() => {
+      this.Pie1.series=[];
+    }, 4000);
+    //模拟新的饼图数据
+    setTimeout(() => {
+      this.Pie1.series=[{
+        "data": [
+          {
+            "name": "一班",
+            "value": 90
+          }, {
+            "name": "二班",
+            "value": 20
+          }
+        ]
+      }];
+    }, 5000);
   },
   methods: {
     getServerData() {
       setTimeout(() => {
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
+        //***注意***我是为了演示数据看起来有条理，才把chartData挂载到一个对象中，您实际项目一定不要这么做，应该每个图形一个根节点属性，***例如本页饼图this.Pie1这种做法***
         this.chartsData.localdata=JSON.parse(JSON.stringify(demodata.localdata))
         this.chartsData.localdataB=JSON.parse(JSON.stringify(demodata.localdataB))
       	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
@@ -96,22 +121,21 @@ export default {
         for (var i = 0; i < pieFormatDemo.series.length; i++) {
           pieFormatDemo.series[i].format="pieDemo"
         }
-        this.chartsData.Pie1=pieFormatDemo
-        
-        
+        this.Pie1=pieFormatDemo
       	//这里的chartsData原本是空对象，因Vue不允许在已经创建的实例上动态添加新的根级响应式属性，所以这里使用this.$forceUpdate()强制视图更新。当然也可以使用this.$set()方法将相应属性添加到嵌套的对象上。
-      	//所以，不建议我这样的做法，建议直接把数据绑定到this上
+      	//所以，不建议我这样的做法，建议直接把数据绑定到this上，否则chartData再次变更数据的时候，组件会检测不到数据变化，无法进行更新！！！
       	this.$forceUpdate();
       }, 1500);
     },
     complete(e) {
-      console.log(e);
+      console.log("渲染完成事件",e);
       //uCharts.instance[e.id]代表当前的图表实例（除APP端，APP不可在组件外调用uCharts的实例）
-      console.log(uCharts.instance[e.id]);
+      console.log("uCharts实例",uCharts.instance[e.id]);
       //uCharts.option[e.id]代表当前的图表的opts（除APP端，APP不可在组件外调用uCharts的实例）
-      console.log(uCharts.option[e.id]);
+      console.log("uCharts的option",uCharts.option[e.id]);
       //下面展示渲染完成后，通过实例调用uCharts的showToolTip方法，有了uCharts实例，您也可以在其他地方调用图表的方法及数据（除APP端，APP因采用renderjs，无法获取uCharts实例）
       // #ifndef APP-PLUS
+      //如果需要tooltip换行显示，也可以参照本示例，关闭组件本身的tooltip功能，即:tooltipShow="false"，然后在@getIndex事件中，通过uCharts.instance[e.id].showToolTip()方法来自定义。
       let textList = [
         { text: '默认显示的tooltip', color: null },
         { text: '类别1：某个值xxx', color: '#2fc25b' },
@@ -127,8 +151,8 @@ export default {
       );
       // #endif
     },
-    getTouchStart(e) {
-      console.log(e);
+    getIndex(e){
+      console.log("获取点击索引事件",e);
     }
   }
 };

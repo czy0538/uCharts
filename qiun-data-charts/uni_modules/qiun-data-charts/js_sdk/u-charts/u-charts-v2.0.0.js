@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0.20210324',
+  version: 'v2.0.0.20210330',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -871,7 +871,7 @@ function findMapChartCurrentIndex(currentPoints, opts) {
 
 function findPieChartCurrentIndex(currentPoints, pieData) {
   var currentIndex = -1;
-  if (isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
+  if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
     var angle = Math.atan2(pieData.center.y - currentPoints.y, currentPoints.x - pieData.center.x);
     angle = -angle;
     for (var i = 0, len = pieData.series.length; i < len; i++) {
