@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0.20210330',
+  version: 'v2.0.0-20210406',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -206,12 +206,12 @@ function calValidDistance(self, distance, chartData, config, opts) {
   var validDistance = distance;
   if (distance >= 0) {
     validDistance = 0;
-    self.event.trigger('scrollLeft');
+    self.uevent.trigger('scrollLeft');
     self.scrollOption.position = 'left'
     opts.xAxis.scrollPosition = 'left';
   } else if (Math.abs(distance) >= dataChartWidth - dataChartAreaWidth) {
     validDistance = dataChartAreaWidth - dataChartWidth;
-    self.event.trigger('scrollRight');
+    self.uevent.trigger('scrollRight');
     self.scrollOption.position = 'right'
     opts.xAxis.scrollPosition = 'right';
   } else {
@@ -363,7 +363,11 @@ function fixPieSeries(series, opts, config){
     opts._pieSeries_ = series;
     let oldseries = series[0].data;
     for (var i = 0; i < oldseries.length; i++) {
-      pieSeriesArr.push({"name": oldseries[i].name,"data": oldseries[i].value})
+      if(series[0].formatter){
+        pieSeriesArr.push({name: oldseries[i].name, data: oldseries[i].value, formatter: series[0].formatter})
+      }else{
+        pieSeriesArr.push({name: oldseries[i].name,data: oldseries[i].value})
+      }
     }
     opts.series = pieSeriesArr;
   }else{
@@ -1810,28 +1814,28 @@ function drawRingTitle(opts, config, context, center) {
   var subtitleHeight = subtitle ? subtitlefontSize : 0;
   var margin = 5;
   if (subtitle) {
-    var textWidth = measureText(subtitle, subtitlefontSize, context);
-    var startX = center.x - textWidth / 2 + (opts.subtitle.offsetX || 0);
-    var startY = center.y + subtitlefontSize / 2 + (opts.subtitle.offsetY || 0);
+    var textWidth = measureText(subtitle, subtitlefontSize * opts.pix, context);
+    var startX = center.x - textWidth / 2 + (opts.subtitle.offsetX|| 0) * opts.pix ;
+    var startY = center.y + subtitlefontSize * opts.pix / 2 + (opts.subtitle.offsetY || 0) * opts.pix;
     if (title) {
-      startY += (titleHeight + margin) / 2;
+      startY += (titleHeight * opts.pix + margin) / 2;
     }
     context.beginPath();
-    context.setFontSize(subtitlefontSize);
+    context.setFontSize(subtitlefontSize * opts.pix);
     context.setFillStyle(subtitleFontColor);
     context.fillText(subtitle, startX, startY);
     context.closePath();
     context.stroke();
   }
   if (title) {
-    var _textWidth = measureText(title, titlefontSize, context);
+    var _textWidth = measureText(title, titlefontSize * opts.pix, context);
     var _startX = center.x - _textWidth / 2 + (opts.title.offsetX || 0);
-    var _startY = center.y + titlefontSize / 2 + (opts.title.offsetY || 0);
+    var _startY = center.y + titlefontSize * opts.pix / 2 + (opts.title.offsetY || 0) * opts.pix;
     if (subtitle) {
-      _startY -= (subtitleHeight + margin) / 2;
+      _startY -= (subtitleHeight * opts.pix + margin) / 2;
     }
     context.beginPath();
-    context.setFontSize(titlefontSize);
+    context.setFontSize(titlefontSize * opts.pix);
     context.setFillStyle(titleFontColor);
     context.fillText(title, _startX, _startY);
     context.closePath();
@@ -4786,15 +4790,15 @@ function Animation(opts) {
   opts.timing = opts.timing || 'easeInOut';
   var delay = 17;
   function createAnimationFrame() {
-    if (typeof requestAnimationFrame !== 'undefined') {
-      return requestAnimationFrame;
-    } else if (typeof setTimeout !== 'undefined') {
+    if (typeof setTimeout !== 'undefined') {
       return function(step, delay) {
         setTimeout(function() {
           var timeStamp = +new Date();
           step(timeStamp);
         }, delay);
       };
+    } else if (typeof requestAnimationFrame !== 'undefined') {
+      return requestAnimationFrame;
     } else {
       return function(step) {
         step(null);
@@ -4984,7 +4988,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5007,7 +5011,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5038,7 +5042,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5069,7 +5073,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5100,7 +5104,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5131,7 +5135,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5151,7 +5155,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5170,7 +5174,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5189,7 +5193,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5206,7 +5210,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5223,7 +5227,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5258,27 +5262,27 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
   }
 }
 
-function Event() {
+function uChartsEvent() {
   this.events = {};
 }
 
-Event.prototype.addEventListener = function(type, listener) {
+uChartsEvent.prototype.addEventListener = function(type, listener) {
   this.events[type] = this.events[type] || [];
   this.events[type].push(listener);
 };
 
-Event.prototype.delEventListener = function(type) {
+uChartsEvent.prototype.delEventListener = function(type) {
   this.events[type] = [];
 };
 
-Event.prototype.trigger = function() {
+uChartsEvent.prototype.trigger = function() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
@@ -5289,7 +5293,7 @@ Event.prototype.trigger = function() {
       try {
         listener.apply(null, params);
       } catch (e) {
-        console.error('[uCharts] '+e);
+          //console.log('[uCharts] '+e);
       }
     });
   }
@@ -5416,7 +5420,7 @@ var uCharts = function uCharts(opts) {
     this.context.draw = function() {}
   }
   opts.chartData = {};
-  this.event = new Event();
+  this.uevent = new uChartsEvent();
   this.scrollOption = {
     currentOffset: 0,
     startTouchX: 0,
@@ -5514,11 +5518,11 @@ uCharts.prototype.stopAnimation = function() {
 };
 
 uCharts.prototype.addEventListener = function(type, listener) {
-  this.event.addEventListener(type, listener);
+  this.uevent.addEventListener(type, listener);
 };
 
 uCharts.prototype.delEventListener = function(type) {
-  this.event.delEventListener(type);
+  this.uevent.delEventListener(type);
 };
 
 uCharts.prototype.getCurrentDataIndex = function(e) {

@@ -9,25 +9,49 @@
     {
     	"path": "pages/ucharts/ucharts",
     	"style": {
-    		"navigationBarTitleText": "全端uCharts渲染Demo"
+    		"navigationBarTitleText": "全端uCharts渲染图表"
     	}
     },
     {
     	"path": "pages/echarts/echarts",
     	"style": {
-    		"navigationBarTitleText": "H5及App用echarts其他端uCharts"
+    		"navigationBarTitleText": "H5、App用ECharts，其他端用uCharts"
     	}
     },
     {
     	"path": "pages/unicloud/unicloud",
     	"style": {
-    		"navigationBarTitleText": "图表组件读取uniCloud数据并渲染"
+    		"navigationBarTitleText": "uniCloud数据渲染图表"
     	}
     },
     {
     	"path": "pages/other/other",
     	"style": {
-    		"navigationBarTitleText": "其他图表高级应用"
+    		"navigationBarTitleText": "图表交互示例"
+    	}
+    },
+    {
+    	"path": "pages/tab/tab",
+    	"style": {
+    		"navigationBarTitleText": "Tab选项卡切换示例"
+    	}
+    },
+    {
+    	"path": "pages/layout/layout",
+    	"style": {
+    		"navigationBarTitleText": "特殊布局示例"
+    	}
+    },
+    {
+    	"path": "pages/format/format",
+    	"style": {
+    		"navigationBarTitleText": "formatter用法示例"
+    	}
+    },
+    {
+    	"path": "pages/canvas/canvas",
+    	"style": {
+    		"navigationBarTitleText": "原生用法示例（非组件）"
     	}
     }
 	],

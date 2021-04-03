@@ -11,10 +11,14 @@ export default {
   data() {
     return {
       list: [
-        {name:"全端uCharts渲染",url:"../ucharts/ucharts"},
-        {name:"H5、App用ECharts，其他端用uCharts渲染",url:"../echarts/echarts"},
+        {name:"全端uCharts渲染图表",url:"../ucharts/ucharts"},
+        {name:"H5、App用ECharts，其他端用uCharts",url:"../echarts/echarts"},
         {name:"uniCloud数据渲染图表",url:"../unicloud/unicloud"},
-        {name:"其他图表高级应用",url:"../other/other"},
+        {name:"图表交互示例",url:"../other/other"},
+        {name:"formatter用法示例",url:"../format/format"},
+        {name:"Tab选项卡切换示例",url:"../tab/tab"},
+        {name:"特殊布局示例",url:"../layout/layout"},
+        {name:"原生用法示例（非组件）",url:"../canvas/canvas"},
       ],
     }
   },
@@ -36,10 +40,11 @@ export default {
   flex-direction: column;
   flex: 1;
   align-items: center;
+  padding-bottom: 40px;
 }
 .list-box{
   text-align: center;
-  margin-top: 50px;
+  margin-top: 40px;
   line-height: 40px;
   width: 80%;
   border: 1 px solid #317ac3;

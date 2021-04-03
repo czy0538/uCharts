@@ -3,7 +3,7 @@
     <!-- config-echarts.js中的seriesTemplate为option.series模板，可以作为series中的默认配置，:chartData.series中的配置如果有相同的，会覆盖掉 seriesTemplate 中的配置 -->
 		<qiun-title-bar title="柱状图+动态更新数据" />
     <view class="charts-box">
-      <qiun-data-charts type="column" :chartData="colunmdata" :echartsH5="true" :echartsApp="true" @getIndex="getIndex" @complete="complete"/>
+      <qiun-data-charts type="column" :chartData="colunmdata" :echartsH5="true" :echartsApp="true" @complete="complete"/>
     </view>
     <qiun-title-bar title="堆叠柱状图+点击获取索引" />
     <view class="charts-box">
@@ -25,6 +25,7 @@
     </view>
     <qiun-title-bar title="渐变色区域图" />
     <view class="charts-box">
+      <!-- 注意：这里的opts是uCharts的配置，eopts是ECharts的配置，不要搞混，如果不需要用在各种小程序端，是不需要传uCharts的opts的，只需要传eopts即可！！！这里加opts是为了覆盖uCharts的rose图的默认图例配置的位置 -->
       <qiun-data-charts type="area" :opts="{yAxis:{data:[{min:0}]},extra:{area:{type:'curve',addLine:true,gradient:true}}}" :chartData="chartsData.Line3" :echartsH5="true" :echartsApp="true"/>
     </view>
 		<qiun-title-bar title="饼图" />

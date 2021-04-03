@@ -2,47 +2,70 @@
   <view class="content">
     <qiun-title-bar title="localdata渲染图表1+点击获取索引"/>
     <view class="charts-box">
-      <qiun-data-charts type="column" :localdata="chartsData.localdata" @getIndex="getIndex"/>
+      <!-- 只需绑定@getIndex即可获取点击索引 -->
+      <qiun-data-charts type="column" :localdata="chartsData.localdata"  @getIndex="getIndex"/>
     </view>
-    <qiun-title-bar title="localdata渲染图表2"/>
+    <qiun-title-bar title="localdata渲染图表2+禁用鼠标移动"/>
     <view class="charts-box">
-      <qiun-data-charts type="pie" :localdata="chartsData.localdataB"/>
+      <qiun-data-charts type="pie" :localdata="chartsData.localdataB" :onmouse="false"/>
     </view>
     <qiun-title-bar title="渲染完成后显示自定义tooltip" />
     <view class="charts-box"> 
-      <!-- 这个demo演示在config-ucharts.js里事先定义好的formatter 渲染完成后显示tooltip-->
+      <!-- 渲染完成后进行操作图表，需要绑定@complete事件，然后在@complete事件中进行操作 -->
       <qiun-data-charts
         type="column"
-        :opts="{
-          enableScroll: true,
-          xAxis: { scrollShow: true, itemCount: 4, disableGrid: true },
-          yAxis: { data: [{ format: 'yAxisDemo1' }] },
-          extra: { column: { seriesGap: 5, barBorderCircle: true } }
-        }"
         :chartData="chartsData.Column1"
-        tooltipFormat="tooltipDemo1"
-        :ontouch="true"
         @complete="complete"
       />
     </view>
-    <qiun-title-bar title="临时的自定义的tooltip及跟手tooltip" />
+    <qiun-title-bar title="跟手tooltip示例" />
     <view class="charts-box" >
-      <!-- 这个demo演示用临时的自定义的tooltip（APP端不可以临时定义） 及 使用canvas2d模式在小程序端，及拖动图表时的跟手tooltip-->
+      <!-- 开启onmovetip后，建议同时开启canvas2d模式（需要传canvasId），否则在小程序端会很卡。开启onmovetip功能的前提是需要开启ontouch，并且关闭图表滚动条，即:opts="{enableScroll: false}" -->
       <qiun-data-charts
         type="column"
-        :opts="{ enableScroll: false, extra: { column: { seriesGap: 5, barBorderCircle: true } } }"
+        :opts="{enableScroll: false}"
         canvasId="canvas2dNeedId"
-        :tooltipFormat="tooltipFormat"
-        :chartData="chartsData.Column2"
+        :chartData="chartsData.Column1"
         :canvas2d="true"
         :ontouch="true"
         :onmovetip="true"
       />
     </view>
-    <qiun-title-bar title="饼状图format+动态更新数据"/>
+    <qiun-title-bar title="固定位置显示tooltip" />
+    <view class="charts-box">
+      <!-- 这个demo演示自定义tooltip的样式及增加额外的数据，例如换行等 -->
+      <qiun-data-charts
+        type="line"
+        :opts="{extra:{tooltip:{showArrow: false,borderWidth: 1,borderRadius:8,borderColor: '#FF0000',bgColor: '#FFFFFF',bgOpacity: 0.9,fontColor: '#000000',splitLine: false}}}"
+        :chartData="chartsData.Column1"
+        :tooltipCustom="{x:2,y:2}"
+      />
+    </view>
+    <qiun-title-bar title="禁用组件tooltip自行触发(换行)" />
+    <view class="charts-box">
+      <!-- 需要关闭组件的tooltip，即:tooltipShow="false"，然后在@getIndex中调用uCharts的showTooltip方法，注意，APP端不能实现，其他端需要引用config-ucharts.js作为实例承载的中间件。 -->
+      <!-- 如果需要做跟手tooltip，需要在@getTouchMove事件中调用，注意需要添加防抖，可参考组件内防抖方法，否则会导致逻辑层与视图层频繁通信造成卡顿 -->
+      <qiun-data-charts
+        type="line"
+        :tooltipShow="false"
+        :chartData="chartsData.Column1"
+        @getIndex="showMyTooltip"
+      />
+    </view>
+    <qiun-title-bar title="动态更新数据示例1"/>
     <view class="charts-box">
       <!-- 如果使用chartData.series=[]的方法展示重新加载数据，chartData绑定的变量一定要挂到this实例上！！！否则可能会导致监听不到数据变化的问题！！！ -->
       <qiun-data-charts type="pie" :chartData="Pie1"/>
+    </view>
+    <qiun-title-bar title="强制展示错误信息"/>
+    <button class="uni-button" type="default" @click="changeErrorMessage">点击展示错误信息</button>
+    <view class="charts-box">
+      <qiun-data-charts type="line" :chartData="chartsData.Line1" :errorMessage="errorMessage"/>
+    </view>
+    <qiun-title-bar title="uCharts保存为图片"/>
+    <button class="uni-button" type="default" @click="createImage('createImageUCharts')">点击保存为图片</button>
+    <view class="charts-box">
+      <qiun-data-charts type="area" ref="createImageUCharts" :chartData="chartsData.Line1"/>
     </view>
   </view>
 </template>
@@ -56,27 +79,15 @@ import demodata from '@/mockdata/demodata.json';
 //再说一遍，只能在H5内使用，APP不行，APP不行，APP不行
 import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
 
-
-
-
 export default {
   data() {
     return {
       chartsData: {},
       Pie1:{},
-      tooltipFormat: 'tooltipDemo2',
+      errorMessage:"自定义的错误信息，点击重新加载",
     };
   },
   onLoad() {
-    //tooltipFormat自定义的示例（APP端不能这么做，只能在config-ucharts.js内预先定义），item, category, index, opts详细解释看文档https://demo.ucharts.cn的帮助页
-    uCharts.formatter[this.tooltipFormat] = function(item, category, index, opts) {
-      //只有第一组数据和其他组别不一样，想要其他的请自由发挥
-      if (index === 0) {
-        return '第一组数据' + item.data + '年';
-      } else {
-        return '2016年以后的' + item.data + '天';
-      }
-    };
     //模拟从服务器获取数据
     this.getServerData()
     
@@ -108,20 +119,11 @@ export default {
         this.chartsData.localdata=JSON.parse(JSON.stringify(demodata.localdata))
         this.chartsData.localdataB=JSON.parse(JSON.stringify(demodata.localdataB))
       	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
+        this.chartsData.Line1=JSON.parse(JSON.stringify(demodata.Line))
         
-        //数据点格式化示例
-      	let columnFormatDemo=JSON.parse(JSON.stringify(demodata.Column))
-        for (var i = 0; i < columnFormatDemo.series.length; i++) {
-          columnFormatDemo.series[i].format="seriesDemo1"
-        }
-        this.chartsData.Column2=columnFormatDemo
+        //因为我需要演示Pie1数据改变，就不能用上面的chartsData定义方法，不然组件监听不到数据改变不能更新
+        this.Pie1=JSON.parse(JSON.stringify(demodata.PieA))
         
-        //饼图格式化示例
-        let pieFormatDemo=JSON.parse(JSON.stringify(demodata.Pie))
-        for (var i = 0; i < pieFormatDemo.series.length; i++) {
-          pieFormatDemo.series[i].format="pieDemo"
-        }
-        this.Pie1=pieFormatDemo
       	//这里的chartsData原本是空对象，因Vue不允许在已经创建的实例上动态添加新的根级响应式属性，所以这里使用this.$forceUpdate()强制视图更新。当然也可以使用this.$set()方法将相应属性添加到嵌套的对象上。
       	//所以，不建议我这样的做法，建议直接把数据绑定到this上，否则chartData再次变更数据的时候，组件会检测不到数据变化，无法进行更新！！！
       	this.$forceUpdate();
@@ -142,6 +144,7 @@ export default {
         { text: '类别2：某个值xxx', color: '#facc14' },
         { text: '类别3：某个值xxx', color: '#f04864' }
       ];
+      //这里指定了changedTouches的x和y坐标，当指定index索引时，x值会被自动修正到正确位置，给0即可，主要是y的坐标值
       uCharts.instance[e.id].showToolTip(
         { changedTouches: [{ x: 0, y: 100 }] },
         {
@@ -153,7 +156,42 @@ export default {
     },
     getIndex(e){
       console.log("获取点击索引事件",e);
-    }
+    },
+    showMyTooltip(e){
+      console.log("获取点击索引事件",e);
+      //拿到canvasId后即e.id，可以通过uCharts.instance[e.id]代表当前的图表实例（除APP端，APP不可在组件外调用uCharts的实例）
+      console.log("获取uCharts实例",uCharts.instance[e.id]);
+      //uCharts.option[e.id]代表当前的图表的opts（除APP端，APP不可在组件外调用uCharts的实例）
+      console.log("uCharts的option",uCharts.option[e.id]);
+      //从option（opts）中获取数据
+      let categories = uCharts.option[e.id].categories;
+      let series = uCharts.option[e.id].series;
+      //e.currentIndex是点击的的点位索引值
+      let index = e.currentIndex;
+      //自行通过uCharts的实例调用showToolTip方法（APP端不能实现，无法通过renderjs获取到uCharts实例）
+      // #ifndef APP-PLUS
+      //如果需要tooltip换行显示，也可以参照本示例，关闭组件本身的tooltip功能，即:tooltipShow="false"，然后在@getIndex事件中，通过uCharts.instance[e.id].showToolTip()方法来自定义。
+      let textList = [{ text: categories[index] + "年收入情况", color: null }];
+      for (let i = 0; i < series.length; i++) {
+        textList.push({text: "自定义" + series[i].name + ":" + series[i].data[index] + "美元", color: series[i].color})
+      }
+      //changedTouches是点击的坐标值
+      uCharts.instance[e.id].showToolTip(
+        { changedTouches: [e.event] },
+        {
+          index: index,
+          textList: textList
+        }
+      );
+      // #endif
+      
+    },
+    changeErrorMessage(){
+      this.errorMessage="自定义错误信息，点击重试"+Math.floor(Math.random() * 1000)
+    },
+    createImage(refid){
+    	this.$refs[refid].saveImage();
+    },
   }
 };
 </script>

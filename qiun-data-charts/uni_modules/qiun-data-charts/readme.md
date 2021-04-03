@@ -174,7 +174,16 @@ localdata:[
 
 /pages/unicloud/unicloud.vue（展示读取uniCloud数据库后直接渲染图表的例子）
 
-/pages/other/other.vue（其他图表高级应用的例子）
+/pages/other/other.vue（展示图表交互的例子：动态更新图表数据，渲染完成事件，获取点击索引，自定义tooltip，图表保存为图片，强制展示错误信息等）
+
+/pages/format/format.vue（展示formatter用法的例子）
+
+/pages/tab/tab.vue（展示再tab选项卡中用法的例子，即父容器采用v-show或v-if时需要注意的问题）
+
+/pages/layout/layout.vue（展示特殊布局用法的例子：swiper、scroll-view、绝对定位等布局）
+
+/pages/canvas/canvas.vue（展示uCharts v2.0版本原生js用法的例子）
+
 ```
 
 
@@ -198,6 +207,7 @@ localdata:[
 |background|String|none|否|背景颜色，默认透明none，可选css的16进制color值，如#FFFFFF|
 |animation|Boolean|true|否|是否开启图表动画效果|
 |inScrollView|Boolean|false|否|图表组件是否在scroll-view中，如果在请传true，否则会出现点击事件坐标不准确的现象|
+|pageScrollTop|Number|0|否|如果图表组件是在scroll-view中，并且整个页面还存在滚动条，这个值应为绑定为页面滚动条滚动的距离，否则会出现点击事件坐标不准确的现象|
 |reshow|Boolean|false|否|强制重新渲染属性，如果图表组件父级用v-show包裹，初始化的时候会获取不到元素的宽高值，导致渲染失败，此时需要把父元素的v-show方法复制到reshow中，组件检测到reshow值变化并且为true的时候会强制重新渲染|
 |reload|Boolean|false|否|强制重新加载属性，与上面的reshow区别在于：1、reload会重新显示loading动画；2、如果组件绑定了uniCloud数据查询，通过reload会重新执行SQL语句查询，重新请求网络。而reshow则不会显示loading动画，只是应用现有的chartData数据进行重新渲染|
 |disableScroll|Boolean|false|否|当在canvas中移动时，且有绑定手势事件时，禁止屏幕滚动以及下拉刷新（赋值为true时，在图表区域内无法拖动页面滚动）|
@@ -377,8 +387,8 @@ tooltipCustom属性如下：
 
 - `图表无法显示问题`：
 	* 请先检查您的HBuilderX版本，要求高于3.1.0+。
-	* 其次请检查组件绑定的CSS样式，是否没有正确的宽高，组件内图表会自适应父级结构的尺寸。
-	* 最后检查父级是否使用了v-show来控制显示，建议将v-show改成v-if来控制父层级逻辑。因为页面初始化时组件处于隐藏状态，组件则无法正确获取宽高尺寸。如果不能改成v-if来控制，此时需要组件内绑定reshow属性（逻辑应与父级的v-show的逻辑相同），强制重新渲染图表，例如:reshow="父级v-show绑定的事件"。
+	* 其次请检查组件父元素绑定的CSS样式（示例中class="charts-box"这个样式），是否没有正确的宽高，组件内图表会自适应父级结构的尺寸。
+	* 最后检查父级是否使用了v-show来控制显示。如果页面初始化时组件处于隐藏状态，组件则无法正确获取宽高尺寸，此时需要组件内绑定reshow属性（逻辑应与父级的v-show的逻辑相同），强制重新渲染图表，例如:reshow="父级v-show绑定的事件"。
 - `图表抖动问题`：如果开启了animation动画效果，由于组件内开启了chartData和opts的监听，当数据变化时会重新渲染图表，建议整体改变chartData及opts的属性值，而不要通过循环或遍历来改变this实例下的chartData及opts，例如先定义一个临时变量，拼接好数据后再整体赋值。
 - `Loading状态问题`：如不使用uniClinetDB获取数据源，并且需要展示Loading状态，请先清空series，使组件变更为Loading状态，即this.chartData.series=[]即可展示，然后再从服务端获取数据，拼接完成后再传入this.chartData。如果不需要展示Loading状态，则不需要以上步骤，获取到数据，拼接好标准格式后，直接赋值即可。
 - `微信小程序图表层级过高问题`：因canvas在微信小程序是原生组件，如果使用自定义tabbar或者自定义导航栏，图表则会超出预期，此时需要给组件的canvas2d传值true来使用type='2d'的功能，开启此模式后，开发者工具显示不正常，图表层级会变高，而正常预览或者发布上线则是正常状态，开发者不必担心，一切以真机预览为准（因微信开发者工具显示不正确，canvas2d这种模式下给调试带来了困难，开发时，可以先用:canvas2d="false"来调试，调试无误后再改成true）。

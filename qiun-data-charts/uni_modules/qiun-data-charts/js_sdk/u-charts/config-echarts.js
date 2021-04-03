@@ -28,7 +28,28 @@ module.exports = {
 	"option": {},
   //以上数据请勿改动
   //下面是自定义format配置，因除H5端外的其他端无法通过props传递函数，只能通过此属性对应下标的方式来替换
-  "formatter":{},
+  "formatter":{
+    "tooltipDemo1":function(res){
+      let result = ''
+      for (let i in res) {
+      	if (i == 0) {
+      		result += res[i].axisValueLabel + '年销售额'
+      	}
+      	let value = '--'
+      	if (res[i].data !== null) {
+      		value = res[i].data
+      	}
+      	// #ifdef H5
+      	result += '\n' + res[i].seriesName + '：' + value + ' 万元'
+      	// #endif
+      	
+      	// #ifdef APP-PLUS
+      	result += '<br/>' + res[i].marker + res[i].seriesName + '：' + value + ' 万元'
+      	// #endif
+      }
+      return result;
+    }
+  },
 	"column": {
 		"color": color,
 		"title": {
@@ -41,7 +62,7 @@ module.exports = {
 			"top": 30,
 			"bottom": 50,
 			"right": 15,
-			"left": 30
+			"left": 40
 		},
 		"legend": {
 			"bottom": 'left',
@@ -100,7 +121,7 @@ module.exports = {
 			"top": 30,
 			"bottom": 50,
 			"right": 15,
-			"left": 30
+			"left": 40
 		},
 		"legend": {
 			"bottom": 'left',
@@ -159,7 +180,7 @@ module.exports = {
 			"top": 30,
 			"bottom": 50,
 			"right": 15,
-			"left": 30
+			"left": 40
 		},
 		"legend": {
 			"bottom": 'left',
@@ -218,7 +239,7 @@ module.exports = {
 			"top": 40,
 			"bottom": 30,
 			"right": 15,
-			"left": 30
+			"left": 15
 		},
 		"legend": {
 			"bottom": 'left',
@@ -247,7 +268,7 @@ module.exports = {
 			"top": 40,
 			"bottom": 30,
 			"right": 15,
-			"left": 30
+			"left": 15
 		},
 		"legend": {
 			"bottom": 'left',
