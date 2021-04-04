@@ -472,8 +472,11 @@ export default {
       }
     },
     mixinDatacomErrorMessage(val, oldval) {
-      if (val && this.errorShow) {
-        console.log('[秋云图表组件]' + val);
+      if (val) {
+        this.emitMsg({name: 'error', params: {type:"error", errorShow: this.errorShow, msg: val, id: this.cid}});
+        if(this.errorShow){
+          console.log('[秋云图表组件]' + val);
+        }
       }
     },
     errorMessage(val, oldval) {
@@ -730,9 +733,10 @@ export default {
     },
     _clearChart() {
       let cid = this.cid
-      if (this.echrts !== true && cfu.option[cid] !== undefined && cfu.option[cid].context && cfu.option[cid].context.draw) {
-        cfu.option[cid].context.clearRect(0, 0, cfu.option[cid].width, cfu.option[cid].height);
-        cfu.option[cid].context.draw();
+      if (this.echrts !== true) {
+        const ctx = uni.createCanvasContext(cid, this);
+        ctx.clearRect(0, 0, this.cWidth, this.cHeight);
+        ctx.draw();
       }
     },
     init() {
@@ -987,7 +991,7 @@ export default {
     },
     // #endif
     _error(e) {
-      console.log(e);
+      this.mixinDatacomErrorMessage = e.detail.errMsg;
     },
     emitMsg(msg) {
       this.$emit(msg.name, msg.params);
@@ -1146,8 +1150,10 @@ export default {
       cfu.option[cid] = JSON.parse(JSON.stringify(newVal))
       cfu.option[cid] = rdformatterAssign(cfu.option[cid],cfu.formatter)
       let canvasdom = document.getElementById(cid)
-      cfu.option[cid].context = canvasdom.children[0].getContext("2d")
-      this.newUChart()
+      if(canvasdom && canvasdom.children[0]){
+        cfu.option[cid].context = canvasdom.children[0].getContext("2d")
+        this.newUChart()
+      }
     },
     newUChart() {
       let cid = this.rid

@@ -60,7 +60,7 @@
     <qiun-title-bar title="强制展示错误信息"/>
     <button class="uni-button" type="default" @click="changeErrorMessage">点击展示错误信息</button>
     <view class="charts-box">
-      <qiun-data-charts type="line" :chartData="chartsData.Line1" :errorMessage="errorMessage"/>
+      <qiun-data-charts type="line" :chartData="chartsData.Line1" :errorMessage="errorMessage" @error="error"/>
     </view>
     <qiun-title-bar title="uCharts保存为图片"/>
     <button class="uni-button" type="default" @click="createImage('createImageUCharts')">点击保存为图片</button>
@@ -192,6 +192,10 @@ export default {
     createImage(refid){
     	this.$refs[refid].saveImage();
     },
+    error(e){
+      console.log("组件传递过来的错误信息",e);
+      //TODO something 重新加载或者其他你想干的事
+    }
   }
 };
 </script>
