@@ -78,6 +78,7 @@ export default {
         this.chartsData.Line1=JSON.parse(JSON.stringify(demodata.Line))
         
         //数据点格式化示例
+        //使用format属性指定config-ucharts.js里事先定义好的formatter的key值，组件会自动匹配与其对应的function 
       	let columnFormatDemo=JSON.parse(JSON.stringify(demodata.Column))
         for (var i = 0; i < columnFormatDemo.series.length; i++) {
           columnFormatDemo.series[i].format="seriesDemo1"
@@ -85,6 +86,7 @@ export default {
         this.chartsData.Column2=columnFormatDemo
         
         //饼图格式化示例
+        //使用format属性指定config-ucharts.js里事先定义好的formatter的key值，组件会自动匹配与其对应的function 
         let pieFormatDemo=JSON.parse(JSON.stringify(demodata.PieA))
         for (var i = 0; i < pieFormatDemo.series.length; i++) {
           pieFormatDemo.series[i].format="pieDemo"

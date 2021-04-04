@@ -146,6 +146,9 @@ localdata:[
 
 ## 进阶用法读取uniCloud数据库并渲染图表
 
+- 组件基于uniCloud的[clientDB](https://uniapp.dcloud.net.cn/uniCloud/clientdb)技术，无需云函数，在前端对数据库通过where查询条件及group和count统计即可渲染图表。
+- 具体可参考/pages/unicloud/unicloud.vue中的demo例子，使用前，请先关联云服务空间，然后在uniCloud/database/db_init.json文件上点右键，初始化云数据库，当控制台显示“初始化云数据库完成”即完成示例数据的导入，之后方可运行uniCloud的demo。
+
 - template代码：
 
 ```
@@ -372,15 +375,6 @@ tooltipCustom属性如下：
 	iv、"formatter"属性因各小程序及app端通过组件均不能传递function类型参数，因此请先在此属性下定义您想格式化的数据，组件会自动匹配与其对应的function
 	
 	v、uCharts配置可跨全端使用
-
-## 图表应用=>读取uniClinetDB示例说明
-- 本示例基于uniCloud的[clientDB](https://uniapp.dcloud.net.cn/uniCloud/clientdb)技术，无需云函数，在前端对数据库进行group和count，进行按天的计数统计。
-- 统计的数据表为[uni-id-users](https://gitee.com/dcloud/opendb/blob/master/collection/uni-id-users/collection.json)。在uniCloud后台新建数据表时可选择该表的模板
-- 需要确保前端页面有访问uni-id-users表的权限
-	* 或者在[uniCloud admin](https://ext.dcloud.net.cn/plugin?id=3268)中使用管理员登录后再查看【图表应用】页面报表
-	* 或者测试期间也可以在uni-id-users表的表结构schema中在根节点配置`"permission": {"read": true}`，表示该表为前端可读
-- 注册几个用户，确保图表可以统计到数字。可在[uniCloud admin](https://ext.dcloud.net.cn/plugin?id=3268)中注册，也可以在[云端一体登录模板](https://ext.dcloud.net.cn/plugin?id=13)中注册。
-- 默认统计7天内的每日注册用户量，时间范围可在代码中修改，修改data中的startdate、enddate即可
 
 
 ## 常见问题及注意事项

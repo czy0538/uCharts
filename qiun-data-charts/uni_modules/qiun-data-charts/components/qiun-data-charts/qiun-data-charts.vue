@@ -356,6 +356,8 @@ export default {
     }
     this.disScroll = this.disableScroll;
     this.beforeInit();
+    
+    // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO
     uni.onWindowResize(res => {
       if (this.mixinDatacomLoading == true) {
         return;
@@ -372,6 +374,8 @@ export default {
         }
       }, 200);
     });
+    // #endif
+    
   },
   destroyed(){
     if(this.echarts === true){
@@ -682,11 +686,11 @@ export default {
       }
     },
     resizeHandler() {
-      // 渲染防抖
-      // let currTime = Date.now();
-      // let lastDrawTime = this.lastDrawTime?this.lastDrawTime:currTime-3000;
-      // let duration = currTime - lastDrawTime;
-      // if (duration < 1000) return;
+      //渲染防抖
+      let currTime = Date.now();
+      let lastDrawTime = this.lastDrawTime?this.lastDrawTime:currTime-3000;
+      let duration = currTime - lastDrawTime;
+      if (duration < 1000) return;
       let chartdom = uni
         .createSelectorQuery()
         .in(this)
@@ -695,7 +699,7 @@ export default {
           this.showchart = true;
           if (data.width > 0 && data.height > 0) {
             if (data.width !== this.cWidth || data.height !== this.cHeight) {
-              this.beforeInit();
+              this.checkData(this.drawData)
             }
           }
         })
