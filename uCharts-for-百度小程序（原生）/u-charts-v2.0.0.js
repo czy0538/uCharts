@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0.20210320',
+  version: 'v2.0.0-20210406',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -31,6 +31,7 @@ var config = {
   rotate: false,
   columePadding: 3,
   fontSize: 13,
+  fontColor: '#666666',
   dataPointShape: ['circle', 'circle', 'circle', 'circle'],
   color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'],
   linearColor: ['#0EE2F8', '#2BDCA8', '#FA7D8D', '#EB88E2', '#2AE3A0', '#0EE2F8', '#EB88E2', '#6773E3', '#F78A85'],
@@ -205,12 +206,12 @@ function calValidDistance(self, distance, chartData, config, opts) {
   var validDistance = distance;
   if (distance >= 0) {
     validDistance = 0;
-    self.event.trigger('scrollLeft');
+    self.uevent.trigger('scrollLeft');
     self.scrollOption.position = 'left'
     opts.xAxis.scrollPosition = 'left';
   } else if (Math.abs(distance) >= dataChartWidth - dataChartAreaWidth) {
     validDistance = dataChartAreaWidth - dataChartWidth;
-    self.event.trigger('scrollRight');
+    self.uevent.trigger('scrollRight');
     self.scrollOption.position = 'right'
     opts.xAxis.scrollPosition = 'right';
   } else {
@@ -354,6 +355,25 @@ function avoidCollision(obj, target) {
     }
   }
   return obj;
+}
+
+function fixPieSeries(series, opts, config){
+  let pieSeriesArr = [];
+  if(series[0].data.constructor.toString().indexOf('Array') > -1){
+    opts._pieSeries_ = series;
+    let oldseries = series[0].data;
+    for (var i = 0; i < oldseries.length; i++) {
+      if(series[0].formatter){
+        pieSeriesArr.push({name: oldseries[i].name, data: oldseries[i].value, formatter: series[0].formatter})
+      }else{
+        pieSeriesArr.push({name: oldseries[i].name,data: oldseries[i].value})
+      }
+    }
+    opts.series = pieSeriesArr;
+  }else{
+    pieSeriesArr = series;
+  }
+  return pieSeriesArr;
 }
 
 function fillSeries(series, opts, config) {
@@ -540,7 +560,7 @@ function getSeriesDataItem(series, index) {
       seriesItem.disableLegend = item.disableLegend;
       seriesItem.name = item.name;
       seriesItem.show = item.show;
-      seriesItem.data = item.format ? item.format(item.data[index]) : item.data[index];
+      seriesItem.data = item.formatter ? item.formatter(item.data[index]) : item.data[index];
       data.push(seriesItem);
     }
   }
@@ -576,7 +596,7 @@ function getToolTipData(seriesData, opts, index, categories) {
       titleText = item.data;
     }
     return {
-      text: option.format ? option.format(item, titleText[index], index, opts) : item.name + ': ' + item.data,
+      text: option.formatter ? option.formatter(item, titleText[index], index, opts) : item.name + ': ' + item.data,
       color: item.color
     };
   });
@@ -608,7 +628,7 @@ function getMixToolTipData(seriesData, opts, index, categories) {
   var calPoints = opts.chartData.calPoints
   var textList = seriesData.map(function(item) {
     return {
-      text: option.format ? option.format(item, categories[index], index, opts) : item.name + ': ' + item.data,
+      text: option.formatter ? option.formatter(item, categories[index], index, opts) : item.name + ': ' + item.data,
       color: item.color,
       disableLegend: item.disableLegend ? true : false
     };
@@ -855,7 +875,7 @@ function findMapChartCurrentIndex(currentPoints, opts) {
 
 function findPieChartCurrentIndex(currentPoints, pieData) {
   var currentIndex = -1;
-  if (isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
+  if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
     var angle = Math.atan2(pieData.center.y - currentPoints.y, currentPoints.x - pieData.center.x);
     angle = -angle;
     for (var i = 0, len = pieData.series.length; i < len; i++) {
@@ -1130,14 +1150,14 @@ function calXAxisData(series, opts, config, context) {
   };
   result.ranges = getXAxisTextList(series, opts, config);
   result.rangesFormat = result.ranges.map(function(item) {
-    item = opts.xAxis.format ? opts.xAxis.format(item) : util.toFixed(item, 2);
+    item = opts.xAxis.formatter ? opts.xAxis.formatter(item) : util.toFixed(item, 2);
     return item;
   });
   var xAxisScaleValues = result.ranges.map(function(item) {
     // 如果刻度值是浮点数,则保留两位小数
     item = util.toFixed(item, 2);
     // 若有自定义格式则调用自定义的格式化函数
-    item = opts.xAxis.format ? opts.xAxis.format(Number(item)) : item;
+    item = opts.xAxis.formatter ? opts.xAxis.formatter(Number(item)) : item;
     return item;
   });
   result = Object.assign(result, getXAxisPoints(xAxisScaleValues, opts, config));
@@ -1336,7 +1356,7 @@ function getPieTextMaxLength(series, config, context) {
   let maxLength = 0;
   for (let i = 0; i < series.length; i++) {
     let item = series[i];
-    let text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
+    let text = item.formatter ? item.formatter(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
     maxLength = Math.max(maxLength, measureText(text, config.fontSize, context));
   }
   return maxLength;
@@ -1639,7 +1659,7 @@ function calYAxisData(series, opts, config, context) {
       };
       rangesFormatArr[i] = rangesArr[i].map(function(items) {
         items = util.toFixed(items, 6);
-        items = yData.format ? yData.format(Number(items)) : items;
+        items = yData.formatter ? yData.formatter(Number(items)) : items;
         yAxisWidthArr[i].width = Math.max(yAxisWidthArr[i].width, measureText(items, yAxisFontSizes, context) + 5);
         return items;
       });
@@ -1661,7 +1681,7 @@ function calYAxisData(series, opts, config, context) {
     var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
     rangesFormatArr[0] = rangesArr[0].map(function(item) {
       item = util.toFixed(item, 6);
-      item = opts.yAxis.format ? opts.yAxis.format(Number(item)) : item;
+      item = opts.yAxis.formatter ? opts.yAxis.formatter(Number(item)) : item;
       yAxisWidthArr[0].width = Math.max(yAxisWidthArr[0].width, measureText(item, yAxisFontSize, context) + 5);
       return item;
     });
@@ -1680,7 +1700,7 @@ function calYAxisData(series, opts, config, context) {
         position: 'left',
         max: opts.yAxis.max,
         min: opts.yAxis.min,
-        format: opts.yAxis.format
+        format: opts.yAxis.formatter
       };
     }
   }
@@ -1700,7 +1720,7 @@ function calTooltipYAxisData(point, series, opts, config, eachSpacing) {
     let maxVal = ranges[i].shift();
     let minVal = ranges[i].pop();
     let item = maxVal - (maxVal - minVal) * (point - minAxis) / spacingValid;
-    item = opts.yAxis.data[i].format ? opts.yAxis.data[i].format(Number(item)) : item.toFixed(0);
+    item = opts.yAxis.data[i].formatter ? opts.yAxis.data[i].formatter(Number(item)) : item.toFixed(0);
     items.push(String(item))
   }
   return items;
@@ -1788,34 +1808,34 @@ function drawRingTitle(opts, config, context, center) {
   var subtitlefontSize = opts.subtitle.fontSize || config.subtitleFontSize;
   var title = opts.title.name || '';
   var subtitle = opts.subtitle.name || '';
-  var titleFontColor = opts.title.color || config.titleColor;
-  var subtitleFontColor = opts.subtitle.color || config.subtitleColor;
+  var titleFontColor = opts.title.color || opts.fontColor;
+  var subtitleFontColor = opts.subtitle.color || opts.fontColor;
   var titleHeight = title ? titlefontSize : 0;
   var subtitleHeight = subtitle ? subtitlefontSize : 0;
   var margin = 5;
   if (subtitle) {
-    var textWidth = measureText(subtitle, subtitlefontSize, context);
-    var startX = center.x - textWidth / 2 + (opts.subtitle.offsetX || 0);
-    var startY = center.y + subtitlefontSize / 2 + (opts.subtitle.offsetY || 0);
+    var textWidth = measureText(subtitle, subtitlefontSize * opts.pix, context);
+    var startX = center.x - textWidth / 2 + (opts.subtitle.offsetX|| 0) * opts.pix ;
+    var startY = center.y + subtitlefontSize * opts.pix / 2 + (opts.subtitle.offsetY || 0) * opts.pix;
     if (title) {
-      startY += (titleHeight + margin) / 2;
+      startY += (titleHeight * opts.pix + margin) / 2;
     }
     context.beginPath();
-    context.setFontSize(subtitlefontSize);
+    context.setFontSize(subtitlefontSize * opts.pix);
     context.setFillStyle(subtitleFontColor);
     context.fillText(subtitle, startX, startY);
     context.closePath();
     context.stroke();
   }
   if (title) {
-    var _textWidth = measureText(title, titlefontSize, context);
+    var _textWidth = measureText(title, titlefontSize * opts.pix, context);
     var _startX = center.x - _textWidth / 2 + (opts.title.offsetX || 0);
-    var _startY = center.y + titlefontSize / 2 + (opts.title.offsetY || 0);
+    var _startY = center.y + titlefontSize * opts.pix / 2 + (opts.title.offsetY || 0) * opts.pix;
     if (subtitle) {
-      _startY -= (subtitleHeight + margin) / 2;
+      _startY -= (subtitleHeight * opts.pix + margin) / 2;
     }
     context.beginPath();
-    context.setFontSize(titlefontSize);
+    context.setFontSize(titlefontSize * opts.pix);
     context.setFillStyle(titleFontColor);
     context.fillText(title, _startX, _startY);
     context.closePath();
@@ -1831,7 +1851,7 @@ function drawPointText(points, series, config, context) {
     if (item !== null) {
       context.beginPath();
       context.setFontSize(series.textSize || config.fontSize);
-      context.setFillStyle(series.textColor || '#666666');
+      context.setFillStyle(series.textColor || config.fontColor);
       var value = data[index]
       if (typeof data[index] === 'object' && data[index] !== null) {
         if (data[index].constructor == Array) {
@@ -1840,7 +1860,7 @@ function drawPointText(points, series, config, context) {
           value = data[index].value
         }
       }
-      var formatVal = series.format ? series.format(value) : value;
+      var formatVal = series.formatter ? series.formatter(value) : value;
       context.setTextAlign('center');
       context.fillText(String(formatVal), item.x, item.y - 4 + textOffset);
       context.closePath();
@@ -1864,14 +1884,14 @@ function drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, conte
       x: radius * Math.cos(nowAngle * Math.PI),
       y: radius * Math.sin(nowAngle * Math.PI)
     };
-    var labelText = gaugeOption.format ? gaugeOption.format(nowNumber) : nowNumber;
+    var labelText = gaugeOption.formatter ? gaugeOption.formatter(nowNumber) : nowNumber;
     pos.x += centerPosition.x - measureText(labelText, config.fontSize, context) / 2;
     pos.y += centerPosition.y;
     var startX = pos.x;
     var startY = pos.y;
     context.beginPath();
     context.setFontSize(config.fontSize);
-    context.setFillStyle(gaugeOption.labelColor || '#666666');
+    context.setFillStyle(gaugeOption.labelColor || opts.fontColor);
     context.fillText(labelText, startX, startY + config.fontSize / 2);
     context.closePath();
     context.stroke();
@@ -1902,7 +1922,7 @@ function drawRadarLabel(angleList, radius, centerPosition, opts, config, context
     }
     context.beginPath();
     context.setFontSize(config.fontSize);
-    context.setFillStyle(radarOption.labelColor || '#666666');
+    context.setFillStyle(radarOption.labelColor || opts.fontColor);
     context.fillText(opts.categories[index] || '', startX, startY + config.fontSize / 2);
     context.closePath();
     context.stroke();
@@ -1914,9 +1934,8 @@ function drawPieText(series, opts, config, context, radius, center) {
   var lineRadius = config.pieChartLinePadding;
   var textObjectCollection = [];
   var lastTextObject = null;
-  var seriesConvert = series.map(function(item) {
-    var text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_.toFixed(
-      4) * 100) + '%';
+  var seriesConvert = series.map(function(item,index,series) {
+    var text = item.formatter ? item.formatter(item,index,series) : util.toFixed(item._proportion_.toFixed(4) * 100) + '%';
     if (item._rose_proportion_) item._proportion_ = item._rose_proportion_;
     var arc = 2 * Math.PI - (item._start_ + 2 * Math.PI * item._proportion_ / 2);
     var color = item.color;
@@ -2008,7 +2027,7 @@ function drawPieText(series, opts, config, context, radius, center) {
     context.fill();
     context.beginPath();
     context.setFontSize(item.textSize || config.fontSize);
-    context.setFillStyle(item.textColor || '#666666');
+    context.setFillStyle(item.textColor || opts.fontColor);
     context.fillText(item.text, textStartX, textPosition.y + 3);
     context.closePath();
     context.stroke();
@@ -2048,7 +2067,7 @@ function drawToolTipSplitLine(offsetX, opts, config, context) {
     context.fill();
     context.beginPath();
     context.setFontSize(config.fontSize);
-    context.setFillStyle(toolTipOption.labelFontColor || config.fontColor);
+    context.setFillStyle(toolTipOption.labelFontColor || opts.fontColor);
     context.fillText(String(labelText), textX, textY + config.toolTipPadding + config.fontSize);
     context.closePath();
     context.stroke();
@@ -2084,7 +2103,7 @@ function drawMarkLine(opts, config, context) {
     context.stroke();
     context.setLineDash([]);
     if (item.showLabel) {
-      let labelText = opts.yAxis.format ? opts.yAxis.format(Number(item.value)) : item.value;
+      let labelText = opts.yAxis.formatter ? opts.yAxis.formatter(Number(item.value)) : item.value;
       context.setFontSize(config.fontSize);
       let textWidth = measureText(labelText, config.fontSize, context);
       let yAxisWidth = opts.chartData.yAxisData.yAxisWidth[0].width;
@@ -2158,7 +2177,7 @@ function drawToolTipHorizentalLine(opts, config, context, eachSpacing, xAxisPoin
       context.fill();
       context.beginPath();
       context.setFontSize(config.fontSize);
-      context.setFillStyle(toolTipOption.labelFontColor || config.fontColor);
+      context.setFillStyle(toolTipOption.labelFontColor || opts.fontColor);
       context.fillText(labelText[i], textX, textY + 0.5 * config.fontSize);
       context.closePath();
       context.stroke();
@@ -2548,7 +2567,7 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
     leftNum = Math.floor(-opts._scrollDistance_ / eachSpacing) - 2;
     rightNum = leftNum + opts.xAxis.itemCount + 4;
-    leftSpace = -opts._scrollDistance_ - eachSpacing + opts.area[3];
+    leftSpace = -opts._scrollDistance_ - eachSpacing * 2 + opts.area[3];
     rightSpace = leftSpace + (opts.xAxis.itemCount + 4) * eachSpacing;
   }
   //画均线
@@ -2670,7 +2689,7 @@ function drawAreaDataPoints(series, opts, config, context) {
   let rightSpace = opts.width + eachSpacing;
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
     context.translate(opts._scrollDistance_, 0);
-    leftSpace = -opts._scrollDistance_ - eachSpacing + opts.area[3];
+    leftSpace = -opts._scrollDistance_ - eachSpacing * 2 + opts.area[3];
     rightSpace = leftSpace + (opts.xAxis.itemCount + 4) * eachSpacing;
   }
   series.forEach(function(eachSeries, seriesIndex) {
@@ -2825,7 +2844,7 @@ function drawLineDataPoints(series, opts, config, context) {
   let rightSpace = opts.width + eachSpacing;
   if (opts._scrollDistance_ && opts._scrollDistance_ !== 0 && opts.enableScroll === true) {
     context.translate(opts._scrollDistance_, 0);
-    leftSpace = -opts._scrollDistance_ - eachSpacing + opts.area[3];
+    leftSpace = -opts._scrollDistance_ - eachSpacing * 2 + opts.area[3];
     rightSpace = leftSpace + (opts.xAxis.itemCount + 4) * eachSpacing;
   }
   series.forEach(function(eachSeries, seriesIndex) {
@@ -2951,7 +2970,7 @@ function drawMixDataPoints(series, opts, config, context) {
     context.translate(opts._scrollDistance_, 0);
     leftNum = Math.floor(-opts._scrollDistance_ / eachSpacing) - 2;
     rightNum = leftNum + opts.xAxis.itemCount + 4;
-    leftSpace = -opts._scrollDistance_ - eachSpacing + opts.area[3];
+    leftSpace = -opts._scrollDistance_ - eachSpacing * 2 + opts.area[3];
     rightSpace = leftSpace + (opts.xAxis.itemCount + 4) * eachSpacing;
   }
   columnOption.customColor = fillCustomColor(columnOption.linearType, columnOption.customColor, series, config);
@@ -3297,7 +3316,7 @@ function drawXAxis(categories, opts, config, context) {
     var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
-        var offset = -measureText(String(item), xAxisFontSize, context) / 2;
+        var offset = -measureText(String(item), xAxisFontSize * opts.pix, context) / 2;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
@@ -3306,10 +3325,9 @@ function drawXAxis(categories, opts, config, context) {
           scrollHeight = 6 * opts.pix;
         }
         context.beginPath();
-        context.setFontSize(xAxisFontSize);
-        context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight -
-          scrollHeight - xAxisFontSize) / 2);
+        context.setFontSize(xAxisFontSize * opts.pix);
+        context.setFillStyle(opts.xAxis.fontColor || opts.fontColor);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize * opts.pix + (config.xAxisHeight * opts.pix - scrollHeight - xAxisFontSize * opts.pix) / 2);
         context.closePath();
         context.stroke();
       });
@@ -3317,20 +3335,20 @@ function drawXAxis(categories, opts, config, context) {
       newCategories.forEach(function(item, index) {
         context.save();
         context.beginPath();
-        context.setFontSize(xAxisFontSize);
-        context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        var textWidth = measureText(String(item), xAxisFontSize, context);
+        context.setFontSize(xAxisFontSize * opts.pix);
+        context.setFillStyle(opts.xAxis.fontColor || opts.fontColor);
+        var textWidth = measureText(String(item), xAxisFontSize * opts.pix, context);
         var offset = -textWidth;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
-        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
+        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize * opts.pix / 2 + 5, opts.height),
           transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
         context.rotate(-1 * config._xAxisTextAngle_);
         context.translate(transX, transY);
-        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize * opts.pix + 5);
         context.closePath();
         context.stroke();
         context.restore();
@@ -3435,7 +3453,7 @@ function drawYAxis(series, opts, config, context) {
           context.setFontSize(yAxisFontSize);
           context.setLineWidth(1 * opts.pix);
           context.setStrokeStyle(yData.axisLineColor || '#cccccc');
-          context.setFillStyle(yData.fontColor || '#666666');
+          context.setFillStyle(yData.fontColor || opts.fontColor);
           let tmpstrat = 0;
           let gapwidth = 4 * opts.pix;
           if (yAxisWidth.position == 'left') {
@@ -3507,7 +3525,7 @@ function drawYAxis(series, opts, config, context) {
           let title = yData.title;
           context.beginPath();
           context.setFontSize(titleFontSize);
-          context.setFillStyle(yData.titleFontColor || '#666666');
+          context.setFillStyle(yData.titleFontColor || opts.fontColor);
           if (yAxisWidth.position == 'left') {
             context.fillText(title, tStartLeft - measureText(title, titleFontSize, context) / 2, opts.area[0] - 10 *
               opts.pix);
@@ -4354,11 +4372,6 @@ function drawMapDataPoints(series, opts, config, context) {
   var scale = xScale < yScale ? xScale : yScale;
   var xoffset = opts.width / 2 - Math.abs(bounds.xMax - bounds.xMin) / 2 * scale;
   var yoffset = opts.height / 2 - Math.abs(bounds.yMax - bounds.yMin) / 2 * scale;
-  context.beginPath();
-  context.clearRect(0, 0, opts.width, opts.height);
-  context.setFillStyle(opts.background);
-  context.rect(0, 0, opts.width, opts.height);
-  context.fill();
   for (var i = 0; i < data.length; i++) {
     context.beginPath();
     context.setLineWidth(mapOption.borderWidth * opts.pix);
@@ -4407,7 +4420,7 @@ function drawMapDataPoints(series, opts, config, context) {
         let text = data[i].properties.name;
         context.beginPath();
         context.setFontSize(fontSize)
-        context.setFillStyle(data[i].textColor || '#666666')
+        context.setFillStyle(data[i].textColor || opts.fontColor)
         context.fillText(text, point.x - measureText(text, fontSize, context) / 2, point.y + fontSize / 2);
         context.closePath();
         context.stroke();
@@ -4683,7 +4696,7 @@ function drawFunnelText(series, opts, context, eachSpacing, labelAlign, activeWi
   for (let i = 0; i < series.length; i++) {
     let item = series[i];
     let startX, endX, startY, fontSize;
-    let text = item.format ? item.format(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
+    let text = item.formatter ? item.formatter(item,i,series) : util.toFixed(item._proportion_ * 100) + '%';
     if (labelAlign == 'right') {
       if (i == 0) {
         startX = (item.funnelArea[2] + centerPosition.x) / 2;
@@ -4708,7 +4721,7 @@ function drawFunnelText(series, opts, context, eachSpacing, labelAlign, activeWi
       context.fill();
       context.beginPath();
       context.setFontSize(fontSize);
-      context.setFillStyle(item.textColor || '#666666');
+      context.setFillStyle(item.textColor || opts.fontColor);
       context.fillText(text, endX + 5, startY + fontSize / 2 - 2);
       context.closePath();
       context.stroke();
@@ -4737,7 +4750,7 @@ function drawFunnelText(series, opts, context, eachSpacing, labelAlign, activeWi
       context.fill();
       context.beginPath();
       context.setFontSize(fontSize);
-      context.setFillStyle(item.textColor || '#666666');
+      context.setFillStyle(item.textColor || opts.fontColor);
       context.fillText(text, endX - 5 - measureText(text, fontSize, context), startY + fontSize / 2 - 2);
       context.closePath();
       context.stroke();
@@ -4776,15 +4789,15 @@ function Animation(opts) {
   opts.timing = opts.timing || 'easeInOut';
   var delay = 17;
   function createAnimationFrame() {
-    if (typeof requestAnimationFrame !== 'undefined') {
-      return requestAnimationFrame;
-    } else if (typeof setTimeout !== 'undefined') {
+    if (typeof setTimeout !== 'undefined') {
       return function(step, delay) {
         setTimeout(function() {
           var timeStamp = +new Date();
           step(timeStamp);
         }, delay);
       };
+    } else if (typeof requestAnimationFrame !== 'undefined') {
+      return requestAnimationFrame;
     } else {
       return function(step) {
         step(null);
@@ -4824,6 +4837,9 @@ Animation.prototype.stop = function() {
 function drawCharts(type, opts, config, context) {
   var _this = this;
   var series = opts.series;
+  if (type === 'pie' || type === 'ring' || type === 'rose' || type === 'funnel') {
+    series = fixPieSeries(series, opts, config);
+  }
   var categories = opts.categories;
   series = fillSeries(series, opts, config);
   var duration = opts.animation ? opts.duration : 0;
@@ -4971,7 +4987,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -4994,7 +5010,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5025,7 +5041,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5056,7 +5072,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5087,7 +5103,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5118,7 +5134,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5138,7 +5154,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5157,7 +5173,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5176,7 +5192,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5193,7 +5209,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5210,7 +5226,7 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
@@ -5245,27 +5261,27 @@ function drawCharts(type, opts, config, context) {
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
-          _this.event.trigger('renderComplete');
+          _this.uevent.trigger('renderComplete');
         }
       });
       break;
   }
 }
 
-function Event() {
+function uChartsEvent() {
   this.events = {};
 }
 
-Event.prototype.addEventListener = function(type, listener) {
+uChartsEvent.prototype.addEventListener = function(type, listener) {
   this.events[type] = this.events[type] || [];
   this.events[type].push(listener);
 };
 
-Event.prototype.delEventListener = function(type) {
+uChartsEvent.prototype.delEventListener = function(type) {
   this.events[type] = [];
 };
 
-Event.prototype.trigger = function() {
+uChartsEvent.prototype.trigger = function() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
@@ -5276,7 +5292,7 @@ Event.prototype.trigger = function() {
       try {
         listener.apply(null, params);
       } catch (e) {
-        console.error('[uCharts] '+e);
+          //console.log('[uCharts] '+e);
       }
     });
   }
@@ -5285,6 +5301,7 @@ Event.prototype.trigger = function() {
 var uCharts = function uCharts(opts) {
   opts.pix = opts.pixelRatio ? opts.pixelRatio : 1;
   opts.fontSize = opts.fontSize ? opts.fontSize : 13;
+  opts.fontColor = opts.fontColor ? opts.fontColor : config.fontColor;
   if (opts.background == "" || opts.background == "none") {
     opts.background = "#FFFFFF"
   }
@@ -5402,7 +5419,7 @@ var uCharts = function uCharts(opts) {
     this.context.draw = function() {}
   }
   opts.chartData = {};
-  this.event = new Event();
+  this.uevent = new uChartsEvent();
   this.scrollOption = {
     currentOffset: 0,
     startTouchX: 0,
@@ -5500,11 +5517,11 @@ uCharts.prototype.stopAnimation = function() {
 };
 
 uCharts.prototype.addEventListener = function(type, listener) {
-  this.event.addEventListener(type, listener);
+  this.uevent.addEventListener(type, listener);
 };
 
 uCharts.prototype.delEventListener = function(type) {
-  this.event.delEventListener(type);
+  this.uevent.delEventListener(type);
 };
 
 uCharts.prototype.getCurrentDataIndex = function(e) {
@@ -5677,18 +5694,13 @@ uCharts.prototype.showToolTip = function(e) {
     }
     drawCharts.call(this, opts.type, opts, this.config, this.context);
   }
-  if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose' || this.opts.type ===
-    'funnel') {
+  if (this.opts.type === 'pie' || this.opts.type === 'ring' || this.opts.type === 'rose' || this.opts.type === 'funnel') {
     var index = option.index == undefined ? this.getCurrentDataIndex(e) : option.index;
     if (index > -1) {
-      var currentOffset = this.scrollOption.currentOffset;
-      var opts = assign({}, this.opts, {
-        _scrollDistance_: currentOffset,
-        animation: false
-      });
+      var opts = assign({}, this.opts, {animation: false});
       var seriesData = this.opts._series_[index];
       var textList = [{
-        text: option.format ? option.format(seriesData, undefined, index, opts) : seriesData.name + ': ' +
+        text: option.formatter ? option.formatter(seriesData, undefined, index, opts) : seriesData.name + ': ' +
           seriesData.data,
         color: seriesData.color
       }];
@@ -5708,15 +5720,11 @@ uCharts.prototype.showToolTip = function(e) {
   if (this.opts.type === 'map') {
     var index = option.index == undefined ? this.getCurrentDataIndex(e) : option.index;
     if (index > -1) {
-      var currentOffset = this.scrollOption.currentOffset;
-      var opts = assign({}, this.opts, {
-        _scrollDistance_: currentOffset,
-        animation: false
-      });
+      var opts = assign({}, this.opts, {animation: false});
       var seriesData = this.opts._series_[index];
       seriesData.name = seriesData.properties.name
       var textList = [{
-        text: option.format ? option.format(seriesData, undefined, index, this.opts) : seriesData.name,
+        text: option.formatter ? option.formatter(seriesData, undefined, index, this.opts) : seriesData.name,
         color: seriesData.color
       }];
       var offset = {
@@ -5736,14 +5744,10 @@ uCharts.prototype.showToolTip = function(e) {
   if (this.opts.type === 'word') {
     var index = option.index == undefined ? this.getCurrentDataIndex(e) : option.index;
     if (index > -1) {
-      var currentOffset = this.scrollOption.currentOffset;
-      var opts = assign({}, this.opts, {
-        _scrollDistance_: currentOffset,
-        animation: false
-      });
+      var opts = assign({}, this.opts, {animation: false});
       var seriesData = this.opts._series_[index];
       var textList = [{
-        text: option.format ? option.format(seriesData, undefined, index, this.opts) : seriesData.name,
+        text: option.formatter ? option.formatter(seriesData, undefined, index, this.opts) : seriesData.name,
         color: seriesData.color
       }];
       var offset = {
@@ -5763,16 +5767,12 @@ uCharts.prototype.showToolTip = function(e) {
   if (this.opts.type === 'radar') {
     var index = option.index == undefined ? this.getCurrentDataIndex(e) : option.index;
     if (index > -1) {
-      var currentOffset = this.scrollOption.currentOffset;
-      var opts = assign({}, this.opts, {
-        _scrollDistance_: currentOffset,
-        animation: false
-      });
+      var opts = assign({}, this.opts, {animation: false});
       var seriesData = getSeriesDataItem(this.opts.series, index);
       if (seriesData.length !== 0) {
         var textList = seriesData.map((item) => {
           return {
-            text: option.format ? option.format(item, this.opts.categories[index], index, this.opts) : item.name + ': ' + item.data,
+            text: option.formatter ? option.formatter(item, this.opts.categories[index], index, this.opts) : item.name + ': ' + item.data,
             color: item.color
           };
         });
