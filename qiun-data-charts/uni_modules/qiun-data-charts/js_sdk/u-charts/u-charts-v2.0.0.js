@@ -3316,7 +3316,7 @@ function drawXAxis(categories, opts, config, context) {
     var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
-        var offset = -measureText(String(item), xAxisFontSize, context) / 2;
+        var offset = -measureText(String(item), xAxisFontSize * opts.pix, context) / 2;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
@@ -3325,10 +3325,9 @@ function drawXAxis(categories, opts, config, context) {
           scrollHeight = 6 * opts.pix;
         }
         context.beginPath();
-        context.setFontSize(xAxisFontSize);
+        context.setFontSize(xAxisFontSize * opts.pix);
         context.setFillStyle(opts.xAxis.fontColor || opts.fontColor);
-        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight -
-          scrollHeight - xAxisFontSize) / 2);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize * opts.pix + (config.xAxisHeight * opts.pix - scrollHeight - xAxisFontSize * opts.pix) / 2);
         context.closePath();
         context.stroke();
       });
@@ -3336,20 +3335,20 @@ function drawXAxis(categories, opts, config, context) {
       newCategories.forEach(function(item, index) {
         context.save();
         context.beginPath();
-        context.setFontSize(xAxisFontSize);
+        context.setFontSize(xAxisFontSize * opts.pix);
         context.setFillStyle(opts.xAxis.fontColor || opts.fontColor);
-        var textWidth = measureText(String(item), xAxisFontSize, context);
+        var textWidth = measureText(String(item), xAxisFontSize * opts.pix, context);
         var offset = -textWidth;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
-        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
+        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize * opts.pix / 2 + 5, opts.height),
           transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
         context.rotate(-1 * config._xAxisTextAngle_);
         context.translate(transX, transY);
-        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize * opts.pix + 5);
         context.closePath();
         context.stroke();
         context.restore();
