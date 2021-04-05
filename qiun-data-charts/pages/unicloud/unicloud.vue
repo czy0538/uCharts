@@ -1,9 +1,9 @@
 <template>
   <view class="content">
     <qiun-title-bar title="统计的开始日期"/>
-    <uni-datetime-picker type="data" v-model="startDate" start="2021-04-06" end="2021-06-05" return-type="string"></uni-datetime-picker>
+    <uni-datetime-picker type="date" v-model="startDate" start="2021-04-06" end="2021-06-05" return-type="string"></uni-datetime-picker>
     <qiun-title-bar title="统计的结束日期"/>
-    <uni-datetime-picker type="data" v-model="endDate" start="2021-04-06" end="2021-06-05" return-type="string"></uni-datetime-picker>
+    <uni-datetime-picker type="date" v-model="endDate" start="2021-04-06" end="2021-06-05" return-type="string"></uni-datetime-picker>
     <qiun-title-bar title="新增用户趋势"/>
     <view class="charts-box">
       <!--
