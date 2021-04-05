@@ -34,9 +34,12 @@
     <view class="charts-box">
       <qiun-data-charts type="line" :chartData="chartsData.Line1"/>
     </view>
-    <qiun-title-bar title="基本曲线图"/>
+    <qiun-title-bar title="基本曲线图(自定义图表类型)"/>
     <view class="charts-box">
-      <qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :chartData="chartsData.Line2"/>
+      <!-- 这里的type="demotype"演示了自定义图表类型的demo，您可以根据需求自己定义一种额外的图表类型 -->
+      <qiun-data-charts type="demotype" :chartData="chartsData.Line2"/>
+      <!-- 如果不定义"demotype"这个图表类型，可以通过传递opts来覆盖line下的默认配置，如下 -->
+      <!-- <qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :chartData="chartsData.Line2"/> -->
     </view>
     <qiun-title-bar title="基本时序图"/>
     <view class="charts-box">

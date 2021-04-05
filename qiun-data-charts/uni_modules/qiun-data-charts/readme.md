@@ -1,4 +1,11 @@
-# 秋云图表组件使用帮助
+[![uCharts/uCharts](https://gitee.com/uCharts/uCharts/widgets/widget_card.svg?colors=393222,ebdfc1,fffae5,d8ca9f,393222,a28b40)](https://gitee.com/uCharts/uCharts)
+
+## [uCharts官方网站](https://www.ucharts.cn)
+
+## [DEMO演示及在线生成工具](https://demo.ucharts.cn)
+
+
+## 秋云图表组件使用帮助
 
 全新图表组件，全端全平台支持，开箱即用，可选择uCharts引擎全端渲染，也可指定PC端或APP端`单独使用ECharts`引擎渲染图表。支持极简单的调用方式，只需指定图表类型及传入符合标准的图表数据即可，使开发者只需专注业务及数据。同时也支持datacom组件读取uniClinetDB，无需关心如何拼接数据等不必要的重复工作，大大缩短开发时间。
 
@@ -18,7 +25,6 @@
 - 未来将支持通过uniCloud的`DB Schema自动生成`全端全平台图表，敬请期待！！！
 - uCharts官方拥有3个2000人的QQ群支持，庞大的用户量证明我们一直在努力，本组件将持续更新，请各位放心使用，本组件问题请在`QQ3群`反馈，您的宝贵建议是我们努力的动力！！
 
-## [点击查看DEMO演示及体验在线生成工具](https://demo.ucharts.cn)
 
 ## 致开发者
 
@@ -168,7 +174,7 @@ localdata:[
 
 ## 示例文件地址：
 
-`强烈建议先看本页帮助，再看下面示例文件源码！`
+### <font color=#FF0000> 强烈建议先看本页帮助，再看下面示例文件源码！</font>
 
 ```
 /pages/ucharts/ucharts.vue（展示用uCharts全端运行的例子）
@@ -194,19 +200,18 @@ localdata:[
 
 |属性名|类型|默认值|必填|说明|
 | -- | -- | -- | -- | -- |
-|type|String|null|`是`|图表类型，如全端用uCharts，可选值为pie、ring、rose、word、funnel、map、arcbar、line、column、area、radar、gauge、candle、mix|
+|type|String|null|`是`|图表类型，如全端用uCharts，可选值为pie、ring、rose、word、funnel、map、arcbar、line、column、area、radar、gauge、candle、mix <font color=#FF0000>（您也可以根据需求自定义新图表类型，需要在config-ucharts.js或config-echarts.js内添加，可参考config-ucharts.js内的"demotype"类型）</font>|
 |chartData|Object|见说明|`是`|图表数据，常用的标准数据格式为{categories: [],series: []}，请按不同图表类型传入对应的标准数据。|
-|localdata|Array|[]|`是`|图表数据，如果您觉得拼接上面chartData比较繁琐，可以通过使用localdata渲染，组件会根据传入的type类型，自动拼接categories或series数据（使用localdata就不必再传入chartData，详见 /pages/other/other.vue 中使用localdata渲染图表的例子）。【localdata和collection（uniCloud数据库）同时存在，优先使用localdata；如果localdata和chartData同时存在，优先使用chartData。即chartData>localdata>collection的优先级渲染图表】。|
-|opts|Object|{}|否|uCharts图表配置参数(option)，请参考[【在线生成工具】](https://demo.ucharts.cn)注：传入的opts会覆盖默认config-ucharts.js中的配置，只需传入与config-ucharts.js中属性不一致的opts即可实现**重点**`【同类型的图表显示不同的样式】`。|
-|eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。注：传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。|
+|localdata|Array|[]|`是`|图表数据，如果您觉得拼接上面chartData比较繁琐，可以通过使用localdata渲染，组件会根据传入的type类型，自动拼接categories或series数据（使用localdata就不必再传入chartData，详见 /pages/other/other.vue 中使用localdata渲染图表的例子）。【localdata和collection（uniCloud数据库）同时存在，优先使用localdata；如果localdata和chartData同时存在，优先使用chartData。<font color=#FF0000> 即chartData>localdata>collection的优先级</font>渲染图表】。|
+|opts|Object|{}|否|uCharts图表配置参数(option)，请参考[【在线生成工具】](https://demo.ucharts.cn)<font color=#FF0000>注：传入的opts会覆盖默认config-ucharts.js中的配置，只需传入与config-ucharts.js中属性不一致的opts即可实现【同类型的图表显示不同的样式】。</font>|
+|eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。<font color=#FF0000>注：传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。</font>|
 |loadingType|Number|2|否|加载动画样式，0为不显示加载动画，1-5为不同的样式，见下面示例。|
 |errorShow|Boolean|true|否|是否在页面上显示错误提示，true为显示错误提示图片，false时会显示空白区域|
 |errorMessage|String|null|否|自定义错误信息，强制显示错误图片及错误信息，当上面errorShow为true时可用。（组件会监听该属性的变化，只要有变化，就会强制显示错误信息！）。说明：1、一般用于页面网络不好或其他情况导致图表loading动画一直显示，可以传任意(不为null或者"null"或者空"")字符串强制显示错误图片及说明。2、如果组件使用了data-come属性读取uniCloud数据，组件会自动判断错误状态并展示错误图标，不必使用此功能。3、当状态从非null改变为null或者空时，会强制调用reload重新加载并渲染图表数据。|
 |echartsH5|Boolean|false|否|是否在H5端使用ECharts引擎渲染图表|
 |echartsApp|Boolean|false|否|是否在APP端使用ECharts引擎渲染图表|
 |canvasId|String|见说明|否|默认生成32位随机字符串。如果指定canvasId，可方便后面调用指定图表实例，否则需要通过渲染完成事件获取自动生成随机的canvasId|
-|canvas2d|Boolean|false|否|是否开启canvas2d模式，用于解决微信小程序层级过高问题，仅微信小程序端可用，其他端会强制关闭canvas2d模式|
-|pixelRatio|Number|1|否|像素比，图表精度比例，配合canvas2d避免微信小程序图表模糊，其他端会强制为1|
+|canvas2d|Boolean|false|否|是否开启canvas2d模式，用于解决微信小程序层级过高问题，仅微信小程序端可用，其他端会强制关闭canvas2d模式。<font color=#FF0000>注：开启canvas2d模式，必须要传入上面的canvasId（随机字符串，不能是动态绑定的值，不能是数字），否则微信小程序可能会获取不到dom导致无法渲染图表！</font>|
 |background|String|none|否|背景颜色，默认透明none，可选css的16进制color值，如#FFFFFF|
 |animation|Boolean|true|否|是否开启图表动画效果|
 |inScrollView|Boolean|false|否|图表组件是否在scroll-view中，如果在请传true，否则会出现点击事件坐标不准确的现象|
@@ -216,15 +221,15 @@ localdata:[
 |disableScroll|Boolean|false|否|当在canvas中移动时，且有绑定手势事件时，禁止屏幕滚动以及下拉刷新（赋值为true时，在图表区域内无法拖动页面滚动）|
 |tooltipShow|Boolean|true|否|点击或者鼠标经过图表时，是否显示tooltip提示窗，默认显示|
 |tooltipFormat|String|undefined|否|自定义格式化Tooltip显示内容，详见下面【tooltipFormat格式化】|
-|tooltipCustom|Object|undefined|否|如果以上系统自带的Tooltip格式化方案仍然不满足您，您可以用此属性实现更多需求，详见下面【tooltipCustom自定义】|
+|tooltipCustom|Object|undefined|否|（仅uCharts）如果以上系统自带的Tooltip格式化方案仍然不满足您，您可以用此属性实现更多需求，详见下面【tooltipCustom自定义】|
 |startDate|String|undefined|否|需为标准时间格式，例如"2021-02-14"。用于配合uniClinetDB自动生成categories使用|
 |endDate|String|undefined|否|需为标准时间格式，例如"2021-03-31"。用于配合uniClinetDB自动生成categories使用|
 |groupEnum|Array|[]|否|当使用到uniCloud数据库时，group字段属性如果遇到统计枚举属性的字段，需要通过将DB Schema中的enum的描述定义指派给该属性，具体格式为[{value: 1,text: "男"},{value: 2,text: "女"}]|
 |textEnum|Array|[]|否|当使用到uniCloud数据库时，text字段属性如果遇到统计枚举属性的字段，需要通过将DB Schema中的enum的描述定义指派给该属性，具体格式为[{value: 1,text: "男"},{value: 2,text: "女"}]|
 |ontap|Boolean|true|否|是否监听@tap@cilck事件，禁用后不会触发组件点击事件|
-|ontouch|Boolean|false|否|是否监听@touchstart@touchmove@touchend事件（赋值为true时，非PC端在图表区域内无法拖动页面滚动）|
+|ontouch|Boolean|false|否|（仅uCharts）是否监听@touchstart@touchmove@touchend事件（赋值为true时，非PC端在图表区域内无法拖动页面滚动）|
 |onmouse|Boolean|true|否|是否监听@mousedown@mousemove@mouseup事件，禁用后鼠标经过图表上方不会显示tooltip|
-|onmovetip|Boolean|false|否|是否开启跟手显示tooltip功能（前提条件，1、需要开启touch功能，即:ontouch="true"；2、并且opts.enableScroll=false即关闭图表的滚动条功能）（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
+|onmovetip|Boolean|false|否|（仅uCharts）是否开启跟手显示tooltip功能（前提条件，1、需要开启touch功能，即:ontouch="true"；2、并且opts.enableScroll=false即关闭图表的滚动条功能）（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
 
 ## 组件事件及方法
 
@@ -323,8 +328,8 @@ tooltipCustom属性如下：
 ```
 ├── components
 │ └── qiun-data-chatrs──────────# 组件主入口模块
-│ └── qiun-error────────────────# 加载动画组件文件目录
-│ └── qiun-loading──────────────# 加载动画组件文件目录
+│ └── qiun-error────────────────# 加载动画组件文件目录（可以修改错误提示图标以减少包体积）
+│ └── qiun-loading──────────────# 加载动画组件文件目录（可以删除您不需要的动画效果以减少包体积）
 ├── js_skd
 │ └── u-charts
 │ ── └──config-echarts.js ──────# ECharts默认配置文件（非APP端内可作为实例公用中转）

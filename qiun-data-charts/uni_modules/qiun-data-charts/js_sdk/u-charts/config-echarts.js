@@ -22,11 +22,13 @@
 const color = ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'];
 
 module.exports = {
-	"type": ["pie", "ring", "rose", "funnel", "line", "column", "area", "radar", "gauge","candle"],
-	"categories": ["line", "column", "area", "radar", "gauge", "candle"],
+  //demotype为自定义图表类型
+	"type": ["pie", "ring", "rose", "funnel", "line", "column", "area", "radar", "gauge","candle","demotype"],
+  //增加自定义图表类型，如果需要categories，请在这里加入您的图表类型例如最后的"demotype"
+	"categories": ["line", "column", "area", "radar", "gauge", "candle","demotype"],
+  //instance为实例变量承载属性，option为eopts承载属性，不要删除
 	"instance": {},
 	"option": {},
-  //以上数据请勿改动
   //下面是自定义format配置，因除H5端外的其他端无法通过props传递函数，只能通过此属性对应下标的方式来替换
   "formatter":{
     "tooltipDemo1":function(res){
@@ -50,6 +52,13 @@ module.exports = {
       return result;
     }
   },
+  //这里演示了自定义您的图表类型的option，可以随意命名，之后在组件上 type="demotype" 后，组件会调用这个花括号里的option，如果组件上还存在eopts参数，会将demotype与eopts中option合并后渲染图表。
+  "demotype":{
+    "color": color,
+    //在这里填写echarts的option即可
+    
+  },
+  //下面是自定义配置，请添加项目所需的通用配置
 	"column": {
 		"color": color,
 		"title": {
