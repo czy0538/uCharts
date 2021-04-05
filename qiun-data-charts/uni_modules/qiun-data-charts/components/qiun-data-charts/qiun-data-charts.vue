@@ -385,7 +385,9 @@ export default {
       delete cfu.option[this.cid]
       delete cfu.instance[this.cid]
     }
+    // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO
     uni.offWindowResize(()=>{})
+    // #endif
   },
   watch: {
     chartDataProps: {
