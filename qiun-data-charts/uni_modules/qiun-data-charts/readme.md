@@ -237,7 +237,7 @@ localdata:[
 | --| --|
 |@complete|图表渲染完成事件，渲染完成会返回图表实例{complete: true, id:"xxxxx"(canvasId), type:"complete"}。可以引入config-ucharts.js/config-echarts.js来根据返回的id，调用uCharts或者ECharts实例的相关方法，详见other.vue其他图表高级应用。|
 |@getIndex|获取点击数据索引，点击后返回图表索引currentIndex，图例索引（仅uCharts）legendIndex，等信息。返回数据：{type: "getIndex", currentIndex: 3, legendIndex: -1, id:"xxxxx"(canvasId), event: {x: 100, y: 100}（点击坐标值）}|
-|@error|当组件发生错误时会触发该事件。返回数据：返回数据：{type:"error",errorShow:true|false(组件props中的errorShow状态值) , msg:"错误消息xxxx", id: "xxxxx"(canvasId)}|
+|@error|当组件发生错误时会触发该事件。返回数据：返回数据：{type:"error",errorShow:true/false(组件props中的errorShow状态值) , msg:"错误消息xxxx", id: "xxxxx"(canvasId)}|
 |@getTouchStart|（仅uCharts）拖动开始监听事件。返回数据：{type:"touchStart",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
 |@getTouchMove|（仅uCharts）拖动中监听事件。返回数据：{type:"touchMove",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
 |@getTouchEnd|（仅uCharts）拖动结束监听事件。返回数据：{type:"touchEnd",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
@@ -297,8 +297,8 @@ tooltipCustom属性如下：
 |y|Number|undefined|tooltip左上角相对于画布的Y坐标|
 |index|Number|undefined|相对于series或者categories中的索引值。当没有定义index或者index定义为undefined的时候，组件会自动获取当前点击的索引，并根据上面的xy位置绘制tooltip提示框。如果为0及以上的数字时，会根据您传的索引自动计算x轴方向的偏移量（仅直角坐标系有效）|
 |textList|Array.Object|undefined|多对象数组，tooltip的文字组。当没有定义textList或者textList定义为undefined的时候，会调自动获取点击索引并拼接相应的textList。如传递[{text:'默认显示的tooltip',color:null},{text:'类别1：某个值xxx',color:'#2fc25b'},{text:'类别2：某个值xxx',color:'#facc14'},{text:'类别3：某个值xxx',color:'#f04864'}]这样定义好的数组，则会只显示该数组。|
-|textList[i].text|String||显示的文字|
-|textList[i].color|Color||左侧图表颜色|
+|textList[i].text|String| |显示的文字|
+|textList[i].color|Color| |左侧图表颜色|
 
 ## datacome属性及说明
 
@@ -306,14 +306,14 @@ tooltipCustom属性如下：
 
 |属性名|类型|默认值|说明|
 | -- | -- | -- | -- |
-|collection|String||表名。支持输入多个表名，用 , 分割|
-|field|String||查询字段，多个字段用 , 分割|
-|where|String||查询条件，内容较多，另见jql文档：[详情](https://uniapp.dcloud.net.cn/uniCloud/uni-clientDB?id=jsquery)|
-|orderby|String||排序字段及正序倒叙设置|
-|groupby|String||对数据进行分组|
-|group-field|String||对数据进行分组统计|
+|collection|String| |表名。支持输入多个表名，用 , 分割|
+|field|String| |查询字段，多个字段用 , 分割|
+|where|String| |查询条件，内容较多，另见jql文档：[详情](https://uniapp.dcloud.net.cn/uniCloud/uni-clientDB?id=jsquery)|
+|orderby|String| |排序字段及正序倒叙设置|
+|groupby|String| |对数据进行分组|
+|group-field|String| |对数据进行分组统计|
 |distinct|Boolean|false|是否对数据查询结果中重复的记录进行去重|
-|action|string||云端执行数据库查询的前或后，触发某个action函数操作，进行预处理或后处理，详情。场景：前端无权操作的数据，比如阅读数+1|
+|action|string| |云端执行数据库查询的前或后，触发某个action函数操作，进行预处理或后处理，详情。场景：前端无权操作的数据，比如阅读数+1|
 |page-data|string|add|分页策略选择。值为 add 代表下一页的数据追加到之前的数据中，常用于滚动到底加载下一页；值为 replace 时则替换当前data数据，常用于PC式交互，列表底部有页码分页按钮|
 |page-current|Number|0|当前页|
 |page-size|Number|0|每页数据数量|

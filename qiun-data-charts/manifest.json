@@ -60,10 +60,16 @@
         "usingComponents" : true
     },
     "mp-baidu" : {
-        "usingComponents" : true
+        "usingComponents" : true,
+        "appid" : "16252649"
     },
     "mp-toutiao" : {
-        "usingComponents" : true
+        "usingComponents" : true,
+        "appid" : "ttfe358888611f7093",
+        "setting" : {
+            "minified" : true,
+            "es6" : true
+        }
     },
     "uniStatistics" : {
         "enable" : false
