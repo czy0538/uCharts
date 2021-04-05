@@ -727,6 +727,7 @@ export default {
     onMixinDatacomPropsChange(needReset, changed) {
       if (needReset == true && this.collection !== '') {
         this.showchart = false;
+        this.mixinDatacomErrorMessage = null;
         this._clearChart();
         this.getCloudData();
       }
@@ -777,11 +778,11 @@ export default {
                 cfe.option[cid].tooltipFormat = this.tooltipFormat;
                 cfe.option[cid].tooltipCustom = this.tooltipCustom;
                 cfe.option[cid].lastDrawTime = this.lastDrawTime;
-                this.echartsOpts = cfe.option[cid];
+                this.echartsOpts = deepCloneAssign({}, cfe.option[cid]);
               } else {
-                this.uchartsOpts = cfu.option[cid];
                 this.mixinDatacomLoading = false;
                 this.showchart = true;
+                this.uchartsOpts = deepCloneAssign({}, cfu.option[cid]);
               }
             //如果是小程序端，采用uCharts渲染
             } else {
