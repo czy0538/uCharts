@@ -2,8 +2,11 @@
 
 ## [uCharts官方网站](https://www.ucharts.cn)
 
-## [DEMO演示及在线生成工具](https://demo.ucharts.cn)
+## [DEMO演示及在线生成工具（v2.0文档）](https://demo.ucharts.cn)
 
+## [`howcode`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4651)
+
+### [v1.0文档（将在9月30日作废，请尽快转v2.0）](http://doc.ucharts.cn)
 
 ## 秋云图表组件使用帮助
 
@@ -411,7 +414,7 @@ tooltipCustom属性如下：
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 - [uCharts基础库更新记录](https://gitee.com/uCharts/uCharts/wikis/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95?sort_id=1535998)
 - [uCharts改造教程](https://gitee.com/uCharts/uCharts/wikis/%E6%94%B9%E9%80%A0uCharts%E6%89%93%E9%80%A0%E4%B8%93%E5%B1%9E%E5%9B%BE%E8%A1%A8?sort_id=1535997)
-- [`烈阳`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4373)
+- [`howcode`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4651)
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
 - [ECharts配置手册](https://echarts.apache.org/zh/option.html)
 - [`wkiwi`提供的w-loading组件地址](https://ext.dcloud.net.cn/plugin?id=504)
