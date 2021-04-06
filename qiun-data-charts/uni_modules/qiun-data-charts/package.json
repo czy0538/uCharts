@@ -2,7 +2,7 @@
   "id": "qiun-data-charts",
   "displayName": "秋云高性能跨全端图表组件",
   "version": "2.0.0-20210406",
-  "description": "uCharts官方跨全端图表组件，支持H5及APP用ECharts渲染图表，uniapp可视化首选组件",
+  "description": "uCharts v2.0上线！全新官方图表组件，支持H5及APP用ECharts渲染图表，uniapp可视化首选组件",
   "keywords": [
     "uCharts",
     "ECharts",
