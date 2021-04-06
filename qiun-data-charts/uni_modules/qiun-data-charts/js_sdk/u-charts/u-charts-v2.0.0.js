@@ -1645,26 +1645,23 @@ function calYAxisData(series, opts, config, context) {
     var rangesFormatArr = new Array(YLength);
     var yAxisWidthArr = new Array(YLength);
 
-console.log(opts);
     for (let i = 0; i < YLength; i++) {
       let yData = opts.yAxis.data[i];
-	  console.log(opts.yAxis);
-	  if(!opts.yAxis.data[i].format){
-		  yData.formatter = (val) => {return val.toFixed(opts.yAxis.data[i].tofix)+ opts.yAxis.data[i].unit}
-	  }
       //如果总开关不显示，强制每个Y轴为不显示
       if (opts.yAxis.disabled == true) {
         yData.disabled = true;
       }
+      if(!yData.formatter){
+        yData.formatter = (val) => {return val.toFixed(yData.tofix) + (yData.unit || '')}
+      }
       rangesArr[i] = getYAxisTextList(newSeries[i], opts, config, columnstyle.type, i);
-      let yAxisFontSizes = yData.fontSize || config.fontSize;
+      let yAxisFontSizes = yData.fontSize * opts.pix || config.fontSize;
       yAxisWidthArr[i] = {
         position: yData.position ? yData.position : 'left',
         width: 0
       };
       rangesFormatArr[i] = rangesArr[i].map(function(items) {
-        items = util.toFixed(items, 6);
-        items = yData.formatter ? yData.formatter(Number(items)) : items;
+        items = yData.formatter(Number(items));
         yAxisWidthArr[i].width = Math.max(yAxisWidthArr[i].width, measureText(items, yAxisFontSizes, context) + 5);
         return items;
       });
@@ -1678,15 +1675,17 @@ console.log(opts);
     var rangesArr = new Array(1);
     var rangesFormatArr = new Array(1);
     var yAxisWidthArr = new Array(1);
+    if(!opts.yAxis.formatter){
+      opts.yAxis.formatter = (val) => {return val.toFixed(opts.yAxis.tofix ) + (opts.yAxis.unit || '')}
+    }
     rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type);
     yAxisWidthArr[0] = {
       position: 'left',
       width: 0
     };
-    var yAxisFontSize = opts.yAxis.fontSize || config.fontSize;
+    var yAxisFontSize = opts.yAxis.fontSize * opts.pix || config.fontSize;
     rangesFormatArr[0] = rangesArr[0].map(function(item) {
-      item = util.toFixed(item, 6);
-      item = opts.yAxis.formatter ? opts.yAxis.formatter(Number(item)) : item;
+      item = opts.yAxis.formatter(Number(item));
       yAxisWidthArr[0].width = Math.max(yAxisWidthArr[0].width, measureText(item, yAxisFontSize, context) + 5);
       return item;
     });
@@ -1705,7 +1704,7 @@ console.log(opts);
         position: 'left',
         max: opts.yAxis.max,
         min: opts.yAxis.min,
-        format: opts.yAxis.formatter
+        formatter: opts.yAxis.formatter
       };
     }
   }
@@ -3318,10 +3317,10 @@ function drawXAxis(categories, opts, config, context) {
       }
     }
     newCategories[cgLength - 1] = categories[cgLength - 1];
-    var xAxisFontSize = opts.xAxis.fontSize || config.fontSize;
+    var xAxisFontSize = opts.xAxis.fontSize * opts.pix || config.fontSize;
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
-        var offset = -measureText(String(item), xAxisFontSize * opts.pix, context) / 2;
+        var offset = -measureText(String(item), xAxisFontSize, context) / 2;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
@@ -3330,9 +3329,9 @@ function drawXAxis(categories, opts, config, context) {
           scrollHeight = 6 * opts.pix;
         }
         context.beginPath();
-        context.setFontSize(xAxisFontSize * opts.pix);
+        context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || opts.fontColor);
-        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize * opts.pix + (config.xAxisHeight * opts.pix - scrollHeight - xAxisFontSize * opts.pix) / 2);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + (config.xAxisHeight - scrollHeight - xAxisFontSize) / 2);
         context.closePath();
         context.stroke();
       });
@@ -3340,20 +3339,20 @@ function drawXAxis(categories, opts, config, context) {
       newCategories.forEach(function(item, index) {
         context.save();
         context.beginPath();
-        context.setFontSize(xAxisFontSize * opts.pix);
+        context.setFontSize(xAxisFontSize);
         context.setFillStyle(opts.xAxis.fontColor || opts.fontColor);
-        var textWidth = measureText(String(item), xAxisFontSize * opts.pix, context);
+        var textWidth = measureText(String(item), xAxisFontSize, context);
         var offset = -textWidth;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }
-        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize * opts.pix / 2 + 5, opts.height),
+        var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + xAxisFontSize / 2 + 5, opts.height),
           transX = _calRotateTranslate.transX,
           transY = _calRotateTranslate.transY;
 
         context.rotate(-1 * config._xAxisTextAngle_);
         context.translate(transX, transY);
-        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize * opts.pix + 5);
+        context.fillText(String(item), xAxisPoints[index] + offset, startY + xAxisFontSize + 5);
         context.closePath();
         context.stroke();
         context.restore();
@@ -5349,7 +5348,7 @@ var uCharts = function uCharts(opts) {
     fontSize: opts.fontSize,
     lineHeight: opts.fontSize,
     fontColor: '#333333',
-    format: {},
+    formatter: {},
     hiddenColor: '#CECECE'
   }, opts.legend);
   opts.extra = assign({}, opts.extra);
