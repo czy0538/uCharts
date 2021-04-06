@@ -2,10 +2,13 @@
 
 ## [uCharts官方网站](https://www.ucharts.cn)
 
-## [DEMO演示及在线生成工具](https://demo.ucharts.cn)
+## [DEMO演示及在线生成工具（v2.0文档）](https://demo.ucharts.cn)
 
+## [`howcode`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4651)
 
-## 秋云图表组件使用帮助（仅uniapp项目，本页qiun-data-charts文件夹）
+### [v1.0文档（将在9月30日作废，请尽快转v2.0）](http://doc.ucharts.cn)
+
+## 秋云图表组件使用帮助
 
 全新图表组件，全端全平台支持，开箱即用，可选择uCharts引擎全端渲染，也可指定PC端或APP端`单独使用ECharts`引擎渲染图表。支持极简单的调用方式，只需指定图表类型及传入符合标准的图表数据即可，使开发者只需专注业务及数据。同时也支持datacom组件读取uniClinetDB，无需关心如何拼接数据等不必要的重复工作，大大缩短开发时间。
 
@@ -237,7 +240,7 @@ localdata:[
 | --| --|
 |@complete|图表渲染完成事件，渲染完成会返回图表实例{complete: true, id:"xxxxx"(canvasId), type:"complete"}。可以引入config-ucharts.js/config-echarts.js来根据返回的id，调用uCharts或者ECharts实例的相关方法，详见other.vue其他图表高级应用。|
 |@getIndex|获取点击数据索引，点击后返回图表索引currentIndex，图例索引（仅uCharts）legendIndex，等信息。返回数据：{type: "getIndex", currentIndex: 3, legendIndex: -1, id:"xxxxx"(canvasId), event: {x: 100, y: 100}（点击坐标值）}|
-|@error|当组件发生错误时会触发该事件。返回数据：返回数据：{type:"error",errorShow:true|false(组件props中的errorShow状态值) , msg:"错误消息xxxx", id: "xxxxx"(canvasId)}|
+|@error|当组件发生错误时会触发该事件。返回数据：返回数据：{type:"error",errorShow:true/false(组件props中的errorShow状态值) , msg:"错误消息xxxx", id: "xxxxx"(canvasId)}|
 |@getTouchStart|（仅uCharts）拖动开始监听事件。返回数据：{type:"touchStart",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
 |@getTouchMove|（仅uCharts）拖动中监听事件。返回数据：{type:"touchMove",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
 |@getTouchEnd|（仅uCharts）拖动结束监听事件。返回数据：{type:"touchEnd",event:{x: 100, y: 100}（点击坐标值）,id:"xxxxx"(canvasId)}|
@@ -297,8 +300,8 @@ tooltipCustom属性如下：
 |y|Number|undefined|tooltip左上角相对于画布的Y坐标|
 |index|Number|undefined|相对于series或者categories中的索引值。当没有定义index或者index定义为undefined的时候，组件会自动获取当前点击的索引，并根据上面的xy位置绘制tooltip提示框。如果为0及以上的数字时，会根据您传的索引自动计算x轴方向的偏移量（仅直角坐标系有效）|
 |textList|Array.Object|undefined|多对象数组，tooltip的文字组。当没有定义textList或者textList定义为undefined的时候，会调自动获取点击索引并拼接相应的textList。如传递[{text:'默认显示的tooltip',color:null},{text:'类别1：某个值xxx',color:'#2fc25b'},{text:'类别2：某个值xxx',color:'#facc14'},{text:'类别3：某个值xxx',color:'#f04864'}]这样定义好的数组，则会只显示该数组。|
-|textList[i].text|String||显示的文字|
-|textList[i].color|Color||左侧图表颜色|
+|textList[i].text|String| |显示的文字|
+|textList[i].color|Color| |左侧图表颜色|
 
 ## datacome属性及说明
 
@@ -306,14 +309,14 @@ tooltipCustom属性如下：
 
 |属性名|类型|默认值|说明|
 | -- | -- | -- | -- |
-|collection|String||表名。支持输入多个表名，用 , 分割|
-|field|String||查询字段，多个字段用 , 分割|
-|where|String||查询条件，内容较多，另见jql文档：[详情](https://uniapp.dcloud.net.cn/uniCloud/uni-clientDB?id=jsquery)|
-|orderby|String||排序字段及正序倒叙设置|
-|groupby|String||对数据进行分组|
-|group-field|String||对数据进行分组统计|
+|collection|String| |表名。支持输入多个表名，用 , 分割|
+|field|String| |查询字段，多个字段用 , 分割|
+|where|String| |查询条件，内容较多，另见jql文档：[详情](https://uniapp.dcloud.net.cn/uniCloud/uni-clientDB?id=jsquery)|
+|orderby|String| |排序字段及正序倒叙设置|
+|groupby|String| |对数据进行分组|
+|group-field|String| |对数据进行分组统计|
 |distinct|Boolean|false|是否对数据查询结果中重复的记录进行去重|
-|action|string||云端执行数据库查询的前或后，触发某个action函数操作，进行预处理或后处理，详情。场景：前端无权操作的数据，比如阅读数+1|
+|action|string| |云端执行数据库查询的前或后，触发某个action函数操作，进行预处理或后处理，详情。场景：前端无权操作的数据，比如阅读数+1|
 |page-data|string|add|分页策略选择。值为 add 代表下一页的数据追加到之前的数据中，常用于滚动到底加载下一页；值为 replace 时则替换当前data数据，常用于PC式交互，列表底部有页码分页按钮|
 |page-current|Number|0|当前页|
 |page-size|Number|0|每页数据数量|
@@ -411,7 +414,7 @@ tooltipCustom属性如下：
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 - [uCharts基础库更新记录](https://gitee.com/uCharts/uCharts/wikis/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95?sort_id=1535998)
 - [uCharts改造教程](https://gitee.com/uCharts/uCharts/wikis/%E6%94%B9%E9%80%A0uCharts%E6%89%93%E9%80%A0%E4%B8%93%E5%B1%9E%E5%9B%BE%E8%A1%A8?sort_id=1535997)
-- [`烈阳`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4373)
+- [`howcode`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4651)
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
 - [ECharts配置手册](https://echarts.apache.org/zh/option.html)
 - [`wkiwi`提供的w-loading组件地址](https://ext.dcloud.net.cn/plugin?id=504)
