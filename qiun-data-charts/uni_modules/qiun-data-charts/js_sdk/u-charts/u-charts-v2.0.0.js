@@ -1645,8 +1645,13 @@ function calYAxisData(series, opts, config, context) {
     var rangesFormatArr = new Array(YLength);
     var yAxisWidthArr = new Array(YLength);
 
+console.log(opts);
     for (let i = 0; i < YLength; i++) {
       let yData = opts.yAxis.data[i];
+	  console.log(opts.yAxis);
+	  if(!opts.yAxis.data[i].format){
+		  yData.formatter = (val) => {return val.toFixed(opts.yAxis.data[i].tofix)+ opts.yAxis.data[i].unit}
+	  }
       //如果总开关不显示，强制每个Y轴为不显示
       if (opts.yAxis.disabled == true) {
         yData.disabled = true;
