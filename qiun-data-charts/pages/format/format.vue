@@ -6,7 +6,11 @@
       <!-- 饼图的format需要挂到chartData中的series[i].format上，例如pieFormatDemo.series[i].format="pieDemo"。当使用localdata数据渲染图表时，因series是组件自动拼接的，暂时不支持使用format -->
       <qiun-data-charts type="pie" :chartData="Pie1"/>
     </view>
-    <qiun-title-bar title="Y轴format"/>
+    <qiun-title-bar title="Y轴format方法1(保留小数点及添加单位)"/>
+    <view class="charts-box">
+      <qiun-data-charts type="area" :opts="{yAxis:{data:[{tofix:3,unit:'万元'}]}}" :chartData="chartsData.Line1" />
+    </view>
+    <qiun-title-bar title="Y轴format方法2(自定义)"/>
     <view class="charts-box">
       <qiun-data-charts type="area" :opts="{yAxis:{data:[{format:'yAxisDemo1'}]}}" :chartData="chartsData.Line1" />
     </view>
