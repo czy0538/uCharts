@@ -2,12 +2,12 @@
   <view class="content">
     <!-- 从页面整洁度及代码可阅读性上来看，不再推荐使用原生canvas写法来调用uCharts -->
     <qiun-title-bar title="原生canvas用法示例"/>
-    <canvas canvasId="canvasLine" class="charts" @tap="tap($event,'canvasLine')"/>
+    <canvas canvasId="canvasLine" id="canvasLine" class="charts" @tap="tap($event,'canvasLine')"/>
     <!-- #ifdef MP-WEIXIN -->
     <!-- 只有微信小程序有canvas2d模式 -->
     <qiun-title-bar title="启用type='2d'用法示例"/>
     <!-- 开启canvas2d模式后@tap的获取的点击坐标会不准确，开发者需按组件源码自行处理event的坐标为正确的坐标，并传入uCharts的实例中方可正确调用showTooltip方法 -->
-    <canvas id="canvasColumn" type="2d" class="charts" @tap="tap($event,'canvasColumn')"/>
+    <canvas canvasId="canvasColumn" id="canvasColumn" type="2d" class="charts" @tap="tap($event,'canvasColumn')"/>
     <!-- #endif -->
   </view>
 </template>

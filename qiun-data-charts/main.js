@@ -3,6 +3,8 @@ import App from './App'
 
 Vue.config.productionTip = false
 
+Vue.prototype.toJSON=()=>{return this}
+
 App.mpType = 'app'
 
 const app = new Vue({

@@ -14,4 +14,7 @@
 
 <style>
 	@import '@/common/uni.css';
+  page{
+    background: #FFFFFF;
+  }
 </style>

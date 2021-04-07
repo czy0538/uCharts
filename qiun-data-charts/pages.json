@@ -59,6 +59,9 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "秋云高性能跨全端图表组件",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+    "mp-alipay" : {
+        "titleBarColor" : "#FFFFFF"
+    }
 	}
 }
