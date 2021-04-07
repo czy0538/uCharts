@@ -1369,9 +1369,9 @@ function fixColumeData(points, eachSpacing, columnLen, index, config, opts) {
     }
     var seriesGap = 0
     if (opts.type == 'mix') {
-      seriesGap = opts.extra.mix.column.seriesGap || 0
+      seriesGap = opts.extra.mix.column.seriesGap * opts.pix || 0
     } else {
-      seriesGap = opts.extra.column.seriesGap || 0
+      seriesGap = opts.extra.column.seriesGap * opts.pix || 0
     }
     item.width = Math.ceil((eachSpacing - 2 * config.columePadding - seriesGap * (columnLen - 1)) / columnLen);
     if (opts.extra.mix && opts.extra.mix.column.width && +opts.extra.mix.column.width > 0) {
@@ -1395,7 +1395,7 @@ function fixColumeMeterData(points, eachSpacing, columnLen, index, config, opts,
     }
     item.width = Math.ceil((eachSpacing - 2 * config.columePadding) / 2);
     if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
-      item.width = Math.min(item.width, +opts.extra.column.width);
+      item.width = Math.min(item.width, +opts.extra.column.width * opts.pix);
     }
     if (index > 0) {
       item.width -= 2 * border;
@@ -1411,7 +1411,7 @@ function fixColumeStackData(points, eachSpacing, columnLen, index, config, opts,
     }
     item.width = Math.ceil((eachSpacing - 2 * config.columePadding) / 2);
     if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
-      item.width = Math.min(item.width, +opts.extra.column.width);
+      item.width = Math.min(item.width, +opts.extra.column.width * opts.pix);
     }
     return item;
   });
@@ -3859,8 +3859,8 @@ function drawArcbarDataPoints(series, opts, config, context) {
     startAngle: 0.75,
     endAngle: 0.25,
     type: 'default',
-    width: 12 * opts.pix,
-    gap: 2 * opts.pix,
+    width: 12 ,
+    gap: 2 ,
     linearType: 'none',
     customColor: [],
   }, opts.extra.arcbar);
@@ -3890,14 +3890,14 @@ function drawArcbarDataPoints(series, opts, config, context) {
   for (let i = 0; i < series.length; i++) {
     let eachSeries = series[i];
     //背景颜色
-    context.setLineWidth(arcbarOption.width);
+    context.setLineWidth(arcbarOption.width * opts.pix);
     context.setStrokeStyle(arcbarOption.backgroundColor || '#E9E9E9');
     context.setLineCap('round');
     context.beginPath();
     if (arcbarOption.type == 'default') {
-      context.arc(centerPosition.x, centerPosition.y, radius - (arcbarOption.width + arcbarOption.gap) * i, arcbarOption.startAngle * Math.PI, arcbarOption.endAngle * Math.PI, false);
+      context.arc(centerPosition.x, centerPosition.y, radius - (arcbarOption.width * opts.pix + arcbarOption.gap * opts.pix) * i, arcbarOption.startAngle * Math.PI, arcbarOption.endAngle * Math.PI, false);
     } else {
-      context.arc(centerPosition.x, centerPosition.y, radius - (arcbarOption.width + arcbarOption.gap) * i, 0, 2 * Math.PI, false);
+      context.arc(centerPosition.x, centerPosition.y, radius - (arcbarOption.width * opts.pix + arcbarOption.gap * opts.pix) * i, 0, 2 * Math.PI, false);
     }
     context.stroke();
     //进度条
@@ -3908,11 +3908,11 @@ function drawArcbarDataPoints(series, opts, config, context) {
       grd.addColorStop(0, hexToRgb(eachSeries.color, 1))
       fillColor = grd;
     }
-    context.setLineWidth(arcbarOption.width);
+    context.setLineWidth(arcbarOption.width * opts.pix);
     context.setStrokeStyle(fillColor);
     context.setLineCap('round');
     context.beginPath();
-    context.arc(centerPosition.x, centerPosition.y, radius - (arcbarOption.width + arcbarOption.gap) * i, arcbarOption.startAngle * Math.PI, eachSeries._proportion_ * Math.PI, false);
+    context.arc(centerPosition.x, centerPosition.y, radius - (arcbarOption.width * opts.pix + arcbarOption.gap * opts.pix) * i, arcbarOption.startAngle * Math.PI, eachSeries._proportion_ * Math.PI, false);
     context.stroke();
   }
   drawRingTitle(opts, config, context, centerPosition);
@@ -4450,7 +4450,7 @@ function getWordCloudPoint(opts, type, context) {
     case 'normal':
       for (let i = 0; i < points.length; i++) {
         let text = points[i].name;
-        let tHeight = points[i].textSize;
+        let tHeight = points[i].textSize * opts.pix;
         let tWidth = measureText(text, tHeight, context);
         let x, y;
         let area;
@@ -4483,7 +4483,7 @@ function getWordCloudPoint(opts, type, context) {
       };
       for (let i = 0; i < points.length; i++) {
         let text = points[i].name;
-        let tHeight = points[i].textSize;
+        let tHeight = points[i].textSize * opts.pix;
         let tWidth = measureText(text, tHeight, context);
         let isSpin = Spin();
         let x, y, area, areav;
@@ -4545,7 +4545,7 @@ function drawWordCloudDataPoints(series, opts, config, context) {
       context.rotate(90 * Math.PI / 180);
     }
     let text = points[i].name;
-    let tHeight = points[i].textSize;
+    let tHeight = points[i].textSize * opts.pix;
     let tWidth = measureText(text, tHeight, context);
     context.beginPath();
     context.setStrokeStyle(points[i].color);
