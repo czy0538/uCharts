@@ -63,8 +63,38 @@
       </view>
     </block>
     <!-- #endif -->
-    <!-- 其他平台通过vue渲染图表 -->
-    <!-- #ifndef APP-PLUS || H5 -->
+    <!-- 支付宝小程序 -->
+    <!-- #ifdef MP-ALIPAY -->
+    <block v-if="ontouch" @tap="_tap">
+      <canvas
+        :id="cid"
+        :canvasId="cid"
+        :width="cWidth * pixel"
+        :height="cHeight * pixel"
+        :style="{ width: cWidth + 'px', height: cHeight + 'px', background: background }"
+        :disable-scroll="disScroll"
+        @touchstart="_touchStart"
+        @touchmove="_touchMove"
+        @touchend="_touchEnd"
+        @error="_error"
+        v-if="showchart"
+      />
+    </block>
+    <block v-if="!ontouch" @tap="_tap">
+      <canvas
+        :id="cid"
+        :canvasId="cid"
+        :width="cWidth * pixel"
+        :height="cHeight * pixel"
+        :style="{ width: cWidth + 'px', height: cHeight + 'px', background: background }"
+        :disable-scroll="disScroll"
+        @error="_error"
+        v-if="showchart"
+      />
+    </block>
+    <!-- #endif -->
+    <!-- 其他小程序通过vue渲染图表 -->
+    <!-- #ifdef MP-360 || MP-BAIDU || MP-QQ || MP-TOUTIAO || MP-WEIXIN -->
     <block v-if="type2d">
       <view v-if="ontouch" @tap="_tap">
         <canvas
@@ -106,12 +136,13 @@
           v-if="showchart"
         />
       </view>
-      <view v-if="!ontouch" @tap="_tap">
+      <view v-if="!ontouch" >
         <canvas
           :id="cid"
           :canvasId="cid"
           :style="{ width: cWidth + 'px', height: cHeight + 'px', background: background }"
           :disable-scroll="disScroll"
+          @tap="_tap"
           @error="_error"
           v-if="showchart"
         />
@@ -305,6 +336,7 @@ export default {
     return {
       cid: 'uchartsid',
       inWx: false,
+      inAli: false,
       inH5: false,
       inApp: false,
       type2d: false,
@@ -350,6 +382,10 @@ export default {
       this.type2d = true;
       this.pixel = uni.getSystemInfoSync().pixelRatio;
     }
+    // #endif
+    // #ifdef MP-ALIPAY
+    this.inAli = true;
+    this.pixel = uni.getSystemInfoSync().pixelRatio;
     // #endif
     if (this.type2d === true && this.canvasId === 'uchartsid') {
       console.log('[uCharts]:开启canvas2d模式，必须指定canvasId，否则会出现偶尔获取不到dom节点的问题！');
@@ -698,7 +734,9 @@ export default {
       if (duration < 1000) return;
       let chartdom = uni
         .createSelectorQuery()
+        // #ifndef MP-ALIPAY
         .in(this)
+        // #endif
         .select('.chartsview')
         .boundingClientRect(data => {
           this.showchart = true;
@@ -746,7 +784,9 @@ export default {
       let cid = this.cid
       let chartdom = uni
         .createSelectorQuery()
+        // #ifndef MP-ALIPAY
         .in(this)
+        // #endif
         .select('.chartsview')
         .boundingClientRect(data => {
           if (data.width > 0 && data.height > 0) {
@@ -793,7 +833,7 @@ export default {
               this.mixinDatacomLoading = false;
               this.showchart = true;
               if (this.type2d === true) {
-                const query = uni.createSelectorQuery().in(this);
+                const query = uni.createSelectorQuery().in(this)
                 query
                   .select('#' + cid)
                   .fields({ node: true, size: true })
@@ -922,9 +962,12 @@ export default {
       if (this.inScrollView === true) {
         let chartdom = uni
           .createSelectorQuery()
+          // #ifndef MP-ALIPAY
           .in(this)
+          // #endif
           .select('.chartsview')
           .boundingClientRect(data => {
+            e.changedTouches=[];
             if (e.detail.x) {
               e.changedTouches.unshift({ x: e.detail.x - data.left, y: e.detail.y - data.top - this.pageScrollTop});
             }
@@ -949,6 +992,7 @@ export default {
             this._showTooltip(e);
           }
         }else{
+          e.changedTouches=[];
           e.changedTouches.unshift({ x: e.detail.x, y: e.detail.y - e.currentTarget.offsetTop });
           currentIndex = cfu.instance[cid].getCurrentDataIndex(e);
           legendIndex = cfu.instance[cid].getLegendDataIndex(e);
