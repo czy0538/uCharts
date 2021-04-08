@@ -25,7 +25,7 @@
 - chartData`配置与数据解耦`，即便使用ECharts引擎也不必担心拼接option的困扰。
 - localdata`后端数据直接渲染`，无需自行拼接chartData的categories及series，从后端拿回的数据简单处理即可生成图表。
 - 小程序端不必担心包体积过大问题，ECharts引擎将不会编译到各小程序端，u-charts.js编译后`仅为93kb`。
-- 未来将支持通过uniCloud的`DB Schema自动生成`全端全平台图表，敬请期待！！！
+- 未来将支持通过HbuilderX的`schema2code自动生成`全端全平台图表，敬请期待！！！
 - uCharts官方拥有3个2000人的QQ群支持，庞大的用户量证明我们一直在努力，本组件将持续更新，请各位放心使用，本组件问题请在`QQ3群`反馈，您的宝贵建议是我们努力的动力！！
 
 
@@ -214,7 +214,7 @@ localdata:[
 |echartsH5|Boolean|false|否|是否在H5端使用ECharts引擎渲染图表|
 |echartsApp|Boolean|false|否|是否在APP端使用ECharts引擎渲染图表|
 |canvasId|String|见说明|否|默认生成32位随机字符串。如果指定canvasId，可方便后面调用指定图表实例，否则需要通过渲染完成事件获取自动生成随机的canvasId|
-|canvas2d|Boolean|false|否|是否开启canvas2d模式，用于解决微信小程序层级过高问题，仅微信小程序端可用，其他端会强制关闭canvas2d模式。<font color=#FF0000>注：开启canvas2d模式，必须要传入上面的canvasId（随机字符串，不能是动态绑定的值，不能是数字），否则微信小程序可能会获取不到dom导致无法渲染图表！</font>|
+|canvas2d|Boolean|false|否|是否开启canvas2d模式，用于解决微信小程序层级过高问题，仅微信小程序端可用，其他端会强制关闭canvas2d模式。<font color=#FF0000>注：开启canvas2d模式，必须要传入上面的canvasId（随机字符串，不能是动态绑定的值，不能是数字），否则微信小程序可能会获取不到dom导致无法渲染图表！**开启后，开发者工具显示不正常，预览正常（不能“真机调试”）**</font>|
 |background|String|none|否|背景颜色，默认透明none，可选css的16进制color值，如#FFFFFF|
 |animation|Boolean|true|否|是否开启图表动画效果|
 |inScrollView|Boolean|false|否|图表组件是否在scroll-view中，如果在请传true，否则会出现点击事件坐标不准确的现象|
@@ -390,6 +390,7 @@ tooltipCustom属性如下：
 
 - `图表无法显示问题`：
 	* 请先检查您的HBuilderX版本，要求高于3.1.0+。
+  * 如果是首次导入插件不显示，请重启HBuilderX或者重启项目或者重启开发者工具，避免缓存导致不能显示。
 	* 其次请检查组件父元素绑定的CSS样式（示例中class="charts-box"这个样式），是否没有正确的宽高，组件内图表会自适应父级结构的尺寸。
 	* 最后检查父级是否使用了v-show来控制显示。如果页面初始化时组件处于隐藏状态，组件则无法正确获取宽高尺寸，此时需要组件内绑定reshow属性（逻辑应与父级的v-show的逻辑相同），强制重新渲染图表，例如:reshow="父级v-show绑定的事件"。
 - `图表抖动问题`：如果开启了animation动画效果，由于组件内开启了chartData和opts的监听，当数据变化时会重新渲染图表，建议整体改变chartData及opts的属性值，而不要通过循环或遍历来改变this实例下的chartData及opts，例如先定义一个临时变量，拼接好数据后再整体赋值。
@@ -397,7 +398,7 @@ tooltipCustom属性如下：
 - `微信小程序图表层级过高问题`：因canvas在微信小程序是原生组件，如果使用自定义tabbar或者自定义导航栏，图表则会超出预期，此时需要给组件的canvas2d传值true来使用type='2d'的功能，开启此模式后，开发者工具显示不正常，图表层级会变高，而正常预览或者发布上线则是正常状态，开发者不必担心，一切以真机预览为准（因微信开发者工具显示不正确，canvas2d这种模式下给调试带来了困难，开发时，可以先用:canvas2d="false"来调试，调试无误后再改成true）。
 - `在图表上滑动无法使页面滚动问题`：此问题是因为监听了touchstart、touchmove和touchend三个事件，或者您开启了disableScroll属性，如果您的图表不需要开启图表内的滚动条功能，请禁用这三个方法的监听，即:ontouch="false"或者:disableScroll="false"即可（此时图表组件默认通过@tap事件来监听点击，可正常显示Tooltip提示窗）。
 - `开启滚动条无法拖动图表问题`：此问题正与以上问题相反，是因为禁用了监听touchstart、touchmove和touchend三个事件，请启用这三个方法的监听，即:ontouch="true"即可。
-- `地图变形问题`：此问题是因为您引用的geojson地图数据的坐标系可能是地球坐标(WGS84)导致，您需要额外自行处理成火星坐标或者百度坐标，常用工具为coordtransform.js，电梯直达[https://github.com/wandergis/coordtransform](https://github.com/wandergis/coordtransform)
+- `地图变形问题`：此问题是因为您引用的geojson地图数据的坐标系可能是地球坐标(WGS84)导致，需要开启【是否进行WGS84转墨卡托投影】功能。开启后因大量的数据运算tooltip可能会不跟手，建议自行转换为墨卡托坐标系，可参照源码内function lonlat2mercator()。
 
 ## QQ群号码
 
