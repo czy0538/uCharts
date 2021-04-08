@@ -488,6 +488,8 @@ function measureText(text, fontSize, context) {
         width += 2.7;
       } else if (/-/.test(item)) {
         width += 3.25;
+      } else if (/:/.test(item)) {
+        width += 2.5;
       } else if (/[\u4e00-\u9fa5]/.test(item)) {
         width += 10;
       } else if (/\(|\)/.test(item)) {
