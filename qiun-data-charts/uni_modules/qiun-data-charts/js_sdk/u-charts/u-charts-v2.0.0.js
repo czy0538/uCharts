@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210406',
+  version: 'v2.0.0-20210408',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -470,7 +470,10 @@ function getDataRange(minData, maxData) {
 function measureText(text, fontSize, context) {
   var width = 0;
   text = String(text);
-  if (context !== false && context !== undefined) {
+  // #ifdef MP-ALIPAY || MP-BAIDU
+  context = false;
+  // #endif
+  if (context !== false && context !== undefined && context.setFontSize && context.measureText) {
     context.setFontSize(fontSize)
     return context.measureText(text).width
   } else {
@@ -3667,9 +3670,9 @@ function drawPieDataPoints(series, opts, config, context) {
   var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
   var pieOption = assign({}, {
     activeOpacity: 0.5,
-    activeRadius: 10 * opts.pix,
+    activeRadius: 10,
     offsetAngle: 0,
-    labelWidth: 15 * opts.pix,
+    labelWidth: 15,
     ringWidth: 30,
     customRadius: 0,
     border: false,
@@ -3683,15 +3686,15 @@ function drawPieDataPoints(series, opts, config, context) {
     y: opts.area[0] + (opts.height - opts.area[0] - opts.area[2]) / 2
   };
   if (config.pieChartLinePadding == 0) {
-    config.pieChartLinePadding = pieOption.activeRadius;
+    config.pieChartLinePadding = pieOption.activeRadius * opts.pix;
   }
 
   var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
   if (pieOption.customRadius > 0) {
-    radius = pieOption.customRadius;
+    radius = pieOption.customRadius * opts.pix;
   }
   series = getPieDataPoints(series, radius, process);
-  var activeRadius = pieOption.activeRadius;
+  var activeRadius = pieOption.activeRadius * opts.pix;
   pieOption.customColor = fillCustomColor(pieOption.linearType, pieOption.customColor, series, config);
   series = series.map(function(eachSeries) {
     eachSeries._start_ += (pieOption.offsetAngle) * Math.PI / 180;
@@ -3736,7 +3739,7 @@ function drawPieDataPoints(series, opts, config, context) {
   if (opts.type === 'ring') {
     var innerPieWidth = radius * 0.6;
     if (typeof pieOption.ringWidth === 'number' && pieOption.ringWidth > 0) {
-      innerPieWidth = Math.max(0, radius - pieOption.ringWidth);
+      innerPieWidth = Math.max(0, radius - pieOption.ringWidth * opts.pix);
     }
     context.beginPath();
     context.setFillStyle(opts.background);
@@ -3772,9 +3775,9 @@ function drawRoseDataPoints(series, opts, config, context) {
   var roseOption = assign({}, {
     type: 'area',
     activeOpacity: 0.5,
-    activeRadius: 10 * opts.pix,
+    activeRadius: 10,
     offsetAngle: 0,
-    labelWidth: 15 * opts.pix,
+    labelWidth: 15,
     border: false,
     borderWidth: 2,
     borderColor: '#FFFFFF',
@@ -3782,7 +3785,7 @@ function drawRoseDataPoints(series, opts, config, context) {
     customColor: [],
   }, opts.extra.rose);
   if (config.pieChartLinePadding == 0) {
-    config.pieChartLinePadding = roseOption.activeRadius;
+    config.pieChartLinePadding = roseOption.activeRadius * opts.pix;
   }
   var centerPosition = {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
@@ -3791,7 +3794,7 @@ function drawRoseDataPoints(series, opts, config, context) {
   var radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, (opts.height - opts.area[0] - opts.area[2]) / 2 - config.pieChartLinePadding - config.pieChartTextPadding);
   var minRadius = roseOption.minRadius || radius * 0.5;
   series = getRoseDataPoints(series, roseOption.type, minRadius, radius, process);
-  var activeRadius = roseOption.activeRadius;
+  var activeRadius = roseOption.activeRadius * opts.pix;
   roseOption.customColor = fillCustomColor(roseOption.linearType, roseOption.customColor, series, config);
   series = series.map(function(eachSeries) {
     eachSeries._start_ += (roseOption.offsetAngle || 0) * Math.PI / 180;
