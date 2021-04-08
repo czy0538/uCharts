@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v1.0.0-20210406
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210408
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -26,7 +26,7 @@
       <qiun-error :errorMessage="errorMessage" />
     </view>
     <!-- APP和H5采用renderjs渲染图表 -->
-    <!-- #ifdef APP-PLUS || H5 -->
+    <!-- #ifdef APP-VUE || H5 -->
     <block v-if="echarts">
       <view
         :style="{ background: background }"
@@ -65,7 +65,7 @@
     <!-- #endif -->
     <!-- 支付宝小程序 -->
     <!-- #ifdef MP-ALIPAY -->
-    <block v-if="ontouch" @tap="_tap">
+    <block v-if="ontouch">
       <canvas
         :id="cid"
         :canvasId="cid"
@@ -73,6 +73,7 @@
         :height="cHeight * pixel"
         :style="{ width: cWidth + 'px', height: cHeight + 'px', background: background }"
         :disable-scroll="disScroll"
+        @tap="_tap"
         @touchstart="_touchStart"
         @touchmove="_touchMove"
         @touchend="_touchEnd"
@@ -80,7 +81,7 @@
         v-if="showchart"
       />
     </block>
-    <block v-if="!ontouch" @tap="_tap">
+    <block v-if="!ontouch">
       <canvas
         :id="cid"
         :canvasId="cid"
@@ -88,6 +89,7 @@
         :height="cHeight * pixel"
         :style="{ width: cWidth + 'px', height: cHeight + 'px', background: background }"
         :disable-scroll="disScroll"
+        @tap="_tap"
         @error="_error"
         v-if="showchart"
       />
@@ -155,7 +157,7 @@
 <script>
 import uChartsMp from '../../js_sdk/u-charts/u-charts-v2.0.0.js';
 import cfu from '../../js_sdk/u-charts/config-ucharts.js';
-// #ifdef APP-PLUS || H5
+// #ifdef APP-VUE || H5
 import cfe from '../../js_sdk/u-charts/config-echarts.js';
 // #endif
 
@@ -364,11 +366,16 @@ export default {
       }
       this.cid = id
     }
-    // #ifdef APP-PLUS
+    // #ifdef APP-VUE
     this.inApp = true;
     if (this.echartsApp === true) {
       this.echarts = true;
     }
+    // #endif
+    // #ifdef APP-NVUE
+    this.inApp = true;
+    this.mixinDatacomLoading = false
+    this.mixinDatacomErrorMessage = "暂不支持NVUE"
     // #endif
     // #ifdef H5
     this.inH5 = true;
@@ -894,7 +901,7 @@ export default {
     	  } 
     	},this);
     },
-    // #ifndef APP-PLUS || H5
+    // #ifndef APP-VUE || H5
     _newChart(cid) {
       if (this.mixinDatacomLoading == true) {
         return;
@@ -959,16 +966,21 @@ export default {
       let cid = this.cid
       let currentIndex = null;
       let legendIndex = null;
-      if (this.inScrollView === true) {
+      if (this.inScrollView === true || this.inAli) {
         let chartdom = uni
           .createSelectorQuery()
           // #ifndef MP-ALIPAY
           .in(this)
-          // #endif
           .select('.chartsview')
+          // #endif
+          // #ifdef MP-ALIPAY
+          .select('#'+this.cid)
+          // #endif
           .boundingClientRect(data => {
             e.changedTouches=[];
-            if (e.detail.x) {
+            if (this.inAli) {
+              e.changedTouches.unshift({ x: e.detail.pageX - data.left, y: e.detail.pageY - data.top});
+            }else{
               e.changedTouches.unshift({ x: e.detail.x - data.left, y: e.detail.y - data.top - this.pageScrollTop});
             }
             if(move){
@@ -1048,12 +1060,15 @@ export default {
       if(this.echarts===true && this.mixinDatacomLoading===false){
         this.beforeInit()
       }
+    },
+    toJSON(){
+      return this
     }
   }
 };
 </script>
 
-<!-- #ifdef APP-PLUS || H5 -->
+<!-- #ifdef APP-VUE || H5 -->
 <script module="rdcharts" lang="renderjs">
 import uChartsRD from '../../js_sdk/u-charts/u-charts-v2.0.0.js';
 import cfu from '../../js_sdk/u-charts/config-ucharts.js';
@@ -1111,7 +1126,7 @@ export default {
           this.newEChart()
       }else{
         const script = document.createElement('script')
-        // #ifdef APP-PLUS
+        // #ifdef APP-VUE
         script.src = './uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
         // #endif
         // #ifdef H5
