@@ -4603,7 +4603,7 @@ function drawFunnelDataPoints(series, opts, config, context) {
     x: opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2,
     y: opts.height - opts.area[2]
   };
-  let activeWidth = funnelOption.activeWidth;
+  let activeWidth = funnelOption.activeWidth * opts.pix;
   let radius = Math.min((opts.width - opts.area[1] - opts.area[3]) / 2 - activeWidth, (opts.height - opts.area[0] - opts.area[2]) / 2 - activeWidth);
   series = getFunnelDataPoints(series, radius, process);
   context.save();
