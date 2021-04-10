@@ -33,15 +33,15 @@
       <button class="uni-button" type="default" @click="openfixed">点击显示弹出层</button>
     </view>
     <qiun-title-bar title="使用v-for生成图表"/>
-    <block v-for="item in list">
+    <block v-for="(item, index) in listA" :key="'listA'+index">
       <view class="charts-box">
         <qiun-data-charts :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
       </view>
     </block>
     <qiun-title-bar title="使用v-for生成图表2"/>
-    <block v-for="item2 in listB">
+    <block v-for="(item, index) in listB" :key="'listB'+index">
       <view class="charts-box">
-        <qiun-data-charts :type="item2.type" :chartData="item2.chartData" :canvas2d="true" :canvasId="item2.id"/>
+        <qiun-data-charts :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
       </view>
     </block>
     <view class="fix-class" v-if="fixedzt">
@@ -67,7 +67,7 @@ export default {
       pageScrollTop:0,
       fixedzt:false,
       absolutezt:false,
-      list:[],
+      listA:[],
       listB:[]
     };
   },
@@ -77,7 +77,7 @@ export default {
     
     //模拟v-for数据变化
     setTimeout(() => {
-      this.list=[
+      this.listA=[
         {id:"xlsldkfjiw1",type:'area',chartData:JSON.parse(JSON.stringify(demodata.Column))},
         {id:"docldkfjiw2",type:'line',chartData:JSON.parse(JSON.stringify(demodata.Line))},
         {id:"pptldkfjiw3",type:'column',chartData:JSON.parse(JSON.stringify(demodata.Column))}
@@ -99,7 +99,7 @@ export default {
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
         this.chartsDataColumn1=JSON.parse(JSON.stringify(demodata.Column))
         
-        this.list=[
+        this.listA=[
           {id:"xlsldkfjiw1",type:'line',chartData:JSON.parse(JSON.stringify(demodata.Line))},
           {id:"docldkfjiw2",type:'column',chartData:JSON.parse(JSON.stringify(demodata.Column))},
           {id:"pptldkfjiw3",type:'area',chartData:JSON.parse(JSON.stringify(demodata.Line))}
