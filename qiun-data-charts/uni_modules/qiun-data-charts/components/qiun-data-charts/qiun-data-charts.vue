@@ -341,7 +341,7 @@ export default {
       inAli: false,
       inH5: false,
       inApp: false,
-      type2d: false,
+      type2d: true,
       disScroll: false,
       pixel: 1,
       cWidth: 375,
@@ -355,7 +355,7 @@ export default {
       lastDrawTime:null,
     };
   },
-  mounted() {
+  created(){
     this.cid = this.canvasId
     if (this.canvasId == 'uchartsid' || this.canvasId == '') {
       let t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -366,6 +366,21 @@ export default {
       }
       this.cid = id
     }
+    // #ifdef MP-WEIXIN
+    this.inWx = true;
+    if (this.canvas2d === false) {
+      this.type2d = false;
+    }else{
+      this.pixel = uni.getSystemInfoSync().pixelRatio;
+      if (this.canvasId === 'uchartsid' || this.canvasId == '') {
+        console.log('[uCharts]:开启canvas2d模式，必须指定canvasId，否则会出现偶尔获取不到dom节点的问题！');
+      }
+    }
+    // #endif
+    //非微信小程序端强制关闭canvas2d模式
+    // #ifndef MP-WEIXIN
+    this.type2d = false;
+    // #endif
     // #ifdef APP-VUE
     this.inApp = true;
     if (this.echartsApp === true) {
@@ -383,23 +398,16 @@ export default {
       this.echarts = true;
     }
     // #endif
-    // #ifdef MP-WEIXIN
-    this.inWx = true;
-    if (this.canvas2d === true) {
-      this.type2d = true;
-      this.pixel = uni.getSystemInfoSync().pixelRatio;
-    }
-    // #endif
     // #ifdef MP-ALIPAY
     this.inAli = true;
     this.pixel = uni.getSystemInfoSync().pixelRatio;
     // #endif
-    if (this.type2d === true && this.canvasId === 'uchartsid') {
-      console.log('[uCharts]:开启canvas2d模式，必须指定canvasId，否则会出现偶尔获取不到dom节点的问题！');
-    }
     this.disScroll = this.disableScroll;
-    this.beforeInit();
-    
+  },
+  mounted() {
+    this.$nextTick(()=>{
+      this.beforeInit();
+    })
     // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO
     uni.onWindowResize(res => {
       if (this.mixinDatacomLoading == true) {
@@ -418,7 +426,6 @@ export default {
       }, 200);
     });
     // #endif
-    
   },
   destroyed(){
     if(this.echarts === true){
@@ -549,6 +556,7 @@ export default {
   },
   methods: {
     beforeInit(){
+      this.mixinDatacomErrorMessage = null;
       if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
         this.mixinDatacomLoading = true;
         //拷贝一下chartData，为了opts变更后统一数据来源
