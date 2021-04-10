@@ -2302,8 +2302,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
       context.beginPath();
       context.setFillStyle(item.color);
       var startX = offset.x + arrowWidth + 2 * config.toolTipPadding;
-      var startY = offset.y + (config.toolTipLineHeight - config.fontSize) / 2 + config.toolTipLineHeight * index +
-        config.toolTipPadding + 1;
+      var startY = offset.y + (config.toolTipLineHeight - config.fontSize) / 2 + config.toolTipLineHeight * index + config.toolTipPadding + 1;
       if (isOverRightBorder) {
         startX = offset.x - toolTipWidth - arrowWidth + 2 * config.toolTipPadding;
       }
