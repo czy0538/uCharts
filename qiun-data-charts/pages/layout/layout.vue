@@ -33,9 +33,15 @@
       <button class="uni-button" type="default" @click="openfixed">点击显示弹出层</button>
     </view>
     <qiun-title-bar title="使用v-for生成图表"/>
-    <block v-for="(item, index) in list" :key="index">
+    <block v-for="item in list">
       <view class="charts-box">
         <qiun-data-charts :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
+      </view>
+    </block>
+    <qiun-title-bar title="使用v-for生成图表2"/>
+    <block v-for="item2 in listB">
+      <view class="charts-box">
+        <qiun-data-charts :type="item2.type" :chartData="item2.chartData" :canvas2d="true" :canvasId="item2.id"/>
       </view>
     </block>
     <view class="fix-class" v-if="fixedzt">
@@ -61,7 +67,8 @@ export default {
       pageScrollTop:0,
       fixedzt:false,
       absolutezt:false,
-      list:[]
+      list:[],
+      listB:[]
     };
   },
   onReady() {
@@ -74,6 +81,11 @@ export default {
         {id:"xlsldkfjiw1",type:'area',chartData:JSON.parse(JSON.stringify(demodata.Column))},
         {id:"docldkfjiw2",type:'line',chartData:JSON.parse(JSON.stringify(demodata.Line))},
         {id:"pptldkfjiw3",type:'column',chartData:JSON.parse(JSON.stringify(demodata.Column))}
+      ]
+      this.listB=[
+        {id:"xlsldkfjiw4b",type:'area',chartData:JSON.parse(JSON.stringify(demodata.Column))},
+        {id:"docldkfjiw5b",type:'line',chartData:JSON.parse(JSON.stringify(demodata.Line))},
+        {id:"pptldkfjiw6b",type:'column',chartData:JSON.parse(JSON.stringify(demodata.Column))}
       ]
     },5000)
   },
@@ -93,6 +105,11 @@ export default {
           {id:"pptldkfjiw3",type:'area',chartData:JSON.parse(JSON.stringify(demodata.Line))}
         ]
         
+        this.listB=[
+          {id:"xlsldkfjiw4b",type:'line',chartData:JSON.parse(JSON.stringify(demodata.Line))},
+          {id:"docldkfjiw5b",type:'column',chartData:JSON.parse(JSON.stringify(demodata.Column))},
+          {id:"pptldkfjiw6b",type:'area',chartData:JSON.parse(JSON.stringify(demodata.Line))}
+        ]
       }, 1500);
     },
     openfixed(){
