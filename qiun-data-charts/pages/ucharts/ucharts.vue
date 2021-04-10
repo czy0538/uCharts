@@ -54,6 +54,10 @@
     <view class="charts-box">
       <qiun-data-charts type="line" canvasId="scrolllineid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true}}" :chartData="chartsDataLine4" :ontouch="true" :canvas2d="true"/>
     </view>
+    <qiun-title-bar title="折线图+断点续连connectNulls"/>
+    <view class="charts-box">
+      <qiun-data-charts type="line" :chartData="chartsDataLine5"/>
+    </view>
     <qiun-title-bar title="基本区域图"/>
     <view class="charts-box">
       <qiun-data-charts type="area" :chartData="chartsDataArea1"/>
@@ -145,6 +149,7 @@ export default {
       chartsDataLine2:{},
       chartsDataLine3:{},
       chartsDataLine4:{},
+      chartsDataLine5:{},
       chartsDataArea1:{},
       chartsDataArea2:{},
       chartsDataMix1:{},
@@ -178,14 +183,20 @@ export default {
       	this.chartsDataColumn3=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsDataColumn4=JSON.parse(JSON.stringify(demodata.Column))
         this.chartsDataColumn5=JSON.parse(JSON.stringify(demodata.Column))
-        let tmpdata = JSON.parse(JSON.stringify(demodata.Column))
-        tmpdata.series[1].data[2]={value:21,color:'#EE6666'}
+        let tmpColumn6=JSON.parse(JSON.stringify(demodata.Column))
+        tmpColumn6.series[1].data[2]={value:21,color:'#EE6666'}
         //注意，因为组件内监听了chartData，构造chartData的时候，一定要先定义一个临时变量，构造完成后统一赋值给chartData绑定的变量，否则会导致多次渲染图表
-      	this.chartsDataColumn6=tmpdata
+      	this.chartsDataColumn6=tmpColumn6
       	this.chartsDataLine1=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataLine2=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataLine3=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataLine4=JSON.parse(JSON.stringify(demodata.Line))
+        let tmpLine5=JSON.parse(JSON.stringify(demodata.Line))
+        for (var i = 0; i < tmpLine5.series.length; i++) {
+          tmpLine5.series[i].data[2]=null
+        }
+        tmpLine5.series[1].connectNulls=true
+        this.chartsDataLine5=tmpLine5
       	this.chartsDataArea1=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataArea2=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataMix1=JSON.parse(JSON.stringify(demodata.Mix))
