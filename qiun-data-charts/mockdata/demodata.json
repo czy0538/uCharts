@@ -49,10 +49,12 @@
 			"style": "curve"
 		}, {
 			"name": "柱1",
+      "index":1,
 			"data": [40, 30, 55, 110, 24, 58],
 			"type": "column"
 		}, {
 			"name": "柱2",
+      "index":1,
 			"data": [50, 20, 75, 60, 34, 38],
 			"type": "column"
 		}, {
@@ -69,6 +71,7 @@
 			"color": "#2fc25b"
 		}, {
 			"name": "点",
+      "index":2,
 			"data": [100, 80, 125, 150, 112, 132],
 			"type": "point",
 			"color": "#f04864"
