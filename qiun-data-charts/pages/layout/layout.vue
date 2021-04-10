@@ -18,20 +18,31 @@
         </view>
       </swiper-item>
     </swiper>
+    
+    
     <qiun-title-bar title="在scroll-view中使用"/>
     <scroll-view style="height: 400px;" :scroll-y="true">
       <view class="charts-box">
         <!-- 如果您的scroll-view可能和我这个一样，既有页面滚动，还有scroll-view滚动，这种情况下，需要动态传入offsetTop的值为页面滚动条滚动的距离 -->
-        <qiun-data-charts type="column" :chartData="chartsDataColumn1" :canvas2d="true" canvasId="scroll-viewid" :inScrollView="true" :pageScrollTop="pageScrollTop"/>
+        <qiun-data-charts type="column" :chartData="chartsDataColumn1" canvasId="scroll-viewid" :inScrollView="true" :pageScrollTop="pageScrollTop"/>
       </view>
       <view style="height: 300px;background: #1890FF;">
         
       </view>
     </scroll-view>
+    
+    
     <qiun-title-bar title="父元素fixed定位"/>
     <view class="botton-box">
       <button class="uni-button" type="default" @click="openfixed">点击显示弹出层</button>
     </view>
+    
+    
+    <qiun-title-bar title="组件套组件示例(尽量别这么用)"/>
+    <test-charts :pageScrollTop="pageScrollTop"/>
+    
+    
+    
     <qiun-title-bar title="使用v-for生成图表"/>
     <block v-for="(item, index) in listA" :key="'listA'+index">
       <view class="charts-box">
@@ -44,6 +55,8 @@
         <qiun-data-charts :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
       </view>
     </block>
+    
+    
     <view class="fix-class" v-if="fixedzt">
       <view class="fix-bottom">
         <view class="close-title" @click="openfixed">点击此处关闭弹窗</view>
@@ -53,6 +66,7 @@
         </view>
       </view>
     </view>
+    
   </view>
 </template>
 
