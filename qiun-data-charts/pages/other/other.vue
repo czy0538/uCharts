@@ -3,18 +3,18 @@
     <qiun-title-bar title="localdata渲染图表1+点击获取索引"/>
     <view class="charts-box">
       <!-- 只需绑定@getIndex即可获取点击索引 -->
-      <qiun-data-charts type="column" :localdata="chartsData.localdata"  @getIndex="getIndex"/>
+      <qiun-data-charts type="column" :localdata="chartsDatalocaldataA"  @getIndex="getIndex"/>
     </view>
     <qiun-title-bar title="localdata渲染图表2+禁用鼠标移动"/>
     <view class="charts-box">
-      <qiun-data-charts type="pie" :localdata="chartsData.localdataB" :onmouse="false"/>
+      <qiun-data-charts type="pie" :localdata="chartsDatalocaldataB" :onmouse="false"/>
     </view>
     <qiun-title-bar title="渲染完成后显示自定义tooltip" />
     <view class="charts-box"> 
       <!-- 渲染完成后进行操作图表，需要绑定@complete事件，然后在@complete事件中进行操作 -->
       <qiun-data-charts
         type="column"
-        :chartData="chartsData.Column1"
+        :chartData="chartsDataColumn1"
         @complete="complete"
       />
     </view>
@@ -25,7 +25,7 @@
         type="column"
         :opts="{enableScroll: false}"
         canvasId="canvas2dNeedId"
-        :chartData="chartsData.Column1"
+        :chartData="chartsDataColumn1"
         :canvas2d="true"
         :ontouch="true"
         :onmovetip="true"
@@ -37,7 +37,7 @@
       <qiun-data-charts
         type="line"
         :opts="{extra:{tooltip:{showArrow: false,borderWidth: 1,borderRadius:8,borderColor: '#FF0000',bgColor: '#FFFFFF',bgOpacity: 0.9,fontColor: '#000000',splitLine: false}}}"
-        :chartData="chartsData.Column1"
+        :chartData="chartsDataColumn1"
         :tooltipCustom="{x:2,y:2}"
       />
     </view>
@@ -48,24 +48,25 @@
       <qiun-data-charts
         type="line"
         :tooltipShow="false"
-        :chartData="chartsData.Column1"
+        :chartData="chartsDataColumn1"
         @getIndex="showMyTooltip"
       />
     </view>
     <qiun-title-bar title="动态更新数据示例1"/>
+    <view style="color: #DD524D;font-weight: bold;">chartData绑定的变量一定要挂到this实例上！！！否则可能会导致监听不到数据变化，导致无法更新数据的问题！！！</view>
     <view class="charts-box">
       <!-- 如果使用chartData.series=[]的方法展示重新加载数据，chartData绑定的变量一定要挂到this实例上！！！否则可能会导致监听不到数据变化的问题！！！ -->
-      <qiun-data-charts type="pie" :chartData="Pie1"/>
+      <qiun-data-charts type="pie" :chartData="chartsDataPie1"/>
     </view>
     <qiun-title-bar title="强制展示错误信息"/>
     <button class="uni-button" type="default" @click="changeErrorMessage">点击展示错误信息</button>
     <view class="charts-box">
-      <qiun-data-charts type="line" :chartData="chartsData.Line1" :errorMessage="errorMessage" @error="error"/>
+      <qiun-data-charts type="line" :chartData="chartsDataLine1" :errorMessage="errorMessage" @error="error"/>
     </view>
     <qiun-title-bar title="uCharts保存为图片"/>
     <button class="uni-button" type="default" @click="createImage('createImageUCharts')">点击保存为图片</button>
     <view class="charts-box">
-      <qiun-data-charts type="area" ref="createImageUCharts" :chartData="chartsData.Line1"/>
+      <qiun-data-charts type="area" ref="createImageUCharts" :chartData="chartsDataLine1"/>
     </view>
   </view>
 </template>
@@ -82,8 +83,13 @@ import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-uchar
 export default {
   data() {
     return {
-      chartsData: {},
-      Pie1:{},
+      //注意如果使用localdata数据格式，默认值的类型应该是数组
+      chartsDatalocaldataA:[],
+      chartsDatalocaldataB:[],
+      //注意如果使用localdata数据格式，默认值的类型应该是数组
+      chartsDataColumn1:{},
+      chartsDataLine1:{},
+      chartsDataPie1:{},
       errorMessage:"自定义的错误信息，点击重新加载",
     };
   },
@@ -93,11 +99,11 @@ export default {
     
     //演示变更数据后显示loading状态
     setTimeout(() => {
-      this.Pie1.series=[];
+      this.chartsDataPie1.series=[];
     }, 4000);
     //模拟新的饼图数据
     setTimeout(() => {
-      this.Pie1.series=[{
+      this.chartsDataPie1.series=[{
         "data": [
           {
             "name": "一班",
@@ -115,18 +121,11 @@ export default {
       setTimeout(() => {
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
-        //***注意***我是为了演示数据看起来有条理，才把chartData挂载到一个对象中，您实际项目一定不要这么做，应该每个图形一个根节点属性，***例如本页饼图this.Pie1这种做法***
-        this.chartsData.localdata=JSON.parse(JSON.stringify(demodata.localdata))
-        this.chartsData.localdataB=JSON.parse(JSON.stringify(demodata.localdataB))
-      	this.chartsData.Column1=JSON.parse(JSON.stringify(demodata.Column))
-        this.chartsData.Line1=JSON.parse(JSON.stringify(demodata.Line))
-        
-        //因为我需要演示Pie1数据改变，就不能用上面的chartsData定义方法，不然组件监听不到数据改变不能更新
-        this.Pie1=JSON.parse(JSON.stringify(demodata.PieA))
-        
-      	//这里的chartsData原本是空对象，因Vue不允许在已经创建的实例上动态添加新的根级响应式属性，所以这里使用this.$forceUpdate()强制视图更新。当然也可以使用this.$set()方法将相应属性添加到嵌套的对象上。
-      	//所以，不建议我这样的做法，建议直接把数据绑定到this上，否则chartData再次变更数据的时候，组件会检测不到数据变化，无法进行更新！！！
-      	this.$forceUpdate();
+        this.chartsDatalocaldataA=JSON.parse(JSON.stringify(demodata.localdata))
+        this.chartsDatalocaldataB=JSON.parse(JSON.stringify(demodata.localdataB))
+      	this.chartsDataColumn1=JSON.parse(JSON.stringify(demodata.Column))
+        this.chartsDataLine1=JSON.parse(JSON.stringify(demodata.Line))
+        this.chartsDataPie1=JSON.parse(JSON.stringify(demodata.PieA))
       }, 1500);
     },
     complete(e) {

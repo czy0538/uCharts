@@ -10,115 +10,119 @@
     3、class="charts-box"这个样式，指定了高度，如果你的父元素有固定高度，请修改为height:100%
     -->
     <view class="charts-box">
-      <qiun-data-charts type="column" :chartData="column1" />
+      <qiun-data-charts type="column" :chartData="chartsDataColumn1" />
     </view>
     <qiun-title-bar title="堆叠柱状图"/>
     <!-- 只需要在:opts中传入与config-ucharts.js中默认配置不同的属性即可覆盖默认配置，既保证了全局图表样式的统一性，也减少了代码量与包体积 -->
     <view class="charts-box">
-      <qiun-data-charts type="column" :opts="{extra:{column:{type:'stack'}}}" :chartData="chartsData.Column2"/>
+      <qiun-data-charts type="column" :opts="{extra:{column:{type:'stack'}}}" :chartData="chartsDataColumn2"/>
     </view>
     <qiun-title-bar title="温度计图表"/>
     <view class="charts-box">
-      <qiun-data-charts type="column" :opts="{extra:{column:{type:'meter'}}}" :chartData="chartsData.Column3"/>
+      <qiun-data-charts type="column" :opts="{extra:{column:{type:'meter'}}}" :chartData="chartsDataColumn3"/>
     </view>
     <qiun-title-bar title="柱状图滚动条"/>
     <!-- 开启滚动条，需要开启拖动功能，即:ontouch="true" ，微信小程序需要开启canvas2d，否则会很卡，开启2d需要指定canvasId -->
     <view class="charts-box">
-      <qiun-data-charts type="column" canvasId="scrollcolumnid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true}}" :ontouch="true" :canvas2d="true" :chartData="chartsData.Column4"/>
+      <qiun-data-charts type="column" canvasId="scrollcolumnid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true}}" :ontouch="true" :canvas2d="true" :chartData="chartsDataColumn4"/>
     </view>
     <qiun-title-bar title="圆角+渐变+半透明柱状图"/>
     <view class="charts-box">
-      <qiun-data-charts type="column" :opts="{color:['#FAC858','#EE6666'],extra:{column:{linearType:'custom',seriesGap:5,linearOpacity:0.5,barBorderCircle:true,customColor:['#FA7D8D','#EB88E2']}}}" :chartData="chartsData.Column6"/>
+      <qiun-data-charts type="column" :opts="{color:['#FAC858','#EE6666'],extra:{column:{linearType:'custom',seriesGap:5,linearOpacity:0.5,barBorderCircle:true,customColor:['#FA7D8D','#EB88E2']}}}" :chartData="chartsDataColumn5"/>
+    </view>
+    <qiun-title-bar title="全圆角柱状图+标记线"/>
+    <view class="charts-box">
+      <qiun-data-charts type="column" :opts="{yAxis:{data:[{min:0}]},enableMarkLine:true,extra:{column:{seriesGap:5,barBorderRadius:[6,6,6,6]},markLine:{data:[{value:15,showLabel:true}]}}}" :chartData="chartsDataColumn6" />
     </view>
     <qiun-title-bar title="基本折线图"/>
     <view class="charts-box">
-      <qiun-data-charts type="line" :chartData="chartsData.Line1"/>
+      <qiun-data-charts type="line" :chartData="chartsDataLine1"/>
     </view>
     <qiun-title-bar title="基本曲线图(自定义图表类型)"/>
     <view class="charts-box">
       <!-- 这里的type="demotype"演示了自定义图表类型的demo，您可以根据需求自己定义一种额外的图表类型 -->
-      <qiun-data-charts type="demotype" :chartData="chartsData.Line2"/>
+      <qiun-data-charts type="demotype" :chartData="chartsDataLine2"/>
       <!-- 如果不定义"demotype"这个图表类型，可以通过传递opts来覆盖line下的默认配置，如下 -->
       <!-- <qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :chartData="chartsData.Line2"/> -->
     </view>
     <qiun-title-bar title="基本时序图"/>
     <view class="charts-box">
-      <qiun-data-charts type="line" :opts="{extra:{line:{type:'step'}}}" :chartData="chartsData.Line3"/>
+      <qiun-data-charts type="line" :opts="{extra:{line:{type:'step'}}}" :chartData="chartsDataLine3"/>
     </view>
     <qiun-title-bar title="折线图滚动条"/>
     <!-- 开启滚动条，需要开启拖动功能，即:ontouch="true"，微信小程序需要开启canvas2d，否则会很卡，开启2d需要指定canvasId -->
     <view class="charts-box">
-      <qiun-data-charts type="line" canvasId="scrolllineid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true}}" :chartData="chartsData.Line4" :ontouch="true" :canvas2d="true"/>
+      <qiun-data-charts type="line" canvasId="scrolllineid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true}}" :chartData="chartsDataLine4" :ontouch="true" :canvas2d="true"/>
     </view>
     <qiun-title-bar title="基本区域图"/>
     <view class="charts-box">
-      <qiun-data-charts type="area" :chartData="chartsData.Area1"/>
+      <qiun-data-charts type="area" :chartData="chartsDataArea1"/>
     </view>
     <qiun-title-bar title="渐变色区域图"/>
     <view class="charts-box">
-      <qiun-data-charts type="area" :opts="{extra:{area:{type:'curve',addLine:true,gradient:true}}}" :chartData="chartsData.Area2"/>
+      <qiun-data-charts type="area" :opts="{extra:{area:{type:'curve',addLine:true,gradient:true}}}" :chartData="chartsDataArea2"/>
     </view>
     <qiun-title-bar title="多坐标系混合图"/>
     <view class="charts-box" style="height: 400px;">
-      <qiun-data-charts type="mix" :opts="{yAxis:{data:[{position: 'left',title: '折线'},{position: 'right',min: 0,max: 200,title: '柱状图',textAlign: 'left'},{position: 'right',min: 0,max: 200,title: '点',textAlign: 'left'}]}}" :chartData="chartsData.Mix1"/>
+      <qiun-data-charts type="mix" :opts="{yAxis:{data:[{position: 'left',title: '折线'},{position: 'right',min: 0,max: 200,title: '柱状图',textAlign: 'left'},{position: 'right',min: 0,max: 200,title: '点',textAlign: 'left'}]}}" :chartData="chartsDataMix1"/>
     </view>
     <qiun-title-bar title="基本饼状图"/>
     <view class="charts-box">
-      <qiun-data-charts type="pie" :chartData="chartsData.Pie1"/>
+      <qiun-data-charts type="pie" :chartData="chartsDataPie1"/>
     </view>
     <qiun-title-bar title="环形图+渐变色"/>
     <view class="charts-box">
-      <qiun-data-charts type="ring" :opts="{legend:{position: 'bottom'},extra:{ring:{ringWidth: 60,linearType:'custom'}}}" :chartData="chartsData.Ring1"/>
+      <qiun-data-charts type="ring" :opts="{legend:{position: 'bottom'},extra:{ring:{ringWidth: 60,linearType:'custom'}}}" :chartData="chartsDataRing1"/>
     </view>
     <qiun-title-bar title="面积玫瑰图"/>
     <view class="charts-box">
-      <qiun-data-charts type="rose" :opts="{legend:{position: 'bottom'}}" :chartData="chartsData.Rose1"/>
+      <qiun-data-charts type="rose" :opts="{legend:{position: 'bottom'}}" :chartData="chartsDataRose1"/>
     </view>
     <qiun-title-bar title="半径玫瑰图"/>
     <view class="charts-box">
-      <qiun-data-charts type="rose" :opts="{legend:{position: 'bottom'},extra:{rose:{type:'radius'}}}" :chartData="chartsData.Rose2"/>
+      <qiun-data-charts type="rose" :opts="{legend:{position: 'bottom'},extra:{rose:{type:'radius'}}}" :chartData="chartsDataRose2"/>
     </view>
     <qiun-title-bar title="圆弧进度条"/>
     <!-- 这里的title.name和subtitle.name如果需要联动chartData，请定义一个变量同步传入:opts和:chartData中 -->
     <view class="charts-box">
-      <qiun-data-charts type="arcbar" :opts="{title:{name:'80%',color:'#2fc25b',fontSize:35},subtitle:{name:'正确率',color:'#666666',fontSize:25}}" :chartData="chartsData.Arcbar1"/>
+      <qiun-data-charts type="arcbar" :opts="{title:{name:'80%',color:'#2fc25b',fontSize:35},subtitle:{name:'正确率',color:'#666666',fontSize:25}}" :chartData="chartsDataArcbar1"/>
     </view>
     <qiun-title-bar title="多重圆弧进度条"/>
     <view class="charts-box">
-      <qiun-data-charts type="arcbar" :opts="{title:{name:'指标',color:'#1890ff',fontSize:35},subtitle:{},extra:{arcbar:{type:'circle',startAngle:1.5}}}" :chartData="chartsData.Arcbar2"/>
+      <qiun-data-charts type="arcbar" :opts="{title:{name:'指标',color:'#1890ff',fontSize:35},subtitle:{},extra:{arcbar:{type:'circle',startAngle:1.5}}}" :chartData="chartsDataArcbar2"/>
     </view>
     <qiun-title-bar title="多边形雷达图"/>
     <view class="charts-box">
-      <qiun-data-charts type="radar" :opts="{legend:{position: 'bottom'},extra:{radar:{border:true}}}" :chartData="chartsData.Radar1"/>
+      <qiun-data-charts type="radar" :opts="{legend:{position: 'bottom'},extra:{radar:{border:true}}}" :chartData="chartsDataRadar1"/>
     </view>
     <qiun-title-bar title="圆形雷达图"/>
     <view class="charts-box">
-      <qiun-data-charts type="radar" :opts="{legend:{position: 'bottom'},extra:{radar:{gridType:'circle'}}}" :chartData="chartsData.Radar2"/>
+      <qiun-data-charts type="radar" :opts="{legend:{position: 'bottom'},extra:{radar:{gridType:'circle'}}}" :chartData="chartsDataRadar2"/>
     </view>
     <qiun-title-bar title="基本仪表盘"/>
     <!-- 这里的title.name和subtitle.name如果需要联动chartData，请定义一个变量同步传入:opts和:chartData中 -->
     <view class="charts-box">
-      <qiun-data-charts type="gauge" :opts="{title:{name: '60Km/H',color: '#2fc25b',fontSize: 25,offsetY:50},subtitle: {name: '实时速度',color: '#666666',fontSize: 15,offsetY:-50}}" :chartData="chartsData.Gauge1"/>
+      <qiun-data-charts type="gauge" :opts="{title:{name: '60Km/H',color: '#2fc25b',fontSize: 25,offsetY:50},subtitle: {name: '实时速度',color: '#666666',fontSize: 15,offsetY:-50}}" :chartData="chartsDataGauge1"/>
     </view>
     <qiun-title-bar title="其他仪表盘"/>
     <view class="charts-box">
-      <qiun-data-charts type="gauge" :opts="{title:{offsetY:0},subtitle:{offsetY:0},extra:{gauge:{type:'progress',width:20,splitLine:{fixRadius:-10,width:15,},}}}" :chartData="chartsData.Gauge2"/>
+      <qiun-data-charts type="gauge" :opts="{title:{offsetY:0},subtitle:{offsetY:0},extra:{gauge:{type:'progress',width:20,splitLine:{fixRadius:-10,width:15,},}}}" :chartData="chartsDataGauge2"/>
     </view>
     <qiun-title-bar title="词云图"/>
     <view class="charts-box">
-      <qiun-data-charts type="word" :chartData="chartsData.Word1"/>
+      <qiun-data-charts type="word" :chartData="chartsDataWord1"/>
     </view>
     <qiun-title-bar title="漏斗图"/>
     <view class="charts-box">
-      <qiun-data-charts type="funnel" :chartData="chartsData.Funnel1"/>
+      <qiun-data-charts type="funnel" :chartData="chartsDataFunnel1"/>
     </view>
     <qiun-title-bar title="K线图"/>
     <view class="charts-box" style="height: 400px;">
-      <qiun-data-charts type="candle" :ontouch="true" :canvas2d="true" canvasId="klineid" :chartData="chartsData.Candle1"/>
+      <qiun-data-charts type="candle" :ontouch="true" :canvas2d="true" canvasId="klineid" :chartData="chartsDataCandle1"/>
     </view>
     <qiun-title-bar title="地图"/>
     <view class="charts-box" style="height: 400px;">
-      <qiun-data-charts type="map" :chartData="chartsData.Map1"/>
+      <qiun-data-charts type="map" :chartData="chartsDataMap1"/>
     </view>
   </view>
 </template>
@@ -131,8 +135,33 @@ import mapdata from '@/mockdata/mapdata.json'
 export default {
   data() {
     return {
-      column1:{},
-      chartsData: {},
+      chartsDataColumn1:{},
+      chartsDataColumn2:{},
+      chartsDataColumn3:{},
+      chartsDataColumn4:{},
+      chartsDataColumn5:{},
+      chartsDataColumn6:{},
+      chartsDataLine1:{},
+      chartsDataLine2:{},
+      chartsDataLine3:{},
+      chartsDataLine4:{},
+      chartsDataArea1:{},
+      chartsDataArea2:{},
+      chartsDataMix1:{},
+      chartsDataPie1:{},
+      chartsDataRing1:{},
+      chartsDataRose1:{},
+      chartsDataRose2:{},
+      chartsDataArcbar1:{},
+      chartsDataArcbar2:{},
+      chartsDataGauge1:{},
+      chartsDataGauge2:{},
+      chartsDataRadar1:{},
+      chartsDataRadar2:{},
+      chartsDataWord1:{},
+      chartsDataFunnel1:{},
+      chartsDataMap1:{},
+      chartsDataCandle1:{},
     };
   },
   onReady() {
@@ -142,38 +171,35 @@ export default {
   methods: {
     getServerData() {
       setTimeout(() => {
-        this.column1=JSON.parse(JSON.stringify(demodata.Column))
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
       	//开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
-      	//***注意***我是为了演示数据看起来有条理，才把chartData挂载到一个对象中，您实际项目一定***不要这么做***，应该每个图形一个根节点属性，***例如上面this.column1这种做法***
-      	this.chartsData.Column2=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column3=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column4=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Column6=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsData.Line1=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Line2=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Line3=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Line4=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Area1=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Area2=JSON.parse(JSON.stringify(demodata.Line))
-      	this.chartsData.Mix1=JSON.parse(JSON.stringify(demodata.Mix))
-      	this.chartsData.Pie1=JSON.parse(JSON.stringify(demodata.PieA))
-      	this.chartsData.Ring1=JSON.parse(JSON.stringify(demodata.PieA))
-      	this.chartsData.Rose1=JSON.parse(JSON.stringify(demodata.PieA))
-      	this.chartsData.Rose2=JSON.parse(JSON.stringify(demodata.PieA))
-      	this.chartsData.Arcbar1=JSON.parse(JSON.stringify(demodata.Arcbar1))
-      	this.chartsData.Arcbar2=JSON.parse(JSON.stringify(demodata.Arcbar2))
-      	this.chartsData.Gauge1=JSON.parse(JSON.stringify(demodata.Gauge))
-      	this.chartsData.Gauge2=JSON.parse(JSON.stringify(demodata.Gauge))
-      	this.chartsData.Radar1=JSON.parse(JSON.stringify(demodata.Radar))
-      	this.chartsData.Radar2=JSON.parse(JSON.stringify(demodata.Radar))
-      	this.chartsData.Word1=JSON.parse(JSON.stringify(demodata.Word))
-      	this.chartsData.Funnel1=JSON.parse(JSON.stringify(demodata.PieA))
-      	this.chartsData.Map1={series:mapdata.features}
-      	this.chartsData.Candle1=JSON.parse(JSON.stringify(demodata.Candle))
-      	//这里的chartsData原本是空对象，因Vue不允许在已经创建的实例上动态添加新的根级响应式属性，所以这里使用this.$forceUpdate()强制视图更新。当然也可以使用this.$set()方法将相应属性添加到嵌套的对象上。
-      	//所以，不建议我这样的做法，建议直接把数据绑定到this上
-      	this.$forceUpdate();
+        this.chartsDataColumn1=JSON.parse(JSON.stringify(demodata.Column))
+      	this.chartsDataColumn2=JSON.parse(JSON.stringify(demodata.Column))
+      	this.chartsDataColumn3=JSON.parse(JSON.stringify(demodata.Column))
+      	this.chartsDataColumn4=JSON.parse(JSON.stringify(demodata.Column))
+        this.chartsDataColumn5=JSON.parse(JSON.stringify(demodata.Column))
+      	this.chartsDataColumn6=JSON.parse(JSON.stringify(demodata.Column))
+      	this.chartsDataLine1=JSON.parse(JSON.stringify(demodata.Line))
+      	this.chartsDataLine2=JSON.parse(JSON.stringify(demodata.Line))
+      	this.chartsDataLine3=JSON.parse(JSON.stringify(demodata.Line))
+      	this.chartsDataLine4=JSON.parse(JSON.stringify(demodata.Line))
+      	this.chartsDataArea1=JSON.parse(JSON.stringify(demodata.Line))
+      	this.chartsDataArea2=JSON.parse(JSON.stringify(demodata.Line))
+      	this.chartsDataMix1=JSON.parse(JSON.stringify(demodata.Mix))
+      	this.chartsDataPie1=JSON.parse(JSON.stringify(demodata.PieA))
+      	this.chartsDataRing1=JSON.parse(JSON.stringify(demodata.PieA))
+      	this.chartsDataRose1=JSON.parse(JSON.stringify(demodata.PieA))
+      	this.chartsDataRose2=JSON.parse(JSON.stringify(demodata.PieA))
+      	this.chartsDataArcbar1=JSON.parse(JSON.stringify(demodata.Arcbar1))
+      	this.chartsDataArcbar2=JSON.parse(JSON.stringify(demodata.Arcbar2))
+      	this.chartsDataGauge1=JSON.parse(JSON.stringify(demodata.Gauge))
+      	this.chartsDataGauge2=JSON.parse(JSON.stringify(demodata.Gauge))
+      	this.chartsDataRadar1=JSON.parse(JSON.stringify(demodata.Radar))
+      	this.chartsDataRadar2=JSON.parse(JSON.stringify(demodata.Radar))
+      	this.chartsDataWord1=JSON.parse(JSON.stringify(demodata.Word))
+      	this.chartsDataFunnel1=JSON.parse(JSON.stringify(demodata.PieA))
+      	this.chartsDataMap1={series:mapdata.features}
+      	this.chartsDataCandle1=JSON.parse(JSON.stringify(demodata.Candle))
       }, 1500);
     }
   }
