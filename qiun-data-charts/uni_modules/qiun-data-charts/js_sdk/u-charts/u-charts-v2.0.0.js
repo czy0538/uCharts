@@ -899,18 +899,25 @@ function isInExactPieChartArea(currentPoints, center, radius) {
   return Math.pow(currentPoints.x - center.x, 2) + Math.pow(currentPoints.y - center.y, 2) <= Math.pow(radius, 2);
 }
 
-function splitPoints(points) {
+function splitPoints(points,eachSeries) {
   var newPoints = [];
   var items = [];
   points.forEach(function(item, index) {
-    if (item !== null) {
-      items.push(item);
-    } else {
-      if (items.length) {
-        newPoints.push(items);
+    if(eachSeries.connectNulls){
+      if (item !== null) {
+        items.push(item);
       }
-      items = [];
+    }else{
+      if (item !== null) {
+        items.push(item);
+      } else {
+        if (items.length) {
+          newPoints.push(items);
+        }
+        items = [];
+      }
     }
+    
   });
   if (items.length) {
     newPoints.push(items);
@@ -2587,7 +2594,7 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
       maxRange = ranges.shift();
       var data = eachSeries.data;
       var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-      var splitPointList = splitPoints(points);
+      var splitPointList = splitPoints(points,eachSeries);
       for (let i = 0; i < splitPointList.length; i++) {
         let points = splitPointList[i];
         context.beginPath();
@@ -2627,7 +2634,7 @@ function drawCandleDataPoints(series, seriesMA, opts, config, context) {
     var data = eachSeries.data;
     var points = getCandleDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
     calPoints.push(points);
-    var splitPointList = splitPoints(points);
+    var splitPointList = splitPoints(points,eachSeries);
     for (let i = 0; i < splitPointList[0].length; i++) {
       if (i > leftNum && i < rightNum) {
         let item = splitPointList[0][i];
@@ -2708,7 +2715,7 @@ function drawAreaDataPoints(series, opts, config, context) {
     let data = eachSeries.data;
     let points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
     calPoints.push(points);
-    let splitPointList = splitPoints(points);
+    let splitPointList = splitPoints(points,eachSeries);
     for (let i = 0; i < splitPointList.length; i++) {
       let points = splitPointList[i];
       // 绘制区域数
@@ -2863,7 +2870,7 @@ function drawLineDataPoints(series, opts, config, context) {
     var data = eachSeries.data;
     var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
     calPoints.push(points);
-    var splitPointList = splitPoints(points);
+    var splitPointList = splitPoints(points,eachSeries);
     if (eachSeries.lineType == 'dash') {
       let dashLength = eachSeries.dashLength ? eachSeries.dashLength : 8;
       dashLength *= opts.pix;
@@ -3062,7 +3069,7 @@ function drawMixDataPoints(series, opts, config, context) {
     }
     //绘制区域图数据
     if (eachSeries.type == 'area') {
-      let splitPointList = splitPoints(points);
+      let splitPointList = splitPoints(points,eachSeries);
       for (let i = 0; i < splitPointList.length; i++) {
         let points = splitPointList[i];
         // 绘制区域数据
@@ -3116,7 +3123,7 @@ function drawMixDataPoints(series, opts, config, context) {
     }
     // 绘制折线数据图
     if (eachSeries.type == 'line') {
-      var splitPointList = splitPoints(points);
+      var splitPointList = splitPoints(points,eachSeries);
       splitPointList.forEach(function(points, index) {
         if (eachSeries.lineType == 'dash') {
           let dashLength = eachSeries.dashLength ? eachSeries.dashLength : 8;
