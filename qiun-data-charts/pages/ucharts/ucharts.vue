@@ -178,7 +178,10 @@ export default {
       	this.chartsDataColumn3=JSON.parse(JSON.stringify(demodata.Column))
       	this.chartsDataColumn4=JSON.parse(JSON.stringify(demodata.Column))
         this.chartsDataColumn5=JSON.parse(JSON.stringify(demodata.Column))
-      	this.chartsDataColumn6=JSON.parse(JSON.stringify(demodata.Column))
+        let tmpdata = JSON.parse(JSON.stringify(demodata.Column))
+        tmpdata.series[1].data[2]={value:21,color:'#EE6666'}
+        //注意，因为组件内监听了chartData，构造chartData的时候，一定要先定义一个临时变量，构造完成后统一赋值给chartData绑定的变量，否则会导致多次渲染图表
+      	this.chartsDataColumn6=tmpdata
       	this.chartsDataLine1=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataLine2=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataLine3=JSON.parse(JSON.stringify(demodata.Line))
