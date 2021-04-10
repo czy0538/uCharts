@@ -814,6 +814,7 @@ export default {
               cfu.option[cid].tooltipShow = this.tooltipShow;
               cfu.option[cid].tooltipFormat = this.tooltipFormat;
               cfu.option[cid].tooltipCustom = this.tooltipCustom;
+              cfu.option[cid].inScrollView = this.inScrollView;
               cfu.option[cid].lastDrawTime = this.lastDrawTime;
             }
             //如果是H5或者App端，采用renderjs渲染图表
@@ -839,32 +840,32 @@ export default {
               this.mixinDatacomErrorMessage = null;
               this.mixinDatacomLoading = false;
               this.showchart = true;
-              if (this.type2d === true) {
-                const query = uni.createSelectorQuery().in(this)
-                query
-                  .select('#' + cid)
-                  .fields({ node: true, size: true })
-                  .exec(res => {
-                    if (res[0]) {
-                      const canvas = res[0].node;
-                      const ctx = canvas.getContext('2d');
-                      cfu.option[cid].context = ctx;
-                      canvas.width = data.width * this.pixel;
-                      canvas.height = data.height * this.pixel;
-                      canvas._width = data.width * this.pixel;
-                      canvas._height = data.height * this.pixel;
-                      this._newChart(cid);
-                    } else {
-                      this.showchart = false;
-                      this.mixinDatacomErrorMessage = '参数错误：未获取到dom节点，请检查是否传入canvasID';
-                    }
-                  });
-              } else {
-                this.$nextTick(() => {
+              this.$nextTick(()=>{
+                if (this.type2d === true) {
+                  const query = uni.createSelectorQuery().in(this)
+                  query
+                    .select('#' + cid)
+                    .fields({ node: true, size: true })
+                    .exec(res => {
+                      if (res[0]) {
+                        const canvas = res[0].node;
+                        const ctx = canvas.getContext('2d');
+                        cfu.option[cid].context = ctx;
+                        canvas.width = data.width * this.pixel;
+                        canvas.height = data.height * this.pixel;
+                        canvas._width = data.width * this.pixel;
+                        canvas._height = data.height * this.pixel;
+                        this._newChart(cid);
+                      } else {
+                        this.showchart = false;
+                        this.mixinDatacomErrorMessage = '参数错误：开启2d模式后，未获取到dom节点，canvas-id:' + cid;
+                      }
+                    });
+                } else {
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
                   this._newChart(cid);
-                });
-              }
+                }
+              })
             }
           } else {
             this.mixinDatacomLoading = false;
@@ -921,7 +922,11 @@ export default {
     },
     _tooltipDefault(item, category, index, opts) {
       if (category) {
-        return category + ' ' + item.name + ':' + item.data;
+        let data = item.data
+        if(typeof item.data === "object"){
+          data = item.data.value
+        }
+        return category + ' ' + item.name + ':' + data;
       } else {
         if (item.properties !== undefined) {
           return item.properties.name;
@@ -1005,7 +1010,7 @@ export default {
           }
         }else{
           e.changedTouches=[];
-          e.changedTouches.unshift({ x: e.detail.x, y: e.detail.y - e.currentTarget.offsetTop });
+          e.changedTouches.unshift({ x: e.detail.x - e.currentTarget.offsetLeft, y: e.detail.y - e.currentTarget.offsetTop });
           currentIndex = cfu.instance[cid].getCurrentDataIndex(e);
           legendIndex = cfu.instance[cid].getLegendDataIndex(e);
           cfu.instance[cid].touchLegend(e);
@@ -1233,7 +1238,11 @@ export default {
     },
     tooltipDefault(item, category, index, opts) {
       if (category) {
-        return category + ' ' + item.name + ':' + item.data;
+        let data = item.data
+        if(typeof item.data === "object"){
+          data = item.data.value
+        }
+        return category + ' ' + item.name + ':' + data;
       } else {
         if (item.properties !== undefined) {
           return item.properties.name;
