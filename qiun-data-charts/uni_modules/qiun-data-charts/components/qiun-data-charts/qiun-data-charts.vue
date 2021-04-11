@@ -339,6 +339,8 @@ export default {
       cid: 'uchartsid',
       inWx: false,
       inAli: false,
+      inTt:false,
+      inBd:false,
       inH5: false,
       inApp: false,
       type2d: true,
@@ -366,7 +368,7 @@ export default {
       }
       this.cid = id
     }
-    // #ifdef MP-WEIXIN
+    // #ifdef MP-WEIXIN || MP-QQ
     this.inWx = true;
     if (this.canvas2d === false) {
       this.type2d = false;
@@ -378,8 +380,18 @@ export default {
     }
     // #endif
     //非微信小程序端强制关闭canvas2d模式
-    // #ifndef MP-WEIXIN
+    // #ifndef MP-WEIXIN || MP-QQ
     this.type2d = false;
+    // #endif
+    // #ifdef MP-ALIPAY
+    this.inAli = true;
+    this.pixel = uni.getSystemInfoSync().pixelRatio;
+    // #endif
+    // #ifdef MP-BAIDU
+    this.inBd = true;
+    // #endif
+    // #ifdef MP-TOUTIAO
+    this.inTt = true;
     // #endif
     // #ifdef APP-VUE
     this.inApp = true;
@@ -397,10 +409,6 @@ export default {
     if (this.echartsH5 === true) {
       this.echarts = true;
     }
-    // #endif
-    // #ifdef MP-ALIPAY
-    this.inAli = true;
-    this.pixel = uni.getSystemInfoSync().pixelRatio;
     // #endif
     this.disScroll = this.disableScroll;
   },
@@ -838,6 +846,7 @@ export default {
                 cfe.option[cid].lastDrawTime = this.lastDrawTime;
                 this.echartsOpts = deepCloneAssign({}, cfe.option[cid]);
               } else {
+                cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                 this.mixinDatacomLoading = false;
                 this.showchart = true;
                 this.uchartsOpts = deepCloneAssign({}, cfu.option[cid]);
@@ -863,6 +872,7 @@ export default {
                         canvas.height = data.height * this.pixel;
                         canvas._width = data.width * this.pixel;
                         canvas._height = data.height * this.pixel;
+                        cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                         this._newChart(cid);
                       } else {
                         this.showchart = false;
@@ -870,6 +880,9 @@ export default {
                       }
                     });
                 } else {
+                  if(this.inAli || this.inBd){
+                    cfu.option[cid].rotateLock = cfu.option[cid].rotate;
+                  }
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
                   this._newChart(cid);
                 }
