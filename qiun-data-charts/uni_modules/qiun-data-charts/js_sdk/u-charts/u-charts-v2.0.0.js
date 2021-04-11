@@ -1870,7 +1870,7 @@ function drawPointText(points, series, config, context) {
       context.setFillStyle(series.textColor || config.fontColor);
       var value = data[index]
       if (typeof data[index] === 'object' && data[index] !== null) {
-        if (data[index].constructor == Array) {
+        if (data[index].constructor.toString().indexOf('Array')>-1) {
           value = data[index][1];
         } else {
           value = data[index].value
@@ -4852,6 +4852,7 @@ Animation.prototype.stop = function() {
 function drawCharts(type, opts, config, context) {
   var _this = this;
   var series = opts.series;
+  //兼容ECharts饼图类数据格式
   if (type === 'pie' || type === 'ring' || type === 'rose' || type === 'funnel') {
     series = fixPieSeries(series, opts, config);
   }
