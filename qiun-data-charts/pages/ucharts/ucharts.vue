@@ -32,7 +32,7 @@
     </view>
     <qiun-title-bar title="全圆角柱状图+标记线"/>
     <view class="charts-box">
-      <qiun-data-charts type="column" :opts="{yAxis:{data:[{min:0}]},enableMarkLine:true,extra:{column:{seriesGap:5,barBorderRadius:[6,6,6,6]},markLine:{data:[{value:15,showLabel:true}]}}}" :chartData="chartsDataColumn6" />
+      <qiun-data-charts type="column" :opts="{yAxis:{data:[{min:0}]},enableMarkLine:true,extra:{column:{seriesGap:5,barBorderRadius:[6,6,6,6]},markLine:{data:[{value:21,showLabel:true}]}}}" :chartData="chartsDataColumn6" />
     </view>
     <qiun-title-bar title="柱状图横屏模式"/>
     <view style="width: 100%;height: 500px;">
