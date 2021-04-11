@@ -52,12 +52,6 @@
         @getIndex="showMyTooltip"
       />
     </view>
-    <qiun-title-bar title="动态更新数据示例1"/>
-    <view style="color: #DD524D;font-weight: bold;">chartData绑定的变量一定要挂到this实例上！！！否则可能会导致监听不到数据变化，导致无法更新数据的问题！！！</view>
-    <view class="charts-box">
-      <!-- 如果使用chartData.series=[]的方法展示重新加载数据，chartData绑定的变量一定要挂到this实例上！！！否则可能会导致监听不到数据变化的问题！！！ -->
-      <qiun-data-charts type="pie" :chartData="chartsDataPie1"/>
-    </view>
     <qiun-title-bar title="强制展示错误信息"/>
     <button class="uni-button" type="default" @click="changeErrorMessage">点击展示错误信息</button>
     <view class="charts-box">
@@ -89,32 +83,12 @@ export default {
       //注意如果使用localdata数据格式，默认值的类型应该是数组
       chartsDataColumn1:{},
       chartsDataLine1:{},
-      chartsDataPie1:{},
       errorMessage:"自定义的错误信息，点击重新加载",
     };
   },
   onLoad() {
     //模拟从服务器获取数据
     this.getServerData()
-    
-    //演示变更数据后显示loading状态
-    setTimeout(() => {
-      this.chartsDataPie1.series=[];
-    }, 4000);
-    //模拟新的饼图数据
-    setTimeout(() => {
-      this.chartsDataPie1.series=[{
-        "data": [
-          {
-            "name": "一班",
-            "value": 90
-          }, {
-            "name": "二班",
-            "value": 20
-          }
-        ]
-      }];
-    }, 5000);
   },
   methods: {
     getServerData() {
@@ -125,7 +99,6 @@ export default {
         this.chartsDatalocaldataB=JSON.parse(JSON.stringify(demodata.localdataB))
       	this.chartsDataColumn1=JSON.parse(JSON.stringify(demodata.Column))
         this.chartsDataLine1=JSON.parse(JSON.stringify(demodata.Line))
-        this.chartsDataPie1=JSON.parse(JSON.stringify(demodata.PieA))
       }, 1500);
     },
     complete(e) {

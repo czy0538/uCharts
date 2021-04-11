@@ -14,6 +14,7 @@ export default {
         {name:"全端uCharts渲染图表",url:"../ucharts/ucharts"},
         {name:"H5、App用ECharts，其他端用uCharts",url:"../echarts/echarts"},
         {name:"uniCloud数据渲染图表",url:"../unicloud/unicloud"},
+        {name:"动态更新数据示例",url:"../updata/updata"},
         {name:"图表交互示例",url:"../other/other"},
         {name:"formatter用法示例",url:"../format/format"},
         {name:"Tab选项卡切换示例",url:"../tab/tab"},
