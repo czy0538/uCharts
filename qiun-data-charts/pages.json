@@ -53,6 +53,12 @@
     	"style": {
     		"navigationBarTitleText": "原生用法示例（非组件）"
     	}
+    },
+    {
+    	"path": "pages/updata/updata",
+    	"style": {
+    		"navigationBarTitleText": "动态更新数据示例"
+    	}
     }
 	],
 	"globalStyle": {
