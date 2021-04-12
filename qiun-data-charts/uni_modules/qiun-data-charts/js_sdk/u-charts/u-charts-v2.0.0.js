@@ -1859,7 +1859,7 @@ function drawRingTitle(opts, config, context, center) {
   }
 }
 
-function drawPointText(points, series, config, context) {
+function drawPointText(points, series, config, context, opts) {
   // 绘制数据文案
   var data = series.data;
   var textOffset = series.textOffset ? series.textOffset : 0;
@@ -1878,7 +1878,7 @@ function drawPointText(points, series, config, context) {
       }
       var formatVal = series.formatter ? series.formatter(value) : value;
       context.setTextAlign('center');
-      context.fillText(String(formatVal), item.x, item.y - 4 + textOffset);
+      context.fillText(String(formatVal), item.x, item.y - 4 + textOffset * opts.pix);
       context.closePath();
       context.stroke();
       context.setTextAlign('left');
@@ -2529,15 +2529,15 @@ function drawColumnDataPoints(series, opts, config, context) {
         case 'group':
           var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
           points = fixColumeData(points, eachSpacing, series.length, seriesIndex, config, opts);
-          drawPointText(points, eachSeries, config, context);
+          drawPointText(points, eachSeries, config, context, opts);
           break;
         case 'stack':
           var points = getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex, series, process);
-          drawPointText(points, eachSeries, config, context);
+          drawPointText(points, eachSeries, config, context, opts);
           break;
         case 'meter':
           var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-          drawPointText(points, eachSeries, config, context);
+          drawPointText(points, eachSeries, config, context, opts);
           break;
       }
     });
@@ -2832,7 +2832,7 @@ function drawAreaDataPoints(series, opts, config, context) {
       maxRange = ranges.shift();
       var data = eachSeries.data;
       var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-      drawPointText(points, eachSeries, config, context);
+      drawPointText(points, eachSeries, config, context, opts);
     });
   }
   context.restore();
@@ -2941,7 +2941,7 @@ function drawLineDataPoints(series, opts, config, context) {
       maxRange = ranges.shift();
       var data = eachSeries.data;
       var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
-      drawPointText(points, eachSeries, config, context);
+      drawPointText(points, eachSeries, config, context, opts);
     });
   }
   context.restore();
@@ -3188,10 +3188,10 @@ function drawMixDataPoints(series, opts, config, context) {
       var data = eachSeries.data;
       var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
       if (eachSeries.type !== 'column') {
-        drawPointText(points, eachSeries, config, context);
+        drawPointText(points, eachSeries, config, context, opts);
       } else {
         points = fixColumeData(points, eachSpacing, columnLength, columnIndex, config, opts);
-        drawPointText(points, eachSeries, config, context);
+        drawPointText(points, eachSeries, config, context, opts);
         columnIndex += 1;
       }
     });
