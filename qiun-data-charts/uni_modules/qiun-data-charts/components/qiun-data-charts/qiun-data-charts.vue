@@ -393,6 +393,9 @@ export default {
     // #ifdef MP-TOUTIAO
     this.inTt = true;
     // #endif
+    this.disScroll = this.disableScroll;
+  },
+  mounted() {
     // #ifdef APP-VUE
     this.inApp = true;
     if (this.echartsApp === true) {
@@ -410,9 +413,6 @@ export default {
       this.echarts = true;
     }
     // #endif
-    this.disScroll = this.disableScroll;
-  },
-  mounted() {
     this.$nextTick(()=>{
       this.beforeInit();
     })
