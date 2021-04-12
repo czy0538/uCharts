@@ -1,3 +1,10 @@
+## 2.0.0-20210412-2（2021-04-12）
+## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
+## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX。如仍不好用，请重启电脑，此问题已于DCloud官方确认，HBuilderX下个版本会修复。
+## [DEMO演示及在线生成工具（v2.0文档）https://demo.ucharts.cn](https://demo.ucharts.cn)
+## [图表组件在uniCloudAdmin中的应用 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
+- 秋云图表组件 修复uCharts在APP端横屏模式下不能正确渲染的bug
+- 示例项目 增加ECharts柱状图渐变色、圆角柱状图、横向柱状图（条状图）的示例
 ## 2.0.0-20210412（2021-04-12）
 - 秋云图表组件 修复created中判断echarts导致APP端无法识别，改回mounted中判断echarts初始化
 - uCharts.js 修复2d模式下series.textOffset未乘像素比的bug
