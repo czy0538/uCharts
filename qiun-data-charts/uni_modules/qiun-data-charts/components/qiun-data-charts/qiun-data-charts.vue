@@ -844,6 +844,7 @@ export default {
                 cfe.option[cid].tooltipFormat = this.tooltipFormat;
                 cfe.option[cid].tooltipCustom = this.tooltipCustom;
                 cfe.option[cid].lastDrawTime = this.lastDrawTime;
+                cfe.option[cid].rotateLock = cfe.option[cid].rotate;
                 this.echartsOpts = deepCloneAssign({}, cfe.option[cid]);
               } else {
                 cfu.option[cid].rotateLock = cfu.option[cid].rotate;
