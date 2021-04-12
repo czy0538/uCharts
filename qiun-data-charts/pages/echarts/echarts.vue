@@ -10,6 +10,19 @@
       <!-- 注意：这里的opts是uCharts的配置，eopts是ECharts的配置，不要搞混，如果不需要用在各种小程序端，是不需要传uCharts的opts的，只需要传eopts即可！！！ -->
       <qiun-data-charts type="column" :opts="{extra:{column:{type:'stack'}}}" :eopts="{xAxis:{axisLabel:{color:'#FF0000'}}}" :chartData="chartsDataColumn2" :echartsH5="true" :echartsApp="true" @getIndex="getIndex"/>
     </view>
+    <qiun-title-bar title="柱状图+渐变色" />
+    <view class="charts-box">
+      <qiun-data-charts type="column" :chartData="chartsDataColumn3" :echartsH5="true" :echartsApp="true"/>
+    </view>
+    <qiun-title-bar title="圆角柱状图" />
+    <view class="charts-box">
+      <!-- 此处改变的是 seriesTemplate 模板中的默认配置，不必每个series都传itemStyle，将会覆盖:chartData.series 实现更低的代码量 -->
+      <qiun-data-charts type="column" :eopts="{seriesTemplate:{itemStyle:{normal:{barBorderRadius:[30, 30, 0, 0]}}}}" :chartData="chartsDataColumn4" :echartsH5="true" :echartsApp="true"/>
+    </view>
+    <qiun-title-bar title="横向柱状图(仅ECharts)" />
+    <view class="charts-box">
+      <qiun-data-charts type="column" :eopts="columneopts" :chartData="chartsDataColumn5" :echartsH5="true" :echartsApp="true"/>
+    </view>
 		<qiun-title-bar title="折线图" />
     <view class="charts-box">
       <qiun-data-charts type="line" :chartData="chartsDataLine1" :echartsH5="true" :echartsApp="true"/>
@@ -58,6 +71,9 @@ export default {
     return {
       chartsDataColumn1:{},
       chartsDataColumn2: {},
+      chartsDataColumn3:{},
+      chartsDataColumn4:{},
+      chartsDataColumn5:{},
       chartsDataPie1: {},
       chartsDataPie2: {},
       chartsDataPie3: {},
@@ -65,7 +81,39 @@ export default {
       chartsDataLine1: {},
       chartsDataLine2: {},
       chartsDataLine3: {},
-      ringOpts:{}
+      ringOpts:{},
+      //横向柱状图的配置，您也可以把默认配置写在config-echarts.js中
+      columneopts:{
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: 30,
+          top:10,
+          containLabel: true
+        },
+        xAxis: {
+          type: 'value',
+          boundaryGap: [0, 0.01],
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          }
+        },
+        yAxis: {
+          type: 'category',
+          data: []
+        },
+        //series模板，会覆盖至chartData中的series中的每一个数组内
+        seriesTemplate:{
+          "label": {
+          	"show": true,
+            "color": "#666666",
+          	"position": 'right',
+          },
+        }
+      }
     };
   },
   onReady() {
@@ -95,6 +143,16 @@ export default {
       //开发者需要自行处理服务器返回的数据，应与标准数据格式一致，注意series的data数值应为数字格式
       
       this.chartsDataColumn1=JSON.parse(JSON.stringify(demodata.Column));
+      let tmpColumn3=JSON.parse(JSON.stringify(demodata.Column));
+      //series.linearGradient代表渐变色：
+      //前4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始；
+      //第5个参数为数组, 用于配置颜色的渐变过程. 每一项为一个对象, 包含offset和color两个参数. offset的范围是0 ~ 1, 用于表示位置
+      tmpColumn3.series[0].linearGradient=[0, 0, 0, 1,[{offset: 0, color: '#0EE2F8'},{offset: 1, color: '#1890FF'}]];
+      tmpColumn3.series[1].linearGradient=[0, 0, 0, 1,[{offset: 0, color: '#2BDCA8'},{offset: 1, color: '#91CB74'}]];
+      this.chartsDataColumn3=tmpColumn3;
+      
+      this.chartsDataColumn4=JSON.parse(JSON.stringify(demodata.Column));
+      this.chartsDataColumn5=JSON.parse(JSON.stringify(demodata.Column));
       this.chartsDataPie1=JSON.parse(JSON.stringify(demodata.PieA))
       this.chartsDataPie2=JSON.parse(JSON.stringify(demodata.PieA))
       this.chartsDataPie3=JSON.parse(JSON.stringify(demodata.PieA))

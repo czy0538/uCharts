@@ -1,3 +1,6 @@
+## 2.0.0-20210412（2021-04-12）
+- 秋云图表组件 修复created中判断echarts导致APP端无法识别，改回mounted中判断echarts初始化
+- uCharts.js 修复2d模式下series.textOffset未乘像素比的bug
 ## 2.0.0-20210411（2021-04-11）
 ## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
 ## 初次使用如果提示未注册<qiun-data-charts>组件，请重启HBuilderX，并清空小程序开发者工具缓存。
