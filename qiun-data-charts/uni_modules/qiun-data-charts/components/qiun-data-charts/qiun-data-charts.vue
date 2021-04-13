@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210412
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210413
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -16,7 +16,7 @@
  * 
  -->
 <template>
-  <view class="chartsview">
+  <view class="chartsview" :id="'ChartBoxId'+cid">
     <view v-if="mixinDatacomLoading">
       <!-- 自定义加载状态，请改这里 -->
       <qiun-loading :loadingType="loadingType" />
@@ -760,7 +760,7 @@ export default {
         // #ifndef MP-ALIPAY
         .in(this)
         // #endif
-        .select('.chartsview')
+        .select('#ChartBoxId'+this.cid)
         .boundingClientRect(data => {
           this.showchart = true;
           if (data.width > 0 && data.height > 0) {
@@ -810,7 +810,7 @@ export default {
         // #ifndef MP-ALIPAY
         .in(this)
         // #endif
-        .select('.chartsview')
+        .select('#ChartBoxId'+cid)
         .boundingClientRect(data => {
           if (data.width > 0 && data.height > 0) {
             this.lastDrawTime = Date.now();
@@ -998,7 +998,7 @@ export default {
           .createSelectorQuery()
           // #ifndef MP-ALIPAY
           .in(this)
-          .select('.chartsview')
+          .select('#ChartBoxId'+cid)
           // #endif
           // #ifdef MP-ALIPAY
           .select('#'+this.cid)
@@ -1048,8 +1048,8 @@ export default {
       lastMoveTime=Date.now();
       if(cfu.option[cid].enableScroll === true){
         cfu.instance[cid].scrollStart(e);
-        this.emitMsg({name:'getTouchStart', params:{type:"touchStart", event:e.changedTouches[0], id:cid}});
       }
+      this.emitMsg({name:'getTouchStart', params:{type:"touchStart", event:e.changedTouches[0], id:cid}});
     },
     _touchMove(e) {
       let cid = this.cid
@@ -1059,8 +1059,8 @@ export default {
       lastMoveTime = currMoveTime;
       if(cfu.option[cid].enableScroll === true){
         cfu.instance[cid].scroll(e);
-        this.emitMsg({name: 'getTouchMove', params: {type:"touchMove", event:e.changedTouches[0], id: cid}});
       }
+      this.emitMsg({name: 'getTouchMove', params: {type:"touchMove", event:e.changedTouches[0], id: cid}});
       if(this.ontap === true && cfu.option[cid].enableScroll === false && this.onmovetip === true){
         this._tap(e,true)
       }
@@ -1069,8 +1069,8 @@ export default {
       let cid = this.cid
       if(cfu.option[cid].enableScroll === true){
         cfu.instance[cid].scrollEnd(e);
-        this.emitMsg({name:'getTouchEnd', params:{type:"touchEnd", event:e.changedTouches[0], id:cid}});
       }
+      this.emitMsg({name:'getTouchEnd', params:{type:"touchEnd", event:e.changedTouches[0], id:cid}});
       if(this.ontap === true && cfu.option[cid].enableScroll === false && this.onmovetip === true){
         this._tap(e,true)
       }
