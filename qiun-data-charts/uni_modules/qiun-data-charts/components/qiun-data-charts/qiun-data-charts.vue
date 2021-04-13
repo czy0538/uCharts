@@ -881,7 +881,7 @@ export default {
                       }
                     });
                 } else {
-                  if(this.inAli || this.inBd){
+                  if(this.inAli){
                     cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                   }
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
