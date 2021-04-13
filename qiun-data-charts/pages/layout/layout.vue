@@ -44,13 +44,13 @@
     
     
     <qiun-title-bar title="使用v-for生成图表"/>
-    <block v-for="(item, index) in listA" :key="'listA'+index">
+    <block v-for="(item, index) in listA" :key="item.id">
       <view class="charts-box">
         <qiun-data-charts :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
       </view>
     </block>
     <qiun-title-bar title="使用v-for生成图表2"/>
-    <block v-for="(item, index) in listB" :key="'listB'+index">
+    <block v-for="(item, index) in listB" :key="item.id">
       <view class="charts-box">
         <qiun-data-charts :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
       </view>
