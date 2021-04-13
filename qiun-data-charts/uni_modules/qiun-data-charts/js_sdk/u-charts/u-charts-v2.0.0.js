@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210412',
+  version: 'v2.0.0-20210413',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -363,11 +363,9 @@ function fixPieSeries(series, opts, config){
     opts._pieSeries_ = series;
     let oldseries = series[0].data;
     for (var i = 0; i < oldseries.length; i++) {
-      if(series[0].formatter){
-        pieSeriesArr.push({name: oldseries[i].name, data: oldseries[i].value, formatter: series[0].formatter})
-      }else{
-        pieSeriesArr.push({name: oldseries[i].name,data: oldseries[i].value})
-      }
+      oldseries[i].formatter = series[0].formatter
+      oldseries[i].data = oldseries[i].value
+      pieSeriesArr.push(oldseries[i])
     }
     opts.series = pieSeriesArr;
   }else{
@@ -2747,7 +2745,8 @@ function drawAreaDataPoints(series, opts, config, context) {
               context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y);
             }
           };
-        } else {
+        } 
+        if (areaOption.type === 'straight') {
           for (let j = 0; j < points.length; j++) {
             let item = points[j];
             if (startPoint == 0 && item.x > leftSpace) {
@@ -2755,6 +2754,19 @@ function drawAreaDataPoints(series, opts, config, context) {
               startPoint = 1;
             }
             if (j > 0 && item.x > leftSpace && item.x < rightSpace) {
+              context.lineTo(item.x, item.y);
+            }
+          };
+        }
+        if (areaOption.type === 'step') {
+          for (let j = 0; j < points.length; j++) {
+            let item = points[j];
+            if (startPoint == 0 && item.x > leftSpace) {
+              context.moveTo(item.x, item.y);
+              startPoint = 1;
+            }
+            if (j > 0 && item.x > leftSpace && item.x < rightSpace) {
+              context.lineTo(item.x, points[j - 1].y);
               context.lineTo(item.x, item.y);
             }
           };
@@ -2800,7 +2812,8 @@ function drawAreaDataPoints(series, opts, config, context) {
                 context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y);
               }
             };
-          } else {
+          }
+          if (areaOption.type === 'straight') {
             for (let j = 0; j < points.length; j++) {
               let item = points[j];
               if (startPoint == 0 && item.x > leftSpace) {
@@ -2808,6 +2821,19 @@ function drawAreaDataPoints(series, opts, config, context) {
                 startPoint = 1;
               }
               if (j > 0 && item.x > leftSpace && item.x < rightSpace) {
+                context.lineTo(item.x, item.y);
+              }
+            };
+          }
+          if (areaOption.type === 'step') {
+            for (let j = 0; j < points.length; j++) {
+              let item = points[j];
+              if (startPoint == 0 && item.x > leftSpace) {
+                context.moveTo(item.x, item.y);
+                startPoint = 1;
+              }
+              if (j > 0 && item.x > leftSpace && item.x < rightSpace) {
+                context.lineTo(item.x, points[j - 1].y);
                 context.lineTo(item.x, item.y);
               }
             };
