@@ -29,6 +29,7 @@
         :canvas2d="true"
         :ontouch="true"
         :onmovetip="true"
+        @getTouchMove="getTouchMove"
       />
     </view>
     <qiun-title-bar title="固定位置显示tooltip" />
@@ -157,6 +158,9 @@ export default {
       );
       // #endif
       
+    },
+    getTouchMove(e){
+      console.log("获取TouchMove",e);
     },
     changeErrorMessage(){
       this.errorMessage="自定义错误信息，点击重试"+Math.floor(Math.random() * 1000)
