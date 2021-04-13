@@ -62,11 +62,15 @@
     <view class="charts-box">
       <qiun-data-charts type="line" :chartData="chartsDataLine5"/>
     </view>
-    <qiun-title-bar title="基本区域图"/>
+    <qiun-title-bar title="基本折线区域图"/>
     <view class="charts-box">
       <qiun-data-charts type="area" :chartData="chartsDataArea1"/>
     </view>
-    <qiun-title-bar title="渐变色区域图"/>
+    <qiun-title-bar title="渐变色时序区域图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="area" :opts="{extra:{area:{type:'step',addLine:true,gradient:true}}}" :chartData="chartsDataArea2"/>
+    </view>
+    <qiun-title-bar title="渐变色曲线区域图"/>
     <view class="charts-box">
       <qiun-data-charts type="area" :opts="{extra:{area:{type:'curve',addLine:true,gradient:true}}}" :chartData="chartsDataArea2"/>
     </view>
