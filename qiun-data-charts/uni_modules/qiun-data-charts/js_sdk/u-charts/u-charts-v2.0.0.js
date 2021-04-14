@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210413',
+  version: 'v2.0.0-20210414',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -2216,6 +2216,7 @@ function drawToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
   context.rect(offsetX - eachSpacing / 2, startY, eachSpacing, endY - startY);
   context.closePath();
   context.fill();
+  context.setFillStyle("#FFFFFF");
 }
 
 function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxisPoints) {
@@ -3712,6 +3713,7 @@ function drawPieDataPoints(series, opts, config, context) {
     border: false,
     borderWidth: 2,
     borderColor: '#FFFFFF',
+    centerColor: '#FFFFFF',
     linearType: 'none',
     customColor: [],
   }, opts.type == "pie" ? opts.extra.pie : opts.extra.ring);
@@ -3776,7 +3778,7 @@ function drawPieDataPoints(series, opts, config, context) {
       innerPieWidth = Math.max(0, radius - pieOption.ringWidth * opts.pix);
     }
     context.beginPath();
-    context.setFillStyle(opts.background);
+    context.setFillStyle(pieOption.centerColor);
     context.moveTo(centerPosition.x, centerPosition.y);
     context.arc(centerPosition.x, centerPosition.y, innerPieWidth, 0, 2 * Math.PI);
     context.closePath();
