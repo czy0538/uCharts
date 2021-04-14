@@ -1,3 +1,22 @@
+## 2.0.0-20210414（2021-04-14）
+## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
+## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑；
+## 如果是cli项目，请尝试清理node_modules，重新install，还不行就删除项目，再重新install。
+## 此问题已于DCloud官方确认，HBuilderX下个版本会修复。
+## 其他图表不显示问题详见[常见问题选项卡](https://demo.ucharts.cn)
+## <font color=#FF0000> 新手请先完整阅读帮助文档及常见问题3遍，右侧蓝色按钮示例项目请看2遍！ </font> 
+## [DEMO演示及在线生成工具（v2.0文档）https://demo.ucharts.cn](https://demo.ucharts.cn)
+## [图表组件在项目中的应用参见 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
+- 秋云图表组件 修复H5端在cli项目下ECharts引用地址错误的bug
+- 示例项目 增加ECharts的formatter用法的示例(详见示例项目format-e.vue)
+- uCharts.js 增加圆环图中心背景色的配置extra.ring.centerColor
+- uCharts.js 修复微信小程序安卓端柱状图开启透明色后显示不正确的bug
+## 2.0.0-20210413（2021-04-13）
+- 秋云图表组件 修复百度小程序多个图表真机未能正确获取根元素dom尺寸的bug
+- 秋云图表组件 修复百度小程序横屏模式方向不正确的bug
+- 秋云图表组件 修改ontouch时，@getTouchStart@getTouchMove@getTouchEnd的触发条件
+- uCharts.js 修复饼图类数据格式series属性不生效的bug
+- uCharts.js 增加时序区域图 详见示例项目中ucharts.vue
 ## 2.0.0-20210412-2（2021-04-12）
 ## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
 ## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX。如仍不好用，请重启电脑，此问题已于DCloud官方确认，HBuilderX下个版本会修复。

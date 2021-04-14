@@ -84,7 +84,7 @@
     </view>
     <qiun-title-bar title="环形图+渐变色"/>
     <view class="charts-box">
-      <qiun-data-charts type="ring" :opts="{legend:{position: 'bottom'},extra:{ring:{ringWidth: 60,linearType:'custom'}}}" :chartData="chartsDataRing1"/>
+      <qiun-data-charts type="ring" :opts="{legend:{position: 'bottom'},extra:{ring:{ringWidth: 60,linearType:'custom',centerColor:'#FF0'}}}" :chartData="chartsDataRing1"/>
     </view>
     <qiun-title-bar title="面积玫瑰图"/>
     <view class="charts-box">

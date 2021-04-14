@@ -43,9 +43,15 @@
     	}
     },
     {
-    	"path": "pages/format/format",
+    	"path": "pages/format-e/format-e",
     	"style": {
-    		"navigationBarTitleText": "formatter用法示例"
+    		"navigationBarTitleText": "ECharts的formatter用法"
+    	}
+    },
+    {
+    	"path": "pages/format-u/format-u",
+    	"style": {
+    		"navigationBarTitleText": "uCharts的formatter用法"
     	}
     },
     {

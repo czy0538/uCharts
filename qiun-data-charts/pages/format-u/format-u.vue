@@ -8,7 +8,7 @@
     </view>
     <qiun-title-bar title="Y轴format方法1(保留小数点及添加单位)"/>
     <view class="charts-box">
-      <qiun-data-charts type="area" :opts="{yAxis:{data:[{tofix:3,unit:'万元'}]}}" :chartData="chartsDataLine1" />
+      <qiun-data-charts type="area" :opts="{yAxis:{data:[{tofix:3,unit:'万元',min:0,max:200}]}}" :chartData="chartsDataLine1" />
     </view>
     <qiun-title-bar title="Y轴format方法2(自定义)"/>
     <view class="charts-box">
@@ -19,18 +19,7 @@
       <!-- series的format需要在chartData.series中指定，注意，因为组件监听了chartData，只要有数据变化，就会触发更新，不要用循环chartData绑定的变量，需要一次性整体赋值给chartData！！！ -->
       <qiun-data-charts type="line" :chartData="chartsDataColumn2"/>
     </view>
-    <qiun-title-bar title="ECharts的tooltip提示窗format(H5 ECharts 其他uCharts)" />
-    <view class="charts-box"> 
-      <!-- tooltip的format需要在组件的props参数上传递，例如tooltipFormat="tooltipDemo1"，并需要在config-ucharts.js中的formatter节点中的tooltipDemo1中配置format方法。如果开启了echarts，则需要在config-echarts.js中的formatter节点中的tooltipDemo1中配置format方法。 -->
-      <!-- 此示例开启了ECharts在H5的渲染，可以编译到H5和小程序查看不同的tooltipFormat效果 -->
-      <qiun-data-charts
-        type="column"
-        :echartsH5="true"
-        :chartData="chartsDataLine1"
-        tooltipFormat="tooltipDemo1"
-      />
-    </view>
-    <qiun-title-bar title="uCharts临时增加的tooltip提示窗format" />
+    <qiun-title-bar title="临时增加的tooltip提示窗format" />
     <view class="charts-box"> 
       <!-- 此方法展示在引用的config-ucharts.js中动态添加tooltip的formatter（APP不能实现） -->
       <qiun-data-charts
