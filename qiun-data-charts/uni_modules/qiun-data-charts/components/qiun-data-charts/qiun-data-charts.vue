@@ -1157,7 +1157,8 @@ export default {
         script.src = './uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
         // #endif
         // #ifdef H5
-        script.src = './uni_modules/qiun-data-charts/static/h5/echarts.min.js'
+        const rooturl = window.location.href.split('/#/')[0]
+        script.src = rooturl+'/uni_modules/qiun-data-charts/static/h5/echarts.min.js'
         // #endif
         script.onload = this.newEChart
         document.head.appendChild(script)
@@ -1209,7 +1210,9 @@ export default {
       cfe.instance[cid].setOption(option, option.notMerge)
       cfe.instance[cid].on('finished', function(){
         that[cid].callMethod('emitMsg',{name:"complete",params:{type:"complete",complete:true,id:cid}})
-        cfe.instance[cid].off('finished')
+        if(cfe.instance[cid]){
+          cfe.instance[cid].off('finished')
+        }
       })
     },
     tooltipPosition(){
