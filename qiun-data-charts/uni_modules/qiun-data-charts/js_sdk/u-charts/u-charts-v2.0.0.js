@@ -2255,7 +2255,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
     return
   }
   // if beyond the right border
-  if (offset.x - Math.abs(opts._scrollDistance_) + arrowWidth + toolTipWidth > opts.width) {
+  if (offset.x - Math.abs(opts._scrollDistance_ || 0) + arrowWidth + toolTipWidth > opts.width) {
     isOverRightBorder = true;
   }
   if (toolTipHeight + offset.y > opts.height) {
