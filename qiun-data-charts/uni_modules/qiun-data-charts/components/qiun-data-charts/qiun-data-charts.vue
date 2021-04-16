@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210414
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210416
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -741,11 +741,15 @@ export default {
             let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate,newData.series[i])
             cfe.option[cid].series.push(Template)
           }
-          this.init();
+          this.$nextTick(()=>{
+            this.init()
+          })
         }else{
           cfu.option[cid].categories = newData.categories;
           cfu.option[cid].series = newData.series;
-          this.init();
+          this.$nextTick(()=>{
+            this.init()
+          })
         }
       }
     },
