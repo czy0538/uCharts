@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210414',
+  version: 'v2.0.0-20210416',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,

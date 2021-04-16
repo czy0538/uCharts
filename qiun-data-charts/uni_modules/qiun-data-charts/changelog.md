@@ -1,3 +1,18 @@
+## 2.0.0-20210416（2021-04-16）
+## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
+## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑；
+## 如果是cli项目，请尝试清理node_modules，重新install，还不行就删除项目，再重新install。
+## 此问题已于DCloud官方确认，HBuilderX下个版本会修复。
+## 其他图表不显示问题详见[常见问题选项卡](https://demo.ucharts.cn)
+## <font color=#FF0000> 新手请先完整阅读帮助文档及常见问题3遍，右侧蓝色按钮示例项目请看2遍！ </font> 
+## [DEMO演示及在线生成工具（v2.0文档）https://demo.ucharts.cn](https://demo.ucharts.cn)
+## [图表组件在项目中的应用参见 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
+- 秋云图表组件 修复APP端某些情况下报错`Not Found Page`的bug，fix by 高级bug开发技术员
+- 示例项目 修复APP端v-for循环某些情况下报错`Not Found Page`的bug，fix by 高级bug开发技术员
+- uCharts.js 修复非直角坐标系tooltip提示窗右侧超出未变换方向显示的bug
+## 2.0.0-20210415（2021-04-15）
+- 秋云图表组件 修复H5端发布到二级目录下echarts无法加载的bug
+- 秋云图表组件 修复某些情况下echarts.off('finished')移除监听事件报错的bug
 ## 2.0.0-20210414（2021-04-14）
 ## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
 ## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑；

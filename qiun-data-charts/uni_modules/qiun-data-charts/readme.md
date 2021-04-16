@@ -4,7 +4,7 @@
 
 ## [DEMO演示及在线生成工具（v2.0文档）](https://demo.ucharts.cn)
 
-## [`howcode`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4651)
+## [图表组件在项目中的应用 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
 
 ### [v1.0文档（将在9月30日作废，请尽快转v2.0）](http://doc.ucharts.cn)
 
@@ -190,7 +190,9 @@ localdata:[
 
 /pages/other/other.vue（展示图表交互的例子：动态更新图表数据，渲染完成事件，获取点击索引，自定义tooltip，图表保存为图片，强制展示错误信息等）
 
-/pages/format/format.vue（展示formatter用法的例子）
+/pages/format-u/format-u.vue（展示uCharts的formatter用法的例子）
+
+/pages/format-e/format-e.vue（展示ECharts的formatter用法的例子）
 
 /pages/tab/tab.vue（展示再tab选项卡中用法的例子，即父容器采用v-show或v-if时需要注意的问题）
 
@@ -426,7 +428,7 @@ tooltipCustom属性如下：
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 - [uCharts基础库更新记录](https://gitee.com/uCharts/uCharts/wikis/%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95?sort_id=1535998)
 - [uCharts改造教程](https://gitee.com/uCharts/uCharts/wikis/%E6%94%B9%E9%80%A0uCharts%E6%89%93%E9%80%A0%E4%B8%93%E5%B1%9E%E5%9B%BE%E8%A1%A8?sort_id=1535997)
-- [`howcode`UReport数据报表——图表组件在uniCloudAdmin中的应用](https://ext.dcloud.net.cn/plugin?id=4651)
+- [图表组件在项目中的应用 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
 - [ECharts配置手册](https://echarts.apache.org/zh/option.html)
 - [`wkiwi`提供的w-loading组件地址](https://ext.dcloud.net.cn/plugin?id=504)
