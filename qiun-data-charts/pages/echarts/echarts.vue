@@ -3,6 +3,8 @@
     <!-- config-echarts.js中的seriesTemplate为option.series模板，可以作为series中的默认配置，:chartData.series中的配置如果有相同的，会覆盖掉 seriesTemplate 中的配置 -->
 		<qiun-title-bar title="柱状图+动态更新数据" />
     <view class="charts-box">
+      <!-- 如果发布到二级或者多级目录中，需要配置 directory 属性 -->
+      <!-- <qiun-data-charts type="column" :chartData="chartsDataColumn1" :echartsH5="true" :echartsApp="true" directory="/h5/" @complete="complete"/> -->
       <qiun-data-charts type="column" :chartData="chartsDataColumn1" :echartsH5="true" :echartsApp="true" @complete="complete"/>
     </view>
     <qiun-title-bar title="堆叠柱状图+点击获取索引" />

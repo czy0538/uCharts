@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210416
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210418
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -31,6 +31,7 @@
       <view
         :style="{ background: background }"
         style="width: 100%;height: 100%;"
+        :data-directory="directory"
         :id="'EC'+cid" 
         :prop="echartsOpts" 
         :change:prop="rdcharts.ecinit" 
@@ -332,6 +333,10 @@ export default {
     pageScrollTop: {
       type: Number,
       default: 0
+    },
+    directory: {
+      type: String,
+      default: '/'
     }
   },
   data() {
@@ -1161,8 +1166,9 @@ export default {
         script.src = './uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
         // #endif
         // #ifdef H5
-        const rooturl = window.location.href.split('/#/')[0]
-        script.src = rooturl+'/uni_modules/qiun-data-charts/static/h5/echarts.min.js'
+        const rooturl = window.location.origin 
+        const directory = instance.getDataset().directory
+        script.src = rooturl + directory + 'uni_modules/qiun-data-charts/static/h5/echarts.min.js'
         // #endif
         script.onload = this.newEChart
         document.head.appendChild(script)

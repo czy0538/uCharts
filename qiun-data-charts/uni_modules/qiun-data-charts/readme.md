@@ -216,6 +216,7 @@ localdata:[
 |errorShow|Boolean|true|否|是否在页面上显示错误提示，true为显示错误提示图片，false时会显示空白区域|
 |errorMessage|String|null|否|自定义错误信息，强制显示错误图片及错误信息，当上面errorShow为true时可用。（组件会监听该属性的变化，只要有变化，就会强制显示错误信息！）。说明：1、一般用于页面网络不好或其他情况导致图表loading动画一直显示，可以传任意(不为null或者"null"或者空"")字符串强制显示错误图片及说明。2、如果组件使用了data-come属性读取uniCloud数据，组件会自动判断错误状态并展示错误图标，不必使用此功能。3、当状态从非null改变为null或者空时，会强制调用reload重新加载并渲染图表数据。|
 |echartsH5|Boolean|false|否|是否在H5端使用ECharts引擎渲染图表|
+|directory|String|'/'|否|二级目录名称，如果开启上面echartsH5即H5端用ECharts引擎渲染图表，并且项目未发布在website根目录，需要填写此项配置。例如二级目录是h5，则需要填写`/h5/`，左右两侧需要带`/`，发布到三级或更多层目录示例`/web/v2/h5/`|
 |echartsApp|Boolean|false|否|是否在APP端使用ECharts引擎渲染图表|
 |canvasId|String|见说明|否|默认生成32位随机字符串。如果指定canvasId，可方便后面调用指定图表实例，否则需要通过渲染完成事件获取自动生成随机的canvasId|
 |canvas2d|Boolean|false|否|是否开启canvas2d模式，用于解决微信小程序层级过高问题，仅微信小程序端可用，其他端会强制关闭canvas2d模式。<font color=#FF0000>注：开启canvas2d模式，必须要传入上面的canvasId（随机字符串，不能是动态绑定的值，不能是数字），否则微信小程序可能会获取不到dom导致无法渲染图表！**开启后，开发者工具显示不正常，预览正常（不能“真机调试”,不能“真机调试”,不能“真机调试”）**</font>|
@@ -405,6 +406,7 @@ tooltipCustom属性如下：
 		* c、请检查父元素或父组件是否用v-if来控制显示，如有请改为v-show，并将v-show的逻辑绑定至组件。
 - `formatter格式化问题`：无论是uCharts还是ECharts，因为组件不能传递function，所有的formatter均需要变成别名format来定义，并在config-ucharts.js或config-echarts.js配置对应的formatter方法，组件会根据format的值自动替换配置文件中的formatter方法。（参考示例项目pages/format/format.vue）
 - `图表抖动问题`：如果开启了animation动画效果，由于组件内开启了chartData和opts的监听，当数据变化时会重新渲染图表，<font color=#FF0000>建议整体改变chartData及opts的属性值</font>，而不要通过循环或遍历来改变this实例下的chartData及opts，例如先定义一个临时变量，拼接好数据后再整体赋值。（参考示例项目pages/updata/updata.vue）
+- `微信小程序报错Maximum call stack size exceeded问题`:由于组件内开启了chartData和opts的监听，当数据变化时会重新渲染图表，<font color=#FF0000>建议整体改变chartData及opts的属性值</font>，而不要通过循环或遍历来改变this实例下的chartData及opts，例如先定义一个临时变量，拼接好数据后再整体赋值。（参考示例项目pages/updata/updata.vue）
 - `Loading状态问题`：如不使用uniClinetDB获取数据源，并且需要展示Loading状态，请先清空series，使组件变更为Loading状态，即this.chartData.series=[]即可展示，然后再从服务端获取数据，拼接完成后再传入this.chartData。如果不需要展示Loading状态，则不需要以上步骤，获取到数据，拼接好标准格式后，直接赋值即可。
 - `微信小程序图表层级过高问题`：因canvas在微信小程序是原生组件，如果使用自定义tabbar或者自定义导航栏，图表则会超出预期，此时需要给组件的canvas2d传值true来使用type='2d'的功能，开启此模式后，<font color=#FF0000>一定要在组件上自定义canvasId，不能为数字，不能动态绑定，要为随机字符串！不能“真机调试”，不能“真机调试”，不能“真机调试”</font>开发者工具显示不正常，图表层级会变高，而正常预览或者发布上线则是正常状态，开发者不必担心，一切以真机预览为准（因微信开发者工具显示不正确，canvas2d这种模式下给调试带来了困难，开发时，可以先用:canvas2d="false"来调试，预览无误后再改成true）。
 - `在图表上滑动无法使页面滚动问题`：此问题是因为监听了touchstart、touchmove和touchend三个事件，或者开启了disableScroll属性，如果您的图表不需要开启图表内的滚动条功能，请禁用这三个方法的监听，即:ontouch="false"或者:disableScroll="false"即可（此时图表组件默认通过@tap事件来监听点击，可正常显示Tooltip提示窗）。
