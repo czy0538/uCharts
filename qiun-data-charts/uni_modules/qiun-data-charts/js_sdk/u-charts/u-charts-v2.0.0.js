@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210416',
+  version: 'v2.0.0-20210419',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -3033,8 +3033,8 @@ function drawMixDataPoints(series, opts, config, context) {
           var startX = item.x - item.width / 2;
           var height = opts.height - item.y - opts.area[2];
           context.beginPath();
-          var fillColor = eachSeries.color
-          var strokeColor = eachSeries.color
+          var fillColor = item.color || eachSeries.color
+          var strokeColor = item.color || eachSeries.color
           if (columnOption.linearType !== 'none') {
             var grd = context.createLinearGradient(startX, item.y, startX, opts.height - opts.area[2]);
             //透明渐变
