@@ -82,3 +82,4 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 /qiun-data-charts/unpackage
+/qiun-data-charts（uni-modules）/unpackage/
