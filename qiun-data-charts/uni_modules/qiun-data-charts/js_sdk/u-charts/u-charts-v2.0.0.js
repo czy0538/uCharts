@@ -3485,7 +3485,7 @@ function drawYAxis(series, opts, config, context) {
       let yData = opts.yAxis.data[i];
       if (yData.disabled !== true) {
         let rangesFormat = opts.chartData.yAxisData.rangesFormat[i];
-        let yAxisFontSize = yData.fontSize || config.fontSize;
+        let yAxisFontSize = yData.fontSize * opts.pix || config.fontSize;
         let yAxisWidth = opts.chartData.yAxisData.yAxisWidth[i];
         let textAlign = yData.textAlign || "right";
         //画Y轴刻度及文案
