@@ -1,3 +1,6 @@
+## 2.0.0-20210420（2021-04-20）
+- 秋云图表组件 修复微信小程序开启canvas2d模式后，windows版微信小程序不支持canvas2d模式的bug
+- 秋云图表组件 修改非uni_modules版本为v2.0版本qiun-data-charts组件
 ## 2.0.0-20210419（2021-04-19）
 ## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
 ## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑；
