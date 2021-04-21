@@ -420,7 +420,7 @@ tooltipCustom属性如下：
 - 交流群1：371774600（已满）
 - 交流群2：619841586（不回答本组件问题，只回答uCharts基础库问题）
 - 交流群3：955340127<font color=#FF0000>（优先解答本组件问题，其他问题群友互助）</font>
-- 口令`uniapp`
+- 口令`gitee`
 
 ## 相关链接
 - [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)
