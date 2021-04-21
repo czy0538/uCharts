@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210419',
+  version: 'v2.0.0-20210421',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -3620,7 +3620,16 @@ function drawLegend(series, opts, config, context, chartData) {
     let startX = 0;
     let startY = 0;
     if (opts.legend.position == 'top' || opts.legend.position == 'bottom') {
-      startX = legendArea.start.x + (legendArea.width - width) / 2;
+      switch (opts.legend.float) {
+        case 'left':
+          startX = legendArea.start.x + padding;
+        break;
+        case 'right':
+          startX = legendArea.start.x + legendArea.width - width;
+        break;
+        default:
+        startX = legendArea.start.x + (legendArea.width - width) / 2;
+      }
       startY = legendArea.start.y + padding + listIndex * lineHeight;
     } else {
       if (listIndex == 0) {
