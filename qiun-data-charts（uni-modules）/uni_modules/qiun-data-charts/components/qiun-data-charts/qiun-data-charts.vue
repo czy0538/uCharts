@@ -175,7 +175,7 @@ function deepCloneAssign(origin = {}, ...args) {
 
 function formatterAssign(args,formatter) {
   for (let key in args) {
-    if(typeof args[key] === 'object'){
+    if(args[key] !== null && typeof args[key] === 'object'){
       formatterAssign(args[key],formatter)
     }else if(key === 'format' && typeof args[key] === 'string'){
       args['formatter'] = formatter[args[key]] ? formatter[args[key]] : undefined;
@@ -1120,7 +1120,7 @@ var rootdom = null;
 
 function rdformatterAssign(args,formatter) {
   for (let key in args) {
-    if(typeof args[key] === 'object'){
+    if(args[key] !== null && typeof args[key] === 'object'){
       rdformatterAssign(args[key],formatter)
     }else if(key === 'format' && typeof args[key] === 'string'){
       args['formatter'] = formatter[args[key]] ? formatter[args[key]] : undefined;

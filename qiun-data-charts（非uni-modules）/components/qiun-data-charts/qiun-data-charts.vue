@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210420
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210422
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -175,7 +175,7 @@ function deepCloneAssign(origin = {}, ...args) {
 
 function formatterAssign(args,formatter) {
   for (let key in args) {
-    if(typeof args[key] === 'object'){
+    if(args[key] !== null && typeof args[key] === 'object'){
       formatterAssign(args[key],formatter)
     }else if(key === 'format' && typeof args[key] === 'string'){
       args['formatter'] = formatter[args[key]] ? formatter[args[key]] : undefined;
@@ -1120,7 +1120,7 @@ var rootdom = null;
 
 function rdformatterAssign(args,formatter) {
   for (let key in args) {
-    if(typeof args[key] === 'object'){
+    if(args[key] !== null && typeof args[key] === 'object'){
       rdformatterAssign(args[key],formatter)
     }else if(key === 'format' && typeof args[key] === 'string'){
       args['formatter'] = formatter[args[key]] ? formatter[args[key]] : undefined;
