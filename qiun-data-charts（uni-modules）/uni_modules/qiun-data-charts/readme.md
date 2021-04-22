@@ -417,6 +417,8 @@ tooltipCustom属性如下：
 - `开启滚动条无法拖动图表问题`：此问题正与以上问题相反，是因为禁用了监听touchstart、touchmove和touchend三个事件，请启用这三个方法的监听，即在组件上加入 :ontouch="true" 即可。注意，不要忘记在opts里需要配置enableScroll:true，另外如果需要显示滚动条，需要在xAxis中配置scrollShow:ture。
 - `开启滚动条后图表两侧有白边问题`：此问题是因为组件上的background为none或者没有指定，请在组件上加入background="#000000"(您的背景色)。如果父元素为图片，尽量不要开启滚动条，此时图表是透明色，可以显示父元素背景图片。
 - `地图变形问题`：此问题是因为您引用的geojson地图数据的坐标系可能是地球坐标(WGS84)导致，需要开启【是否进行WGS84转墨卡托投影】功能。开启后因大量的数据运算tooltip可能会不跟手，建议自行转换为墨卡托坐标系，可参照源码内function lonlat2mercator()。其他地图数据下载地址：[http://datav.aliyun.com/tools/atlas/](http://datav.aliyun.com/tools/atlas/)
+- `支付宝（钉钉）小程序无法点击问题`：请检查支付宝小程序开发者工具中，点击【详情】，在弹出的【项目详情】中【取消】启用小程序基础库 2.0 构建，一定不要勾选此项。
+
 
 ## [更多常见问题以官方网站【常见问题】为准](http://demo.ucharts.cn)
 

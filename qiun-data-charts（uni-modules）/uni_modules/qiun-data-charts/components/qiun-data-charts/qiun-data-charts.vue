@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210420
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210422
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -884,6 +884,8 @@ export default {
                         canvas._width = data.width * this.pixel;
                         canvas._height = data.height * this.pixel;
                         cfu.option[cid].rotateLock = cfu.option[cid].rotate;
+                        cfu.option[cid].context.restore();
+                        cfu.option[cid].context.save();
                         this._newChart(cid);
                       } else {
                         this.showchart = false;
@@ -895,6 +897,8 @@ export default {
                     cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                   }
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
+                  cfu.option[cid].context.restore();
+                  cfu.option[cid].context.save();
                   this._newChart(cid);
                 }
               })
@@ -1255,6 +1259,8 @@ export default {
       let canvasdom = document.getElementById(cid)
       if(canvasdom && canvasdom.children[0]){
         cfu.option[cid].context = canvasdom.children[0].getContext("2d")
+        cfu.option[cid].context.restore();
+        cfu.option[cid].context.save();
         this.newUChart()
       }
     },
