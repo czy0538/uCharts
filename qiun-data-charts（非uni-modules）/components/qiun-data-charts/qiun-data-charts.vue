@@ -374,7 +374,7 @@ export default {
       this.cid = id
     }
     const systemInfo = uni.getSystemInfoSync()
-    // #ifdef MP-WEIXIN || MP-QQ
+    // #ifdef MP-WEIXIN
     this.inWx = true;
     if (this.canvas2d === false || systemInfo.platform === 'windows') {
       this.type2d = false;
@@ -386,7 +386,7 @@ export default {
     }
     // #endif
     //非微信小程序端强制关闭canvas2d模式
-    // #ifndef MP-WEIXIN || MP-QQ
+    // #ifndef MP-WEIXIN
     this.type2d = false;
     // #endif
     // #ifdef MP-ALIPAY

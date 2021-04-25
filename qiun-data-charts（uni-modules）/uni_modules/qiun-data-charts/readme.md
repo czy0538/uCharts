@@ -4,6 +4,7 @@
 ## 此问题已于DCloud官方确认，HBuilderX下个版本会修复。
 ## 其他图表不显示问题详见[常见问题选项卡](https://demo.ucharts.cn)
 ## <font color=#FF0000> 新手请先完整阅读【帮助文档】及【常见问题】3遍，右侧蓝色按钮【示例项目】请看2遍！ </font> 
+## <font color=#FF0000> 关于NVUE兼容的说明： </font> 建议NVUE使用图表的页面改为vue页面，在App端，从性能来讲，由于通讯阻塞的问题，nvue的canvas性能不可能达到使用renderjs的vue页面的canvas。在App端，推荐使用vue的canvas。[详见uni-app官方说明](https://uniapp.dcloud.io/component/canvas?id=canvas)
 ## [uCharts官方网站](https://www.ucharts.cn)
 ## [DEMO演示及在线生成工具（v2.0文档）https://demo.ucharts.cn](https://demo.ucharts.cn)
 ## [图表组件在项目中的应用 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
