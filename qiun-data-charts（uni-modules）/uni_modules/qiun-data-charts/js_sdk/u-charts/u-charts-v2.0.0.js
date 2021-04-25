@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210421',
+  version: 'v2.0.0-20210426',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -1378,12 +1378,17 @@ function fixColumeData(points, eachSpacing, columnLen, index, config, opts) {
       return null;
     }
     var seriesGap = 0
+    var categoryGap = 0
     if (opts.type == 'mix') {
       seriesGap = opts.extra.mix.column.seriesGap * opts.pix || 0
+      categoryGap = opts.extra.mix.column.categoryGap * opts.pix || 0
     } else {
       seriesGap = opts.extra.column.seriesGap * opts.pix || 0
+      categoryGap = opts.extra.column.categoryGap * opts.pix || 0
     }
-    item.width = Math.ceil((eachSpacing - 2 * config.columePadding - seriesGap * (columnLen - 1)) / columnLen);
+    seriesGap =  Math.min(seriesGap, eachSpacing / columnLen)
+    categoryGap =  Math.min(categoryGap, eachSpacing / columnLen)
+    item.width = Math.ceil((eachSpacing - 2 * categoryGap - seriesGap * (columnLen - 1)) / columnLen);
     if (opts.extra.mix && opts.extra.mix.column.width && +opts.extra.mix.column.width > 0) {
       item.width = Math.min(item.width, +opts.extra.mix.column.width * opts.pix);
     }
@@ -1399,11 +1404,12 @@ function fixColumeData(points, eachSpacing, columnLen, index, config, opts) {
 }
 
 function fixColumeMeterData(points, eachSpacing, columnLen, index, config, opts, border) {
+  var categoryGap = opts.extra.column.categoryGap * opts.pix || 0;
   return points.map(function(item) {
     if (item === null) {
       return null;
     }
-    item.width = Math.ceil((eachSpacing - 2 * config.columePadding) / 2);
+    item.width = Math.ceil(eachSpacing - 2 * categoryGap);
     if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
       item.width = Math.min(item.width, +opts.extra.column.width * opts.pix);
     }
@@ -1415,13 +1421,17 @@ function fixColumeMeterData(points, eachSpacing, columnLen, index, config, opts,
 }
 
 function fixColumeStackData(points, eachSpacing, columnLen, index, config, opts, series) {
+  var categoryGap = opts.extra.column.categoryGap * opts.pix || 0;
   return points.map(function(item, indexn) {
     if (item === null) {
       return null;
     }
-    item.width = Math.ceil((eachSpacing - 2 * config.columePadding) / 2);
+    item.width = Math.ceil(eachSpacing - 2 * categoryGap);
     if (opts.extra.column && opts.extra.column.width && +opts.extra.column.width > 0) {
       item.width = Math.min(item.width, +opts.extra.column.width * opts.pix);
+    }
+    if (item.width <= 0) {
+      item.width = 1;
     }
     return item;
   });
