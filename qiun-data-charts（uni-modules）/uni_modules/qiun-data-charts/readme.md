@@ -1,6 +1,7 @@
 ## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
-## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑；
-## 如果是cli项目，请升级uniapp依赖为最新版本后，尝试清理node_modules，重新install，还不行请使用【非uni_modules版本】，最新非uni_modules版本在码云发布，[点击此处获取](https://gitee.com/uCharts/uCharts/tree/master/qiun-data-charts%EF%BC%88%E9%9D%9Euni-modules%EF%BC%89)。
+## [如何安装、更新 uni_modules 插件点这里，必看，必看，必看](https://uniapp.dcloud.io/uni_modules?id=%e4%bd%bf%e7%94%a8-uni_modules-%e6%8f%92%e4%bb%b6)
+## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑，最后大招，卸载HBuilderX重新安装最新版（不是更新，是重装）；
+## 如果是cli项目，1、请 npm update 升级uniapp依赖为最新版本；2、尝试清理node_modules，重新npm install。还不行请使用【非uni_modules版本】，最新非uni_modules版本在码云发布，[点击此处获取](https://gitee.com/uCharts/uCharts/tree/master/qiun-data-charts%EF%BC%88%E9%9D%9Euni-modules%EF%BC%89)。
 ## 此问题已于DCloud官方确认，HBuilderX下个版本会修复。
 ## 其他图表不显示问题详见[常见问题选项卡](https://demo.ucharts.cn)
 ## <font color=#FF0000> 新手请先完整阅读【帮助文档】及【常见问题】3遍，右侧蓝色按钮【示例项目】请看2遍！ </font> 
@@ -414,6 +415,7 @@ tooltipCustom属性如下：
 - `微信小程序报错Maximum call stack size exceeded问题`:由于组件内开启了chartData和opts的监听，当数据变化时会重新渲染图表，<font color=#FF0000>建议整体改变chartData及opts的属性值</font>，而不要通过循环或遍历来改变this实例下的chartData及opts，例如先定义一个临时变量，拼接好数据后再整体赋值。（参考示例项目pages/updata/updata.vue）
 - `Loading状态问题`：如不使用uniClinetDB获取数据源，并且需要展示Loading状态，请先清空series，使组件变更为Loading状态，即this.chartData.series=[]即可展示，然后再从服务端获取数据，拼接完成后再传入this.chartData。如果不需要展示Loading状态，则不需要以上步骤，获取到数据，拼接好标准格式后，直接赋值即可。
 - `微信小程序图表层级过高问题`：因canvas在微信小程序是原生组件，如果使用自定义tabbar或者自定义导航栏，图表则会超出预期，此时需要给组件的canvas2d传值true来使用type='2d'的功能，开启此模式后，<font color=#FF0000>一定要在组件上自定义canvasId，不能为数字，不能动态绑定，要为随机字符串！不能“真机调试”，不能“真机调试”，不能“真机调试”</font>开发者工具显示不正常，图表层级会变高，而正常预览或者发布上线则是正常状态，开发者不必担心，一切以真机预览为准（因微信开发者工具显示不正确，canvas2d这种模式下给调试带来了困难，开发时，可以先用:canvas2d="false"来调试，预览无误后再改成true）。
+- `MiniPorgramError U.createEvent is ot a function`：此问题一般是微信小程序开启了canvas2d，并点击了“真机调试导致”，参考上面【微信小程序图表层级过高问题】解决办法，开启2d后，不可以真机调试，只能开发者工具调试或者扫二维码“预览”。
 - `在图表上滑动无法使页面滚动问题`：此问题是因为监听了touchstart、touchmove和touchend三个事件，或者开启了disableScroll属性，如果您的图表不需要开启图表内的滚动条功能，请禁用这三个方法的监听，即:ontouch="false"或者:disableScroll="false"即可（此时图表组件默认通过@tap事件来监听点击，可正常显示Tooltip提示窗）。
 - `开启滚动条无法拖动图表问题`：此问题正与以上问题相反，是因为禁用了监听touchstart、touchmove和touchend三个事件，请启用这三个方法的监听，即在组件上加入 :ontouch="true" 即可。注意，不要忘记在opts里需要配置enableScroll:true，另外如果需要显示滚动条，需要在xAxis中配置scrollShow:ture。
 - `开启滚动条后图表两侧有白边问题`：此问题是因为组件上的background为none或者没有指定，请在组件上加入background="#000000"(您的背景色)。如果父元素为图片，尽量不要开启滚动条，此时图表是透明色，可以显示父元素背景图片。
@@ -424,12 +426,13 @@ tooltipCustom属性如下：
 ## [更多常见问题以官方网站【常见问题】为准](http://demo.ucharts.cn)
 
 ## QQ群号码
-
+## <font color=#FF0000> 请先完整阅读【帮助文档】及【常见问题】3遍，右侧蓝色按钮【示例项目】请看2遍！不看文档不看常见问题进群就问的拒绝回答问题！咨询量太大请理解作者！ </font> 
 - 放在下面是为了让您先看文档，看好群分类，再进群！！
 - 交流群1：371774600（已满）
 - 交流群2：619841586（不回答本组件问题，只回答uCharts基础库问题）
 - 交流群3：955340127<font color=#FF0000>（优先解答本组件问题，其他问题群友互助）</font>
 - 口令`uniapp`
+
 
 ## 相关链接
 - [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)

@@ -1,3 +1,10 @@
+## 2.0.0-20210426（2021-04-26）
+- 秋云图表组件 修复QQ小程序不支持canvas2d的bug
+- 秋云图表组件 修复钉钉小程序某些情况点击坐标计算错误的bug
+- uCharts.js 增加 extra.column.categoryGap 参数，柱状图类每个category点位（X轴点）柱子组之间的间距
+- uCharts.js 增加 yAxis.data[i].titleOffsetY 参数，标题纵向偏移距离，负数为向上偏移，正数向下偏移
+- uCharts.js 增加 yAxis.data[i].titleOffsetX 参数，标题横向偏移距离，负数为向左偏移，正数向右偏移
+- uCharts.js 增加 extra.gauge.labelOffset 参数，仪表盘标签文字径向便宜距离，默认13px
 ## 2.0.0-20210422-2（2021-04-22）
 秋云图表组件 修复 formatterAssign 未判断 args[key] == null 的情况导致栈溢出的 bug
 ## 2.0.0-20210422（2021-04-22）
