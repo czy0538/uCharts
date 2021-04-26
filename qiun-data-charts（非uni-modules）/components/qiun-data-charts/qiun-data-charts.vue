@@ -1020,7 +1020,7 @@ export default {
           .boundingClientRect(data => {
             e.changedTouches=[];
             if (this.inAli) {
-              e.changedTouches.unshift({ x: e.detail.pageX - data.left, y: e.detail.pageY - data.top});
+              e.changedTouches.unshift({ x: e.detail.clientX - data.left, y: e.detail.clientY - data.top});
             }else{
               e.changedTouches.unshift({ x: e.detail.x - data.left, y: e.detail.y - data.top - this.pageScrollTop});
             }
