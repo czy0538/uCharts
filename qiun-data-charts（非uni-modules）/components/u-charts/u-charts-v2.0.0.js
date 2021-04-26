@@ -1896,7 +1896,7 @@ function drawPointText(points, series, config, context, opts) {
 }
 
 function drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, context) {
-  radius -= gaugeOption.width / 2 + config.gaugeLabelTextMargin;
+  radius -= gaugeOption.width / 2 + gaugeOption.labelOffset * opts.pix;
   let totalAngle = gaugeOption.startAngle - gaugeOption.endAngle + 1;
   let splitAngle = totalAngle / gaugeOption.splitLine.splitNumber;
   let totalNumber = gaugeOption.endNumber - gaugeOption.startNumber;
@@ -3579,11 +3579,9 @@ function drawYAxis(series, opts, config, context) {
           context.setFontSize(titleFontSize);
           context.setFillStyle(yData.titleFontColor || opts.fontColor);
           if (yAxisWidth.position == 'left') {
-            context.fillText(title, tStartLeft - measureText(title, titleFontSize, context) / 2, opts.area[0] - 10 *
-              opts.pix);
+            context.fillText(title, tStartLeft - measureText(title, titleFontSize, context) / 2 + (yData.titleOffsetX || 0), opts.area[0] - (10 - yData.titleOffsetY || 0) * opts.pix);
           } else {
-            context.fillText(title, tStartRight - measureText(title, titleFontSize, context) / 2, opts.area[0] - 10 *
-              opts.pix);
+            context.fillText(title, tStartRight - measureText(title, titleFontSize, context) / 2 + (yData.titleOffsetX || 0), opts.area[0] - (10 - yData.titleOffsetY || 0) * opts.pix);
           }
           context.closePath();
           context.stroke();
@@ -3988,6 +3986,7 @@ function drawGaugeDataPoints(categories, series, opts, config, context) {
     startAngle: 0.75,
     endAngle: 0.25,
     width: 15,
+    labelOffset:13,
     splitLine: {
       fixRadius: 0,
       splitNumber: 10,
