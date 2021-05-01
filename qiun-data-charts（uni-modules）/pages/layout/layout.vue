@@ -46,12 +46,12 @@
     <qiun-title-bar title="使用v-for生成图表"/>
     <view class="charts-box" v-for="(item, index) in listA" :key="item.id">
       <!-- 建议循环使用时，加上key值 -->
-      <qiun-data-charts :key="item.id" :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
+      <qiun-data-charts :key="item.id" :type="item.type" :chartData="item.chartData" :animation="false"/>
     </view>
     <qiun-title-bar title="使用v-for生成图表2"/>
     <view class="charts-box" v-for="(item, index) in listB" :key="item.id">
       <!-- 建议循环使用时，加上key值 -->
-      <qiun-data-charts :key="item.id" :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id"/>
+      <qiun-data-charts :key="item.id" :type="item.type" :chartData="item.chartData" :canvas2d="true" :canvasId="item.id" :animation="false"/>
     </view>
     
     

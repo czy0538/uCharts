@@ -897,8 +897,6 @@ export default {
                     cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                   }
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
-                  cfu.option[cid].context.restore();
-                  cfu.option[cid].context.save();
                   this._newChart(cid);
                 }
               })
