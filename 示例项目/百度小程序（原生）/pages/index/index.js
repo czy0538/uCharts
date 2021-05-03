@@ -37,10 +37,10 @@ Page({
     });
   },
   showColumn(canvasId, chartData) {
+    let ctx = swan.createCanvasContext(canvasId, this);
     canvaColumn = new uCharts({
-      $this: _self,
-      canvasId: canvasId,
       type: 'column',
+      context: ctx,
       legend: true,
       fontSize: 11,
       background: '#FFFFFF',
