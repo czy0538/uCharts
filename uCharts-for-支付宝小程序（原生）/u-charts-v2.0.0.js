@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.0.0-20210426',
+  version: 'v2.0.0-20210502',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -363,9 +363,9 @@ function fixPieSeries(series, opts, config){
     opts._pieSeries_ = series;
     let oldseries = series[0].data;
     for (var i = 0; i < oldseries.length; i++) {
-      oldseries[i].formatter = series[0].formatter
-      oldseries[i].data = oldseries[i].value
-      pieSeriesArr.push(oldseries[i])
+      oldseries[i].formatter = series[0].formatter;
+      oldseries[i].data = oldseries[i].value;
+      pieSeriesArr.push(oldseries[i]);
     }
     opts.series = pieSeriesArr;
   }else{
@@ -377,7 +377,7 @@ function fixPieSeries(series, opts, config){
 function fillSeries(series, opts, config) {
   var index = 0;
   for (var i = 0; i < series.length; i++) {
-    let item = series[i]
+    let item = series[i];
     if (!item.color) {
       item.color = config.color[index];
       index = (index + 1) % config.color.length;
@@ -422,12 +422,12 @@ function fillSeries(series, opts, config) {
 function fillCustomColor(linearType, customColor, series, config) {
   var newcolor = customColor || [];
   if (linearType == 'custom' && newcolor.length == 0 ) {
-    newcolor = config.linearColor
+    newcolor = config.linearColor;
   }
   if (linearType == 'custom' && newcolor.length < series.length) {
-    let chazhi = series.length - newcolor.length
+    let chazhi = series.length - newcolor.length;
     for (var i = 0; i < chazhi; i++) {
-      newcolor.push(config.linearColor[(i + 1) % config.linearColor.length])
+      newcolor.push(config.linearColor[(i + 1) % config.linearColor.length]);
     }
   }
   return newcolor;
@@ -472,8 +472,8 @@ function measureText(text, fontSize, context) {
   context = false;
   // #endif
   if (context !== false && context !== undefined && context.setFontSize && context.measureText) {
-    context.setFontSize(fontSize)
-    return context.measureText(text).width
+    context.setFontSize(fontSize);
+    return context.measureText(text).width;
   } else {
     var text = text.split('');
     for (let i = 0; i < text.length; i++) {
@@ -751,13 +751,13 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
   let xAxisPoints = [];
   if (calPoints && calPoints.length > 0) {
     for (let i = 1; i < opts.chartData.xAxisPoints.length; i++) {
-      xAxisPoints.push(opts.chartData.xAxisPoints[i] - spacing)
+      xAxisPoints.push(opts.chartData.xAxisPoints[i] - spacing);
     }
     if ((opts.type == 'line' || opts.type == 'area') && opts.xAxis.boundaryGap == 'justify') {
       xAxisPoints = opts.chartData.xAxisPoints;
     }
     if (!opts.categories) {
-      spacing = 0
+      spacing = 0;
     }
     if (isInExactChartArea(currentPoints, opts, config)) {
       xAxisPoints.forEach(function(item, index) {
@@ -4500,9 +4500,7 @@ function drawMapDataPoints(series, opts, config, context) {
 }
 
 function getWordCloudPoint(opts, type, context) {
-  let points = opts.series.sort(function(a, b) {
-    return parseInt(b.textSize) - parseInt(a.textSize);
-  });
+  let points = opts.series;
   switch (type) {
     case 'normal':
       for (let i = 0; i < points.length; i++) {
