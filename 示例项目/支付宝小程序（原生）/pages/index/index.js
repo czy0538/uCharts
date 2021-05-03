@@ -35,10 +35,10 @@ Page({
     });
   },
   showColumn(canvasId, chartData) {
+    let ctx = my.createCanvasContext(canvasId, this);
     canvaColumn = new uCharts({
-      $this: this,
-      canvasId: canvasId,
       type: 'column',
+      context: ctx,
       legend: true,
       fontSize: 11,
       background: '#FFFFFF',
