@@ -45,10 +45,10 @@ Page({
     });
   },
   showColumn(canvasId, chartData) {
+    let ctx = wx.createCanvasContext(canvasId, this);
     canvaColumn = new uCharts({
-      $this: _self,
-      canvasId: canvasId,
       type: 'column',
+      context: ctx,
       legend: true,
       fontSize: 11,
       background: '#FFFFFF',
@@ -86,10 +86,10 @@ Page({
     });
   },
   showLineA(canvasId, chartData) {
+    let ctx = wx.createCanvasContext(canvasId, this);
     canvaLineA = new uCharts({
-      $this: _self,
-      canvasId: canvasId,
       type: 'line',
+      context: ctx,
       fontSize: 11,
       legend: true,
       dataLabel: true,
@@ -144,10 +144,10 @@ Page({
     });
   },
   showCandle(canvasId, chartData) {
+    let ctx = wx.createCanvasContext(canvasId, this);
     canvaCandle = new uCharts({
-      $this: _self,
-      canvasId: canvasId,
       type: 'candle',
+      context: ctx,
       fontSize: 11,
       legend: true,
       background: '#FFFFFF',
