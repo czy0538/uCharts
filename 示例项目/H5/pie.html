@@ -24,12 +24,13 @@
 <script language="JavaScript">
 var canvaPie;
 
-var chartData={"series":[{"name":"一班","data":50,"format":function(val){return "一班:50人"+val;}},{"name":"二班","data":30},{"name":"三班","data":20},{"name":"四班","data":18},{"name":"五班","data":8}]};
+var chartData={"series":[{"name":"一班","data":50,"formatter":function(val){return "一班:50人";}},{"name":"二班","data":30},{"name":"三班","data":20},{"name":"四班","data":18},{"name":"五班","data":8}]};
 
 function showPie(canvasId,chartData){
-	canvaPie=new Charts({
-		canvasId: canvasId,
-		type: 'pie',
+  var ctx=document.getElementById(canvasId).getContext("2d");
+	canvaPie=new uCharts({
+    type:'pie',
+		context:ctx,
 		fontSize:11,
 		padding:[15,15,0,15],
 		legend:{
