@@ -45,7 +45,7 @@
     <qiun-title-bar title="基本曲线图(自定义图表类型)"/>
     <view class="charts-box">
       <!-- 这里的type="demotype"演示了自定义图表类型的demo，您可以根据需求自己定义一种额外的图表类型 -->
-      <qiun-data-charts type="demotype" :chartData="chartsDataLine2"/>
+      <qiun-data-charts type="demotype" :opts="{xAxis:{boundaryGap:'justify'}}" :chartData="chartsDataLine2"/>
       <!-- 如果不定义"demotype"这个图表类型，可以通过传递opts来覆盖line下的默认配置，如下 -->
       <!-- <qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :chartData="chartsData.Line2"/> -->
     </view>
@@ -62,6 +62,11 @@
     <view class="charts-box">
       <qiun-data-charts type="line" :chartData="chartsDataLine5"/>
     </view>
+    <qiun-title-bar title="时间轴(矢量轴)折线图"/>
+    <!-- 矢量轴图表支持折线图、区域图、散点图、气泡图。需要注意chartData中，如果是矢量轴，则不能带categories -->
+    <view class="charts-box">
+      <qiun-data-charts type="tline" :opts="{yAxis:{data:[{min:0,max:80}]}}" :chartData="chartsDataTLine" />
+    </view>
     <qiun-title-bar title="基本折线区域图"/>
     <view class="charts-box">
       <qiun-data-charts type="area" :chartData="chartsDataArea1"/>
@@ -73,6 +78,19 @@
     <qiun-title-bar title="渐变色曲线区域图"/>
     <view class="charts-box">
       <qiun-data-charts type="area" :opts="{extra:{area:{type:'curve',addLine:true,gradient:true}}}" :chartData="chartsDataArea2"/>
+    </view>
+    <qiun-title-bar title="时间轴(矢量轴)区域图"/>
+    <!-- 矢量轴图表支持折线图、区域图、散点图、气泡图。需要注意chartData中，如果是矢量轴，则不能带categories -->
+    <view class="charts-box">
+      <qiun-data-charts type="tarea" :opts="{xAxis:{format:'xAxisDemo2'},yAxis:{data:[{min:0,max:80}]}}" :chartData="chartsDataTLine" />
+    </view>
+    <qiun-title-bar title="散点图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="scatter" :chartData="chartsDataScatter" />
+    </view>
+    <qiun-title-bar title="气泡图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="bubble" :chartData="chartsDataBubble" />
     </view>
     <qiun-title-bar title="多坐标系混合图"/>
     <view class="charts-box" style="height: 400px;">
@@ -124,9 +142,17 @@
     <view class="charts-box">
       <qiun-data-charts type="word" :chartData="chartsDataWord1"/>
     </view>
-    <qiun-title-bar title="漏斗图"/>
+    <qiun-title-bar title="漏斗图+渐变色"/>
     <view class="charts-box">
-      <qiun-data-charts type="funnel" :chartData="chartsDataFunnel1"/>
+      <qiun-data-charts type="funnel" :opts="{extra:{funnel:{linearType:'custom'}}}" :chartData="chartsDataFunnel1"/>
+    </view>
+    <qiun-title-bar title="倒三角形漏斗图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="funnel" :opts="{extra:{funnel:{type:'triangle'}}}" :chartData="chartsDataFunnel1"/>
+    </view>
+    <qiun-title-bar title="金字塔形漏斗图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="funnel" :opts="{extra:{funnel:{type:'pyramid',labelAlign:'left'}}}" :chartData="chartsDataFunnel1"/>
     </view>
     <qiun-title-bar title="K线图"/>
     <view class="charts-box" style="height: 400px;">
@@ -143,6 +169,7 @@
 //下面是演示数据，您的项目不需要引用，数据需要您从服务器自行获取
 import demodata from '@/mockdata/demodata.json';
 import mapdata from '@/mockdata/mapdata.json'
+import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
 
 export default {
   data() {
@@ -158,6 +185,9 @@ export default {
       chartsDataLine3:{},
       chartsDataLine4:{},
       chartsDataLine5:{},
+      chartsDataTLine:{},
+      chartsDataScatter:{},
+      chartsDataBubble:{},
       chartsDataArea1:{},
       chartsDataArea2:{},
       chartsDataMix1:{},
@@ -182,6 +212,9 @@ export default {
     this.getServerData()
   },
   methods: {
+    complete(e){
+      console.log("渲染完成事件",uCharts.instance[e.id]);
+    },
     getServerData() {
       setTimeout(() => {
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
@@ -205,6 +238,9 @@ export default {
         }
         tmpLine5.series[1].connectNulls=true
         this.chartsDataLine5=tmpLine5
+        this.chartsDataTLine=JSON.parse(JSON.stringify(demodata.TLine))
+        this.chartsDataScatter=JSON.parse(JSON.stringify(demodata.Scatter))
+        this.chartsDataBubble=JSON.parse(JSON.stringify(demodata.Bubble))
       	this.chartsDataArea1=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataArea2=JSON.parse(JSON.stringify(demodata.Line))
       	this.chartsDataMix1=JSON.parse(JSON.stringify(demodata.Mix))
