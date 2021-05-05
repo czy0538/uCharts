@@ -14,6 +14,10 @@
     <view class="charts-box">
       <qiun-data-charts type="area" :opts="{yAxis:{data:[{format:'yAxisDemo1'}]}}" :chartData="chartsDataLine1" />
     </view>
+    <qiun-title-bar title="X轴format方法"/>
+    <view class="charts-box">
+      <qiun-data-charts type="area" :opts="{xAxis:{format:'xAxisDemo1'}}" :chartData="chartsDataLine1" />
+    </view>
     <qiun-title-bar title="series数据点format"/>
     <view class="charts-box">
       <!-- series的format需要在chartData.series中指定，注意，因为组件监听了chartData，只要有数据变化，就会触发更新，不要用循环chartData绑定的变量，需要一次性整体赋值给chartData！！！ -->
@@ -38,7 +42,7 @@ import demodata from '@/mockdata/demodata.json';
 //下面是uCharts的配置文件及qiun-data-charts组件的公用中转参数，可以从本配置文件中获取uCharts实例、opts配置、format配置（APP端因采用renderjs无法从此配置文件获取uCharts实例）
 //***并不是所有的页面都需要引用这个文件***引入这个configjs是为了获取组件的uCharts实例，从而操作uCharts的一些方法，例如手动显示tooltip及一些其他uCharts包含的方法及事件。
 //再说一遍，只能在H5内使用，APP不行，APP不行，APP不行
-import uCharts from '@/components/u-charts/config-ucharts.js';
+import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
 
 export default {
   data() {
