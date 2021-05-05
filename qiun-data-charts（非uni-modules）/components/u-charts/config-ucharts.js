@@ -19,22 +19,46 @@
 // 主题颜色配置：如每个图表类型需要不同主题，请在对应图表类型上更改color属性
 const color = ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'];
 
+//事件转换函数，主要用作格式化x轴为时间轴，根据需求自行修改
+const formatDateTime = (timeStamp, returnType)=>{
+  var date = new Date();
+  date.setTime(timeStamp * 1000);
+  var y = date.getFullYear();
+  var m = date.getMonth() + 1;
+  m = m < 10 ? ('0' + m) : m;
+  var d = date.getDate();
+  d = d < 10 ? ('0' + d) : d;
+  var h = date.getHours();
+  h = h < 10 ? ('0' + h) : h;
+  var minute = date.getMinutes();
+  var second = date.getSeconds();
+  minute = minute < 10 ? ('0' + minute) : minute;
+  second = second < 10 ? ('0' + second) : second;
+  if(returnType == 'full'){return y + '-' + m + '-' + d + ' '+ h +':' + minute + ':' + second;}
+  if(returnType == 'y-m-d'){return y + '-' + m + '-' + d;}
+  if(returnType == 'h:m'){return  h +':' + minute;}
+  if(returnType == 'h:m:s'){return  h +':' + minute +':' + second;}
+  return [y, m, d, h, minute, second];
+}
+
 module.exports = {
-  //demotype为自定义图表类型
-	"type":["pie","ring","rose","word","funnel","map","arcbar","line","column","area","radar","gauge","candle","mix","demotype"],
-	"range":["饼状图","圆环图","玫瑰图","词云图","漏斗图","地图","圆弧进度条","折线图","柱状图","区域图","雷达图","仪表盘","K线图","混合图","自定义类型"],
-  //增加自定义图表类型，如果需要categories，请在这里加入您的图表类型例如最后的"demotype"
+  //demotype为自定义图表类型，一般不需要自定义图表类型，只需要改根节点上对应的类型即可
+	"type":["pie","ring","rose","word","funnel","map","arcbar","line","column","area","radar","gauge","candle","mix","tline","tarea","scatter","bubble","demotype"],
+	"range":["饼状图","圆环图","玫瑰图","词云图","漏斗图","地图","圆弧进度条","折线图","柱状图","区域图","雷达图","仪表盘","K线图","混合图","时间轴","散点图","气泡图","自定义类型"],
+  //增加自定义图表类型，如果需要categories，请在这里加入您的图表类型，例如最后的"demotype"
+  //自定义类型时需要注意"tline","tarea","scatter","bubble"等时间轴（矢量x轴）类图表，没有categories，不需要加入categories
 	"categories":["line","column","area","radar","gauge","candle","mix","demotype"],
-  //instance为实例变量承载属性，option为eopts承载属性，不要删除
+  //instance为实例变量承载属性，不要删除
   "instance":{},
+  //option为opts及eopts承载属性，不要删除
   "option":{},
   //下面是自定义format配置，因除H5端外的其他端无法通过props传递函数，只能通过此属性对应下标的方式来替换
   "formatter":{
     "yAxisDemo1":function(val){return val+'元'},
     "yAxisDemo2":function(val){return val.toFixed(2)},
-    "seriesDemo1":function(val){
-      return val+'元'
-    },
+    "xAxisDemo1":function(val){return val+'年'},
+    "xAxisDemo2":function(val){return formatDateTime(val,'h:m')},
+    "seriesDemo1":function(val){return val+'元'},
     "tooltipDemo1":function(item, category, index, opts){
       if(index==0){
       	return '随便用'+item.data+'年'
@@ -231,6 +255,63 @@ module.exports = {
 			},
 		}
 	},
+  "tline":{
+  	"type": "line",
+    "color": color,
+  	"padding": [15,10,0,15],
+  	"xAxis": {
+      "disableGrid": false,
+      "boundaryGap":"justify",
+  	},
+  	"yAxis": {
+      "gridType": "dash",
+      "dashLength": 2,
+      "data":[
+        {
+          "min":0,
+          "max":80
+        }
+      ]
+  	},
+  	"legend": {
+  	},
+  	"extra": {
+  		"line": {
+  			"type": "curve",
+  			"width": 2
+  		},
+  	}
+  },
+  "tarea":{
+  	"type": "area",
+    "color": color,
+  	"padding": [15,10,0,15],
+  	"xAxis": {
+      "disableGrid": true,
+      "boundaryGap":"justify",
+  	},
+  	"yAxis": {
+      "gridType": "dash",
+      "dashLength": 2,
+      "data":[
+        {
+          "min":0,
+          "max":80
+        }
+      ]
+  	},
+  	"legend": {
+  	},
+  	"extra": {
+  		"area": {
+  			"type": "curve",
+  			"opacity": 0.2,
+  			"addLine": true,
+  			"width": 2,
+  			"gradient": true
+  		},
+  	}
+  },
 	"column":{
 		"type": "column",
     "color": color,
@@ -420,14 +501,56 @@ module.exports = {
 			},
 		}
 	},
-	"point":{
-		"type": "point",
+	"scatter":{
+		"type": "scatter",
 		"color":color,
 		"padding":[15,15,0,15],
+    "dataLabel":false,
+    "xAxis": {
+      "disableGrid": false,
+      "gridType":"dash",
+      "splitNumber":5,
+      "boundaryGap":"justify",
+      "min":0
+    },
+    "yAxis": {
+      "disableGrid": false,
+      "gridType":"dash",
+    },
+    "legend": {
+    },
+    "extra": {
+    	"scatter": {
+    	},
+    }
 	},
 	"bubble":{
 		"type": "bubble",
 		"color":color,
 		"padding":[15,15,0,15],
+    "xAxis": {
+      "disableGrid": false,
+      "gridType":"dash",
+      "splitNumber":5,
+      "boundaryGap":"justify",
+      "min":0,
+      "max":250
+    },
+    "yAxis": {
+      "disableGrid": false,
+      "gridType":"dash",
+      "data":[{
+        "min":0,
+        "max":150
+      }]
+    },
+    "legend": {
+    },
+    "extra": {
+    	"bubble": {
+        "border":2,
+        "opacity": 0.5,
+    	},
+    }
 	}
 }
