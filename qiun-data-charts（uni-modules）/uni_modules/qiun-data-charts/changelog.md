@@ -1,3 +1,18 @@
+## 2.1.0-20210506（2021-05-06）
+- 秋云图表组件 修复极个别情况下报错item.properties undefined的bug
+- 秋云图表组件 修复极个别情况下关闭加载动画reshow不起作用，无法显示图表的bug
+- 示例项目 pages/ucharts/ucharts.vue 增加时间轴折线图（type="tline"）、时间轴区域图（type="tarea"）、散点图（type="scatter"）、气泡图demo（type="bubble"）、倒三角形漏斗图（opts.extra.funnel.type="triangle"）、金字塔形漏斗图（opts.extra.funnel.type="pyramid"）
+- 示例项目 pages/format-u/format-u.vue 增加X轴format格式化示例
+- uCharts.js 升级至v2.1.0版本
+- uCharts.js 修复 玫瑰图面积模式点击tooltip位置不正确的bug
+- uCharts.js 修复 玫瑰图点击图例，只剩一个类别显示空白的bug
+- uCharts.js 修复 饼图类图点击图例，其他图表tooltip位置某些情况下不准的bug
+- uCharts.js 修复 x轴为矢量轴（时间轴）情况下，点击tooltip位置不正确的bug
+- uCharts.js 修复 词云图获取点击索引偶尔不准的bug
+- uCharts.js 增加 直角坐标系图表X轴format格式化方法（原生uCharts.js用法请使用formatter）
+- uCharts.js 增加 漏斗图扩展配置，倒三角形（opts.extra.funnel.type="triangle"），金字塔形（opts.extra.funnel.type="pyramid"）
+- uCharts.js 增加 散点图（opts.type="scatter"）、气泡图（opts.type="bubble"）
+- 后期计划 完善散点图、气泡图，增加markPoints标记点，增加横向条状图。
 ## 2.0.0-20210502（2021-05-02）
 - uCharts.js 修复词云图获取点击索引不正确的bug
 ## 2.0.0-20210501（2021-05-01）
