@@ -14,6 +14,10 @@
     <view class="charts-box">
       <qiun-data-charts type="area" :opts="{yAxis:{data:[{format:'yAxisDemo1'}]}}" :chartData="chartsDataLine1" />
     </view>
+    <qiun-title-bar title="X轴format方法"/>
+    <view class="charts-box">
+      <qiun-data-charts type="area" :opts="{xAxis:{format:'xAxisDemo1'}}" :chartData="chartsDataLine1" />
+    </view>
     <qiun-title-bar title="series数据点format"/>
     <view class="charts-box">
       <!-- series的format需要在chartData.series中指定，注意，因为组件监听了chartData，只要有数据变化，就会触发更新，不要用循环chartData绑定的变量，需要一次性整体赋值给chartData！！！ -->
