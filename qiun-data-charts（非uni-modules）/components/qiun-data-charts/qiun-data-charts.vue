@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210426
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210506
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -156,7 +156,7 @@
 </template>
 
 <script>
-import uChartsMp from '@/components/u-charts/u-charts-v2.0.0.js';
+import uChartsMp from '@/components/u-charts/u-charts.js';
 import cfu from '@/components/u-charts/config-ucharts.js';
 // #ifdef APP-VUE || H5
 import cfe from '@/components/u-charts/config-echarts.js';
@@ -404,6 +404,7 @@ export default {
   mounted() {
     // #ifdef APP-VUE
     this.inApp = true;
+    this.onmouse = false;
     if (this.echartsApp === true) {
       this.echarts = true;
     }
@@ -523,7 +524,6 @@ export default {
     reshow(val, oldval) {
       if (val === true && this.mixinDatacomLoading === false) {
         setTimeout(() => {
-          this.showchart = true;
           this.mixinDatacomErrorMessage = null;
           this.echartsResize = !this.echartsResize;
           this.checkData(this.drawData);
@@ -962,7 +962,7 @@ export default {
         }
         return category + ' ' + item.name + ':' + data;
       } else {
-        if (item.properties !== undefined) {
+        if (item.properties && item.properties.name) {
           return item.properties.name;
         } else {
           return item.name + ':' + item.data;
@@ -1109,7 +1109,7 @@ export default {
 
 <!-- #ifdef APP-VUE || H5 -->
 <script module="rdcharts" lang="renderjs">
-import uChartsRD from '@/components/u-charts/u-charts-v2.0.0.js';
+import uChartsRD from '@/components/u-charts/u-charts.js';
 import cfu from '@/components/u-charts/config-ucharts.js';
 import cfe from '@/components/u-charts/config-echarts.js';
 
@@ -1284,7 +1284,7 @@ export default {
         }
         return category + ' ' + item.name + ':' + data;
       } else {
-        if (item.properties !== undefined) {
+        if (item.properties && item.properties.name) {
           return item.properties.name;
         } else {
           return item.name + ':' + item.data;
