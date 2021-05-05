@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import uCharts from '@/components/u-charts/u-charts-v2.0.0.js';
+import uCharts from '@/components/u-charts/u-charts.js';
 var uChartsInstance = {};
 
 //下面是演示数据，您的项目不需要引用，数据需要您从服务器自行获取
