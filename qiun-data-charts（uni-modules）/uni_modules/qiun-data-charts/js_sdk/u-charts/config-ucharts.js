@@ -372,7 +372,6 @@ module.exports = {
 				"gridColor": "#CCCCCC",
 				"gridCount": 3,
 				"opacity": 0.2,
-				"labelColor": "#666666",
 				"max": 200
 			},
 		}
