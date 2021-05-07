@@ -572,12 +572,10 @@ export default {
     beforeInit(){
       this.mixinDatacomErrorMessage = null;
       if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
-        this.mixinDatacomLoading = true;
         //拷贝一下chartData，为了opts变更后统一数据来源
         this.drawData = deepCloneAssign({}, this.chartData);
         this.checkData(this.chartData);
       }else if(this.localdata.length>0){
-        this.mixinDatacomLoading = true;
         this.localdataInit(this.localdata);
       }else if(this.collection !== ''){
         this.mixinDatacomLoading = false;
