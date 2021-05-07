@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.0-20210506',
+  version: 'v2.1.0-20210507',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -1942,7 +1942,7 @@ function drawPointText(points, series, config, context, opts) {
     if (item !== null) {
       context.beginPath();
       context.setFontSize(series.textSize || config.fontSize);
-      context.setFillStyle(series.textColor || config.fontColor);
+      context.setFillStyle(series.textColor || opts.fontColor);
       var value = data[index]
       if (typeof data[index] === 'object' && data[index] !== null) {
         if (data[index].constructor.toString().indexOf('Array')>-1) {
@@ -3585,7 +3585,7 @@ function drawXAxis(categories, opts, config, context) {
     var xAxisFontSize = opts.xAxis.fontSize * opts.pix || config.fontSize;
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
-        var xitem = opts.xAxis.formatter ? opts.xAxis.formatter(Number(item)) : item;
+        var xitem = opts.xAxis.formatter ? opts.xAxis.formatter(item) : item;
         var offset = -measureText(String(xitem), xAxisFontSize, context) / 2;
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
@@ -4405,7 +4405,6 @@ function drawRadarDataPoints(series, opts, config, context) {
   var radarOption = assign({}, {
     gridColor: '#cccccc',
     gridType: 'radar',
-    labelColor: '#666666',
     opacity: 0.2,
     gridCount: 3,
     border:false,
@@ -5787,7 +5786,7 @@ var uCharts = function uCharts(opts) {
     itemGap: 10,
     fontSize: opts.fontSize,
     lineHeight: opts.fontSize,
-    fontColor: '#333333',
+    fontColor: opts.fontColor,
     formatter: {},
     hiddenColor: '#CECECE'
   }, opts.legend);
