@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210506
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.0.0-20210509
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -404,7 +404,6 @@ export default {
   mounted() {
     // #ifdef APP-VUE
     this.inApp = true;
-    this.onmouse = false;
     if (this.echartsApp === true) {
       this.echarts = true;
     }
@@ -712,12 +711,9 @@ export default {
       let cid = this.cid
       //复位opts或eopts
       if(this.echarts === true){
-        if (this.type && cfe.type.includes(this.type)) {
-          cfe.option[cid] = deepCloneAssign({}, cfe[this.type], this.eopts);
-        }else{
-          cfe.option[cid] = deepCloneAssign({}, this.eopts);
-        }
+        cfe.option[cid] = deepCloneAssign({}, this.eopts);
         cfe.option[cid].id = cid;
+        cfe.option[cid].type = this.type;
       }else{
         if (this.type && cfu.type.includes(this.type)) {
           cfu.option[cid] = deepCloneAssign({}, cfu[this.type], this.opts);
@@ -733,18 +729,7 @@ export default {
       if (newData.series !== undefined && newData.series.length > 0) {
         this.mixinDatacomErrorMessage = null;
         if (this.echarts === true) {
-          if(cfe.option[cid].xAxis && cfe.option[cid].xAxis.type && cfe.option[cid].xAxis.type === 'category'){
-            cfe.option[cid].xAxis.data = newData.categories
-          }
-          if(cfe.option[cid].yAxis && cfe.option[cid].yAxis.type && cfe.option[cid].yAxis.type === 'category'){
-            cfe.option[cid].yAxis.data = newData.categories
-          }
-          cfe.option[cid].series = []
-          for (var i = 0; i < newData.series.length; i++) {
-            cfe.option[cid].seriesTemplate = cfe.option[cid].seriesTemplate ? cfe.option[cid].seriesTemplate : {}
-            let Template = deepCloneAssign({},cfe.option[cid].seriesTemplate,newData.series[i])
-            cfe.option[cid].series.push(Template)
-          }
+          cfe.option[cid].chartData = newData;
           this.$nextTick(()=>{
             this.init()
           })
@@ -852,7 +837,6 @@ export default {
                 cfe.option[cid].tooltipFormat = this.tooltipFormat;
                 cfe.option[cid].tooltipCustom = this.tooltipCustom;
                 cfe.option[cid].lastDrawTime = this.lastDrawTime;
-                cfe.option[cid].rotateLock = cfe.option[cid].rotate;
                 this.echartsOpts = deepCloneAssign({}, cfe.option[cid]);
               } else {
                 cfu.option[cid].rotateLock = cfu.option[cid].rotate;
@@ -1114,6 +1098,17 @@ import cfe from '@/components/u-charts/config-echarts.js';
 var that = {};
 var rootdom = null;
 
+function rddeepCloneAssign(origin = {}, ...args) {
+  for (let i in args) {
+    for (let key in args[i]) {
+      if (args[i].hasOwnProperty(key)) {
+        origin[key] = args[i][key] && typeof args[i][key] === 'object' ? rddeepCloneAssign(Array.isArray(args[i][key]) ? [] : {}, origin[key], args[i][key]) : args[i][key];
+      }
+    }
+  }
+  return origin;
+}
+
 function rdformatterAssign(args,formatter) {
   for (let key in args) {
     if(args[key] !== null && typeof args[key] === 'object'){
@@ -1155,10 +1150,31 @@ export default {
   methods: {
     //==============以下是ECharts的方法====================
     ecinit(newVal, oldVal, owner, instance){
-      let cid = JSON.parse(JSON.stringify(newVal.id))
+      let cid = JSON.stringify(newVal.id)
       this.rid = cid
       that[cid] = this.$ownerInstance
-      cfe.option[cid] = JSON.parse(JSON.stringify(newVal))
+      let eopts = JSON.parse(JSON.stringify(newVal))
+      let type = eopts.type;
+      //载入并覆盖默认配置
+      if (type && cfe.type.includes(type)) {
+        cfe.option[cid] = rddeepCloneAssign({}, cfe[type], eopts);
+      }else{
+        cfe.option[cid] = rddeepCloneAssign({}, eopts);
+      }
+      let newData = eopts.chartData;
+      //挂载categories和series
+      if(cfe.option[cid].xAxis && cfe.option[cid].xAxis.type && cfe.option[cid].xAxis.type === 'category'){
+        cfe.option[cid].xAxis.data = newData.categories
+      }
+      if(cfe.option[cid].yAxis && cfe.option[cid].yAxis.type && cfe.option[cid].yAxis.type === 'category'){
+        cfe.option[cid].yAxis.data = newData.categories
+      }
+      cfe.option[cid].series = []
+      for (var i = 0; i < newData.series.length; i++) {
+        cfe.option[cid].seriesTemplate = cfe.option[cid].seriesTemplate ? cfe.option[cid].seriesTemplate : {}
+        let Template = rddeepCloneAssign({},cfe.option[cid].seriesTemplate,newData.series[i])
+        cfe.option[cid].series.push(Template)
+      }
       if (typeof window.echarts === 'object') {
           this.newEChart()
       }else{
