@@ -42,7 +42,7 @@ import demodata from '@/mockdata/demodata.json';
 //下面是uCharts的配置文件及qiun-data-charts组件的公用中转参数，可以从本配置文件中获取uCharts实例、opts配置、format配置（APP端因采用renderjs无法从此配置文件获取uCharts实例）
 //***并不是所有的页面都需要引用这个文件***引入这个configjs是为了获取组件的uCharts实例，从而操作uCharts的一些方法，例如手动显示tooltip及一些其他uCharts包含的方法及事件。
 //再说一遍，只能在H5内使用，APP不行，APP不行，APP不行
-import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
+import uCharts from '@/components/u-charts/config-ucharts.js';
 
 export default {
   data() {
