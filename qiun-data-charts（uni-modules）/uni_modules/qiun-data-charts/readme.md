@@ -1,15 +1,12 @@
-## v1.0版本已停更，建议转uni_modules版本组件方式调用，点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
-## [如何安装、更新 uni_modules 插件点这里，必看，必看，必看](https://uniapp.dcloud.io/uni_modules?id=%e4%bd%bf%e7%94%a8-uni_modules-%e6%8f%92%e4%bb%b6)
-## 初次使用如果提示未注册&lt;qiun-data-charts&gt;组件，请重启HBuilderX，如仍不好用，请重启电脑，最后大招，卸载HBuilderX重新安装最新版（不是更新，是重装）；
-## 如果是cli项目，1、请 npm update 升级uniapp依赖为最新版本；2、尝试清理node_modules，重新npm install。还不行请使用【非uni_modules版本】，最新非uni_modules版本在码云发布，[点击此处获取](https://gitee.com/uCharts/uCharts/tree/master/qiun-data-charts%EF%BC%88%E9%9D%9Euni-modules%EF%BC%89)。
-## 此问题已于DCloud官方确认，HBuilderX下个版本会修复。
-## 其他图表不显示问题详见[常见问题选项卡](https://demo.ucharts.cn)
-## <font color=#FF0000> 新手请先完整阅读【帮助文档】及【常见问题】3遍，右侧蓝色按钮【示例项目】请看2遍！ </font> 
-## <font color=#FF0000> 关于NVUE兼容的说明： </font> 建议NVUE使用图表的页面改为vue页面，在App端，从性能来讲，由于通讯阻塞的问题，nvue的canvas性能不可能达到使用renderjs的vue页面的canvas。在App端，推荐使用vue的canvas。[详见uni-app官方说明](https://uniapp.dcloud.io/component/canvas?id=canvas)
 ## [uCharts官方网站](https://www.ucharts.cn)
 ## [DEMO演示及在线生成工具（v2.0文档）https://demo.ucharts.cn](https://demo.ucharts.cn)
 ## [图表组件在项目中的应用 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
 ### [v1.0文档（将在9月30日作废，请尽快转v2.0）](http://doc.ucharts.cn)
+## [如何安装、更新 uni_modules 插件点这里，必看，必看，必看](https://uniapp.dcloud.io/uni_modules?id=%e4%bd%bf%e7%94%a8-uni_modules-%e6%8f%92%e4%bb%b6)
+## 点击右侧绿色【使用HBuilderX导入插件】即可使用，示例项目请点击右侧蓝色按钮【使用HBuilderX导入示例项目】。
+## 初次使用不显示问题详见[常见问题选项卡](https://demo.ucharts.cn)
+## <font color=#FF0000> 新手请先完整阅读【帮助文档】及【常见问题】3遍，右侧蓝色按钮【示例项目】请看2遍！ </font> 
+## <font color=#FF0000> 关于NVUE兼容的说明： </font> 建议NVUE使用图表的页面改为vue页面，在App端，从性能来讲，由于通讯阻塞的问题，nvue的canvas性能不可能达到使用renderjs的vue页面的canvas。在App端，推荐使用vue的canvas。[详见uni-app官方说明](https://uniapp.dcloud.io/component/canvas?id=canvas)
 
 [![uCharts/uCharts](https://gitee.com/uCharts/uCharts/widgets/widget_card.svg?colors=393222,ebdfc1,fffae5,d8ca9f,393222,a28b40)](https://gitee.com/uCharts/uCharts)
 
@@ -23,7 +20,7 @@
 
 - 极简单的调用方式，默认配置下只需要传入`图表类型`及`图表数据`即可全端显示。
 - 提供强大的`在线配置生成工具`，可视化中的可视化，鼠标点一点就可以生成图表，可视化从此不再难配。
-- 兼容ECharts，并解决了ECharts无法使用formatter的问题，可选择`PC端或APP端单独使用ECharts`引擎渲染图表。
+- 兼容ECharts，可选择`PC端或APP端单独使用ECharts`引擎渲染图表。
 - H5及App采用`renderjs`渲染图表，动画流畅、性能翻倍。
 - 根据父容器尺寸`弹性显示图表`，再也不必为宽高匹配及多端适配问题发愁。
 - 支持`加载状态loading及error展示`，避免数据读取显示空白的尴尬。
@@ -216,7 +213,7 @@ localdata:[
 |chartData|Object|见说明|`是`|图表数据，常用的标准数据格式为{categories: [],series: []}，请按不同图表类型传入对应的标准数据。|
 |localdata|Array|[]|`是`|图表数据，如果您觉得拼接上面chartData比较繁琐，可以通过使用localdata渲染，组件会根据传入的type类型，自动拼接categories或series数据（使用localdata就不必再传入chartData，详见 /pages/other/other.vue 中使用localdata渲染图表的例子）。【localdata和collection（uniCloud数据库）同时存在，优先使用localdata；如果localdata和chartData同时存在，优先使用chartData。<font color=#FF0000> 即chartData>localdata>collection的优先级</font>渲染图表】。|
 |opts|Object|{}|否|uCharts图表配置参数(option)，请参考[【在线生成工具】](https://demo.ucharts.cn)<font color=#FF0000>注：传入的opts会覆盖默认config-ucharts.js中的配置，只需传入与config-ucharts.js中属性不一致的opts即可实现【同类型的图表显示不同的样式】。</font>|
-|eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。<font color=#FF0000>注：传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。</font>|
+|eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。<font color=#FF0000>注：1、传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。2、eopts不能传递function，如果option配置参数需要function，请将option写在config-echarts.js中即可实现。</font>|
 |loadingType|Number|2|否|加载动画样式，0为不显示加载动画，1-5为不同的样式，见下面示例。|
 |errorShow|Boolean|true|否|是否在页面上显示错误提示，true为显示错误提示图片，false时会显示空白区域|
 |errorMessage|String|null|否|自定义错误信息，强制显示错误图片及错误信息，当上面errorShow为true时可用。（组件会监听该属性的变化，只要有变化，就会强制显示错误信息！）。说明：1、一般用于页面网络不好或其他情况导致图表loading动画一直显示，可以传任意(不为null或者"null"或者空"")字符串强制显示错误图片及说明。2、如果组件使用了data-come属性读取uniCloud数据，组件会自动判断错误状态并展示错误图标，不必使用此功能。3、当状态从非null改变为null或者空时，会强制调用reload重新加载并渲染图表数据。|
@@ -403,7 +400,7 @@ tooltipCustom属性如下：
 	* 1、如果是首次导入插件不显示，或者报以下未注册`qiun-data-charts`的错误：
 	> Unknown custom element: &lt; qiun-data-charts &gt; - did you register the component correctly? For recursive components, make sure to provide the "name" option.
 	* 2、<font color=#FF0000>请【重启HBuilderX】或者【重启项目】或者【重启开发者工具】或者【删除APP基座】重新运行，避免缓存问题导致不能显示。</font>
-  * 3、如果是基于uniapp的vue-cli项目，请尝试清理node-modules，重新install，还不行就删除项目，再重新install。如果仍然不行，请检查uniapp依赖是否为最新版本，再重试以上步骤。如果仍然不行，请使用<font color=#FF0000>【非uni_modules版本】</font>组件，最新版请移步码云[https://gitee.com/uCharts/uCharts](https://gitee.com/uCharts/uCharts)。
+  * 3、如果是基于uniapp的vue-cli项目，1、请 npm update 升级uniapp依赖为最新版本；2、请尝试清理node-modules，重新install，还不行就删除项目，再重新install。如果仍然不行，请检查uniapp依赖是否为最新版本，再重试以上步骤。如果仍然不行，请使用<font color=#FF0000>【非uni_modules版本】</font>组件，最新非uni_modules版本在码云发布，[点击此处获取](https://gitee.com/uCharts/uCharts/tree/master/qiun-data-charts%EF%BC%88%E9%9D%9Euni-modules%EF%BC%89)。。
 	* 4、请检查控制台是否有报错或提示信息，如果没有报错，也没有提示信息，并且检查视图中class="charts-box"这个元素的宽高均为0，请修改父元素的css样式或进行下面第4步检查。
 	* 5、检查父级是否使用了v-show来控制显示。如果页面初始化时组件处于隐藏状态，组件则无法正确获取宽高尺寸，此时<font color=#FF0000>需要组件内绑定reshow属性（逻辑应与父级的v-show的逻辑相同）</font>，强制重新渲染图表，例如:reshow="父级v-show绑定的事件"。
 	* 6、如果在微信小程序端开启了canvas2d模式<font color=#FF0000>（不能使用真机调试，请直接预览）</font>不显示图表：

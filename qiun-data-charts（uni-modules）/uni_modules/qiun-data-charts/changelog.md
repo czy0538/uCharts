@@ -1,3 +1,11 @@
+## 2.1.1-20210509（2021-05-09）
+- 秋云图表组件 变更ECharts的eopts配置在renderjs内执行，支持在config-echarts.js配置文件内写function配置。
+- 秋云图表组件 修复APP端报错Prop being mutated: "onmouse"错误的bug。
+- 秋云图表组件 修复APP端报错Error: Not Found：Page[6][-1,27] at view.umd.min.js:1的bug。
+## 2.1.0-20210507（2021-05-07）
+- 秋云图表组件 修复初始化时就有数据或者数据更新的时候loading加载动画闪动的bug
+- uCharts.js 修复x轴format方法categories为字符串类型时返回NaN的bug
+- uCharts.js 修复series.textColor、legend.fontColor未执行全局默认颜色的bug
 ## 2.1.0-20210506（2021-05-06）
 - 秋云图表组件 修复极个别情况下报错item.properties undefined的bug
 - 秋云图表组件 修复极个别情况下关闭加载动画reshow不起作用，无法显示图表的bug
