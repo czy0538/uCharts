@@ -169,7 +169,6 @@
 //下面是演示数据，您的项目不需要引用，数据需要您从服务器自行获取
 import demodata from '@/mockdata/demodata.json';
 import mapdata from '@/mockdata/mapdata.json'
-import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
 
 export default {
   data() {
@@ -212,9 +211,6 @@ export default {
     this.getServerData()
   },
   methods: {
-    complete(e){
-      console.log("渲染完成事件",uCharts.instance[e.id]);
-    },
     getServerData() {
       setTimeout(() => {
       	//因部分数据格式一样，这里不同图表引用同一数据源的话，需要深拷贝一下构造不同的对象
