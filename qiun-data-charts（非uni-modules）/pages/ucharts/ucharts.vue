@@ -160,7 +160,7 @@
     </view>
     <qiun-title-bar title="地图"/>
     <view class="charts-box" style="height: 400px;">
-      <qiun-data-charts type="map" :chartData="chartsDataMap1"/>
+      <qiun-data-charts type="map" :opts="{extra:{map:{mercator:true}}}" :chartData="chartsDataMap1"/>
     </view>
   </view>
 </template>
