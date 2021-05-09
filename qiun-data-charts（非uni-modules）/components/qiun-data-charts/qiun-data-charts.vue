@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.1-20210509
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.2-20210509
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -573,8 +573,12 @@ export default {
       if (typeof this.chartData === 'object' && this.chartData != null && this.chartData.series !== undefined && this.chartData.series.length > 0) {
         //拷贝一下chartData，为了opts变更后统一数据来源
         this.drawData = deepCloneAssign({}, this.chartData);
+        this.mixinDatacomLoading = false;
+        this.showchart = true;
         this.checkData(this.chartData);
       }else if(this.localdata.length>0){
+        this.mixinDatacomLoading = false;
+        this.showchart = true;
         this.localdataInit(this.localdata);
       }else if(this.collection !== ''){
         this.mixinDatacomLoading = false;

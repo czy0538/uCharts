@@ -1,3 +1,5 @@
+## 2.1.2-20210509（2021-05-09）
+秋云图表组件 修复APP端初始化时就传入chartData或lacaldata不显示图表的bug
 ## 2.1.1-20210509（2021-05-09）
 - 秋云图表组件 变更ECharts的eopts配置在renderjs内执行，支持在config-echarts.js配置文件内写function配置。
 - 秋云图表组件 修复APP端报错Prop being mutated: "onmouse"错误的bug。
