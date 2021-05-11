@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.2-20210509
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.2-20210511
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -59,7 +59,7 @@
           :style="{ width: cWidth + 'px', height: cHeight + 'px', background: background }"
           :disable-scroll="disableScroll"
           @error="_error"
-          v-if="showchart"
+          v-show="showchart"
         />
       </view>
     </block>
@@ -810,6 +810,8 @@ export default {
         .select('#ChartBoxId'+cid)
         .boundingClientRect(data => {
           if (data.width > 0 && data.height > 0) {
+            this.mixinDatacomLoading = false;
+            this.showchart = true;
             this.lastDrawTime = Date.now();
             this.cWidth = data.width;
             this.cHeight = data.height;
@@ -833,8 +835,6 @@ export default {
             //如果是H5或者App端，采用renderjs渲染图表
             if (this.inH5 || this.inApp) {
               if (this.echarts == true) {
-                this.mixinDatacomLoading = false;
-                this.showchart = true;
                 cfe.option[cid].ontap = this.ontap;
                 cfe.option[cid].onmouse = this.onmouse;
                 cfe.option[cid].tooltipShow = this.tooltipShow;
@@ -844,8 +844,6 @@ export default {
                 this.echartsOpts = deepCloneAssign({}, cfe.option[cid]);
               } else {
                 cfu.option[cid].rotateLock = cfu.option[cid].rotate;
-                this.mixinDatacomLoading = false;
-                this.showchart = true;
                 this.uchartsOpts = deepCloneAssign({}, cfu.option[cid]);
               }
             //如果是小程序端，采用uCharts渲染
@@ -1274,10 +1272,14 @@ export default {
       cfu.option[cid] = rdformatterAssign(cfu.option[cid],cfu.formatter)
       let canvasdom = document.getElementById(cid)
       if(canvasdom && canvasdom.children[0]){
-        cfu.option[cid].context = canvasdom.children[0].getContext("2d")
-        cfu.option[cid].context.restore();
-        cfu.option[cid].context.save();
-        this.newUChart()
+        if(cfu.instance[cid]){
+          this.updataUChart()
+        }else{
+          cfu.option[cid].context = canvasdom.children[0].getContext("2d")
+          cfu.option[cid].context.restore();
+          cfu.option[cid].context.save();
+          this.newUChart()
+        }
       }
     },
     newUChart() {
@@ -1293,6 +1295,10 @@ export default {
       cfu.instance[cid].addEventListener('scrollRight', () => {
         that[cid].callMethod('emitMsg',{name:"scrollRight",params:{type:"scrollRight",scrollRight:true,id:cid}})
       });
+    },
+    updataUChart() {
+      let cid = this.rid
+      cfu.instance[cid].updateData(cfu.option[cid])
     },
     tooltipDefault(item, category, index, opts) {
       if (category) {
