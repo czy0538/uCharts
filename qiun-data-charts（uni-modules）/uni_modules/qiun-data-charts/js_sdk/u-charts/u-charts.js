@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.0-20210507',
+  version: 'v2.1.2-20210511',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -639,7 +639,7 @@ function getToolTipData(seriesData, opts, index, group, categories) {
 
 function getMixToolTipData(seriesData, opts, index, categories) {
   var option = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
-  var calPoints = opts.chartData.calPoints
+  var points = opts.chartData.xAxisPoints[index] + opts.chartData.eachSpacing / 2;
   var textList = seriesData.map(function(item) {
     return {
       text: option.formatter ? option.formatter(item, categories[index], index, opts) : item.name + ': ' + item.data,
@@ -652,23 +652,10 @@ function getMixToolTipData(seriesData, opts, index, categories) {
       return item;
     }
   });
-  var validCalPoints = [];
   var offset = {
-    x: 0,
+    x: Math.round(points),
     y: 0
   };
-  for (let i = 0; i < calPoints.length; i++) {
-    let points = calPoints[i];
-    if (typeof points[index] !== 'undefined' && points[index] !== null) {
-      validCalPoints.push(points[index]);
-    }
-  }
-  for (let i = 0; i < validCalPoints.length; i++) {
-    let item = validCalPoints[i];
-    offset.x = Math.round(item.x);
-    offset.y += item.y;
-  }
-  offset.y /= validCalPoints.length;
   return {
     textList: textList,
     offset: offset
