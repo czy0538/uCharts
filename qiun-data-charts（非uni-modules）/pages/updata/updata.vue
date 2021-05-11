@@ -24,6 +24,10 @@
     <view style="padding: 10px;">
       <button class="uni-button" type="default" @click="updataWithOutLoading">不显示loading的更新</button>
     </view>
+		<qiun-title-bar title="滚动条拖动更新"/>
+		<view class="charts-box">
+		  <qiun-data-charts type="column" canvasId="scrollcolumnid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true,scrollAlign:'current'}}" :ontouch="true" :canvas2d="true" :chartData="chartsDataColumn" @scrollRight="scrollRight"/>
+		</view>
   </view>
 </template>
 
@@ -39,7 +43,9 @@ export default {
       //注意如果使用chartsData数据格式，默认值的类型应该是对象
       chartsDataLine:{},
       chartsDataRing:{},
-      ringopts:{}
+			chartsDataColumn:{},
+      ringopts:{},
+			scrollLoadingStatus:false
     };
   },
   onLoad() {
@@ -53,6 +59,7 @@ export default {
         this.chartsDatalocaldata=JSON.parse(JSON.stringify(demodata.localdata))
         this.chartsDataLine=JSON.parse(JSON.stringify(demodata.Line))
         this.chartsDataRing=JSON.parse(JSON.stringify(demodata.PieA))
+				this.chartsDataColumn=JSON.parse(JSON.stringify(demodata.Column))
         //这里演示圆环图标题和副标题动态变化
         let tmpopts = {
           title:{
@@ -122,6 +129,32 @@ export default {
         this.ringopts = tmpopts;
       },200)
     },
+		//滚动条加载更新
+		scrollRight(e){
+			//scrollLoadingStatus防抖方法
+			if(this.scrollLoadingStatus === true){
+				return;
+			}else{
+				this.scrollLoadingStatus = true
+				console.log(e);
+				this.getNewServerData();
+			}
+		},
+		//模拟滚动条加载，从服务器获取数据后拼接数据
+		getNewServerData(){
+			//模拟从服务器获取数据的过程，请替换为您封装好的request的API
+			setTimeout(()=>{
+				let tmpdata = this.chartsDataColumn;
+				tmpdata.categories = tmpdata.categories.concat(JSON.parse(JSON.stringify(demodata.Column.categories)))
+				for (var i = 0; i < tmpdata.series.length; i++) {
+					tmpdata.series[i].data=tmpdata.series[i].data.concat(JSON.parse(JSON.stringify(demodata.Column.series[i].data)))
+				}
+				//以上是我模拟的拼接增加的数据
+				this.chartsDataColumn=JSON.parse(JSON.stringify(tmpdata))
+				//防抖复位，下次触发可以继续加载
+				this.scrollLoadingStatus = false
+			},200)
+		},
     //构造随机数字，模拟用，不必理会
     randomLocalData(data){
       for (var i = 0; i < data.length; i++) {
