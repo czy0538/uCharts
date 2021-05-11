@@ -140,7 +140,7 @@ export default {
       let categories = uCharts.option[e.id].categories;
       let series = uCharts.option[e.id].series;
       //e.currentIndex是点击的的点位索引值
-      let index = e.currentIndex;
+      let index = e.currentIndex.index;//注意v2.1.2版本后，e.currentIndex是对象，而e.currentIndex.index是索引值，如果是时间轴图表，index在多个series的情况下会是数组
       //自行通过uCharts的实例调用showToolTip方法（APP端不能实现，无法通过renderjs获取到uCharts实例）
       // #ifndef APP-PLUS
       //如果需要tooltip换行显示，也可以参照本示例，关闭组件本身的tooltip功能，即:tooltipShow="false"，然后在@getIndex事件中，通过uCharts.instance[e.id].showToolTip()方法来自定义。
