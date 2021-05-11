@@ -5868,7 +5868,7 @@ uCharts.prototype.updateData = function() {
   let scrollPosition = data.scrollPosition || 'current';
   switch (scrollPosition) {
     case 'current':
-      this.opts._scrollDistance_ = this.scrollOption.currentOffset;
+      //this.opts._scrollDistance_ = this.scrollOption.currentOffset;
       break;
     case 'left':
       this.opts._scrollDistance_ = 0;
@@ -6282,6 +6282,7 @@ uCharts.prototype.scroll = function(e) {
       _scrollDistance_: currentOffset + _distance,
       animation: false
     });
+		this.opts = opts;
     drawCharts.call(this, opts.type, opts, this.config, this.context);
     return currentOffset + _distance;
   }
