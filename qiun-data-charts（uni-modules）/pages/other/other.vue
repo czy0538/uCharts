@@ -56,7 +56,7 @@
     <qiun-title-bar title="强制展示错误信息"/>
     <button class="uni-button" type="default" @click="changeErrorMessage">点击展示错误信息</button>
     <view class="charts-box">
-      <qiun-data-charts type="line" :chartData="chartsDataLine1" :errorMessage="errorMessage" @error="error"/>
+      <qiun-data-charts type="line" :chartData="chartsDataLine1" :errorMessage="errorMessage" :errorReload="false" @error="error"/>
     </view>
     <qiun-title-bar title="uCharts保存为图片"/>
     <button class="uni-button" type="default" @click="createImage('createImageUCharts')">点击保存为图片</button>
@@ -84,7 +84,7 @@ export default {
       //注意如果使用localdata数据格式，默认值的类型应该是数组
       chartsDataColumn1:{},
       chartsDataLine1:{},
-      errorMessage:"自定义的错误信息，点击重新加载",
+      errorMessage:"自定义的错误信息，关闭点击重新加载",
     };
   },
   onLoad() {
@@ -163,7 +163,7 @@ export default {
       console.log("获取TouchMove",e);
     },
     changeErrorMessage(){
-      this.errorMessage="自定义错误信息，点击重试"+Math.floor(Math.random() * 1000)
+      this.errorMessage="自定义错误信息，关闭点击重新加载"+Math.floor(Math.random() * 1000)
     },
     createImage(refid){
     	this.$refs[refid].saveImage();
