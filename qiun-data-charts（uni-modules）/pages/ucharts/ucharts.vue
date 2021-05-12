@@ -156,7 +156,7 @@
     </view>
     <qiun-title-bar title="K线图"/>
     <view class="charts-box" style="height: 400px;">
-      <qiun-data-charts type="candle" :ontouch="true" :canvas2d="true" canvasId="klineid" :chartData="chartsDataCandle1"/>
+      <qiun-data-charts type="candle" :opts="{extra:{tooltip:{showCategory:true}}}" :ontouch="true" :canvas2d="true" canvasId="klineid" :chartData="chartsDataCandle1"/>
     </view>
     <qiun-title-bar title="地图"/>
     <view class="charts-box" style="height: 400px;">
