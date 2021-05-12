@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.2-20210511
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.3-20210513
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -79,7 +79,7 @@
         @touchmove="_touchMove"
         @touchend="_touchEnd"
         @error="_error"
-        v-if="showchart"
+        v-show="showchart"
       />
     </block>
     <block v-if="!ontouch">
@@ -92,7 +92,7 @@
         :disable-scroll="disScroll"
         @tap="_tap"
         @error="_error"
-        v-if="showchart"
+        v-show="showchart"
       />
     </block>
     <!-- #endif -->
@@ -136,7 +136,7 @@
           @touchend="_touchEnd"
           :disable-scroll="disScroll"
           @error="_error"
-          v-if="showchart"
+          v-show="showchart"
         />
       </view>
       <view v-if="!ontouch" >
@@ -147,7 +147,7 @@
           :disable-scroll="disScroll"
           @tap="_tap"
           @error="_error"
-          v-if="showchart"
+          v-show="showchart"
         />
       </view>
     </block>
@@ -218,13 +218,13 @@ var lastMoveTime = null;
  * }, 1000)
  */
 export function debounce(fn, wait) {
-    let timer;
-    return function() {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            fn.apply(this, arguments); // 把参数传进去
-        }, wait);
-    };
+  let timer;
+  return function() {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, arguments); // 把参数传进去
+    }, wait);
+  };
 }
 
 export default {
@@ -277,6 +277,10 @@ export default {
       default: 2
     },
     errorShow: {
+      type: Boolean,
+      default: true
+    },
+    errorReload: {
       type: Boolean,
       default: true
     },
@@ -448,24 +452,24 @@ export default {
       this.beforeInit();
     })
     // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || APP-PLUS
-     const time = this.inH5 ? 500 : 200;
-        const _this = this;
-        uni.onWindowResize(
-            debounce(function(res) {
-                if (_this.mixinDatacomLoading == true) {
-                    return;
-                }
-                let errmsg = _this.mixinDatacomErrorMessage;
-                if (errmsg !== null && errmsg !== 'null' && errmsg !== '') {
-                    return;
-                }
-                if (_this.echarts) {
-                    _this.echartsResize = !_this.echartsResize;
-                } else {
-                    _this.resizeHandler();
-                }
-            }, time)
-        );
+    const time = this.inH5 ? 500 : 200;
+    const _this = this;
+    uni.onWindowResize(
+      debounce(function(res) {
+        if (_this.mixinDatacomLoading == true) {
+          return;
+        }
+        let errmsg = _this.mixinDatacomErrorMessage;
+        if (errmsg !== null && errmsg !== 'null' && errmsg !== '') {
+          return;
+        }
+        if (_this.echarts) {
+          _this.echartsResize = !_this.echartsResize;
+        } else {
+          _this.resizeHandler();
+        }
+      }, time)
+    );
     // #endif
   },
   destroyed(){
@@ -489,12 +493,14 @@ export default {
               this.beforeInit();
             }else{
               this.mixinDatacomLoading = true;
+              this._clearChart();
               this.showchart = false;
               this.mixinDatacomErrorMessage = null;
             }
           }
         } else {
           this.mixinDatacomLoading = false;
+          this._clearChart();
           this.showchart = false;
           this.mixinDatacomErrorMessage = '参数错误：chartData数据类型错误';
         }
@@ -509,6 +515,7 @@ export default {
             this.beforeInit();
           }else{
             this.mixinDatacomLoading = true;
+            this._clearChart();
             this.showchart = false;
             this.mixinDatacomErrorMessage = null;
           }
@@ -525,6 +532,7 @@ export default {
           }
         } else {
           this.mixinDatacomLoading = false;
+          this._clearChart();
           this.showchart = false;
           this.mixinDatacomErrorMessage = '参数错误：opts数据类型错误';
         }
@@ -729,6 +737,9 @@ export default {
       this.checkData(tmpData)
     },
     reloading() {
+      if(this.errorReload === false){
+        return;
+      }
       this.showchart = false;
       this.mixinDatacomErrorMessage = null;
       if (this.collection !== '') {
@@ -895,9 +906,15 @@ export default {
                         canvas._width = data.width * this.pixel;
                         canvas._height = data.height * this.pixel;
                         cfu.option[cid].rotateLock = cfu.option[cid].rotate;
-                        cfu.option[cid].context.restore();
-                        cfu.option[cid].context.save();
-                        this._newChart(cid);
+                        if(cfu.instance[cid]){
+                          cfu.option[cid].context.restore();
+                          cfu.option[cid].context.save();
+                          this._updataUChart(cid)
+                        }else{
+                          setTimeout(()=>{
+                            this._newChart(cid)
+                          },100)
+                        }
                       } else {
                         this.showchart = false;
                         this.mixinDatacomErrorMessage = '参数错误：开启2d模式后，未获取到dom节点，canvas-id:' + cid;
@@ -908,7 +925,13 @@ export default {
                     cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                   }
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
-                  this._newChart(cid);
+                  if(cfu.instance[cid]){
+                    this._updataUChart(cid)
+                  }else{
+                    setTimeout(()=>{
+                      this._newChart(cid)
+                    },100)
+                  }
                 }
               })
             }
@@ -964,6 +987,9 @@ export default {
       cfu.instance[cid].addEventListener('scrollRight', () => {
         this.emitMsg({name: 'scrollRight', params: {type:"scrollRight", scrollRight: true, id: cid}});
       });
+    },
+    _updataUChart(cid) {
+      cfu.instance[cid].updateData(cfu.option[cid])
     },
     _tooltipDefault(item, category, index, opts) {
       if (category) {
@@ -1299,13 +1325,15 @@ export default {
       cfu.option[cid] = rdformatterAssign(cfu.option[cid],cfu.formatter)
       let canvasdom = document.getElementById(cid)
       if(canvasdom && canvasdom.children[0]){
+        cfu.option[cid].context = canvasdom.children[0].getContext("2d")
         if(cfu.instance[cid]){
-          this.updataUChart()
-        }else{
-          cfu.option[cid].context = canvasdom.children[0].getContext("2d")
           cfu.option[cid].context.restore();
           cfu.option[cid].context.save();
-          this.newUChart()
+          this.updataUChart()
+        }else{
+          setTimeout(()=>{
+            this.newUChart()
+          },100)
         }
       }
     },
