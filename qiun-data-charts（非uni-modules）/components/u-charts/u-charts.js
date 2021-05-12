@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.2-20210511',
+  version: 'v2.1.3-20210513',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -359,7 +359,7 @@ function avoidCollision(obj, target) {
 
 function fixPieSeries(series, opts, config){
   let pieSeriesArr = [];
-  if(series[0].data.constructor.toString().indexOf('Array') > -1){
+  if(series.length>0 && series[0].data.constructor.toString().indexOf('Array') > -1){
     opts._pieSeries_ = series;
     let oldseries = series[0].data;
     for (var i = 0; i < oldseries.length; i++) {
@@ -670,11 +670,6 @@ function getCandleToolTipData(series, seriesData, opts, index, categories, extra
   //颜色顺序为开盘，收盘，最低，最高
   let color = [upColor, upColor, downColor, upColor];
   var textList = [];
-  let text0 = {
-    text: categories[index],
-    color: null
-  };
-  textList.push(text0);
   seriesData.map(function(item) {
     if (index == 0) {
       if (item.data[1] - item.data[0] < 0) {
@@ -2289,6 +2284,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
   var toolTipOption = assign({}, {
     showBox: true,
     showArrow: true,
+    showCategory: false,
     bgColor: '#000000',
     bgOpacity: 0.7,
     borderColor: '#000000',
@@ -2298,6 +2294,9 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
     fontColor: '#FFFFFF',
     splitLine: true,
   }, opts.extra.tooltip);
+  if(toolTipOption.showCategory==true && opts.categories){
+    textList.unshift({text:opts.categories[opts.tooltip.index],color:null})
+  }
   var legendWidth = 4 * opts.pix;
   var legendMarginRight = 5 * opts.pix;
   var arrowWidth = toolTipOption.showArrow ? 8 * opts.pix : 0;
