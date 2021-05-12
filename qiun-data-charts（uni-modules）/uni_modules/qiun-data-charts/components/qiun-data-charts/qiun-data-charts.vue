@@ -201,33 +201,31 @@ function getFormatDate(date) {
 }
 
 var lastMoveTime = null;
-
 /**
  * 防抖
- * 
+ *
  * @param {Object} fn 要执行的方法
  * @param {Object} wait  防抖多少秒
- * 
+ *
  * 在 vue 中使用（注意：不能使用箭头函数，否则this指向不对，并且不能再次封装如：
  * move(){  // 错误调用方式
  *   debounce(function () {
  *    console.log(this.title);
- * }, 1000)}）; 
+ * }, 1000)}）;
  * 应该直接使用：（）
  * move: debounce(function () {// 正确调用方式
  *    console.log(this.title);
  * }, 1000)
  */
 export function debounce(fn, wait) {
-	let timer;
-	return function() {
-		clearTimeout(timer);
-		timer = setTimeout(() => {
-			fn.apply(this, arguments) // 把参数传进去
-		}, wait);
-	}
+    let timer;
+    return function() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            fn.apply(this, arguments); // 把参数传进去
+        }, wait);
+    };
 }
-
 
 export default {
   name: 'qiun-data-charts',
@@ -450,26 +448,24 @@ export default {
       this.beforeInit();
     })
     // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || APP-PLUS
-    let time = 200;
-    // #ifdef H5
-     time = 400;
-    // #endif
-    uni.onWindowResize(
-        debounce(function (res) {
-            if (this.mixinDatacomLoading == true) {
-                return;
-            }
-            let errmsg = this.mixinDatacomErrorMessage;
-            if (errmsg !== null && errmsg !== 'null' && errmsg !== '') {
-                return;
-            }
-            if (this.echarts) {
-                this.echartsResize = !this.echartsResize;
-            } else {
-                this.resizeHandler();
-            }
-        }, time)
-            );
+     const time = this.inH5 ? 500 : 200;
+        const _this = this;
+        uni.onWindowResize(
+            debounce(function(res) {
+                if (_this.mixinDatacomLoading == true) {
+                    return;
+                }
+                let errmsg = _this.mixinDatacomErrorMessage;
+                if (errmsg !== null && errmsg !== 'null' && errmsg !== '') {
+                    return;
+                }
+                if (_this.echarts) {
+                    _this.echartsResize = !_this.echartsResize;
+                } else {
+                    _this.resizeHandler();
+                }
+            }, time)
+        );
     // #endif
   },
   destroyed(){
