@@ -1,3 +1,15 @@
+## 2.1.3-20210513（2021-05-13）
+- 秋云图表组件 修改uCharts变更chartData数据为updateData方法，支持带滚动条的数据动态打点
+- 秋云图表组件 增加onWindowResize防抖方法 fix by ど誓言，如尘般染指流年づ 
+- 秋云图表组件 H5或者APP变更chartData数据显示loading图表时，原数据闪现的bug
+- 秋云图表组件 props增加errorReload禁用错误点击重新加载的方法
+- uCharts.js 增加tooltip显示category（x轴对应点位）标题的功能，opts.extra.tooltip.showCategory，默认为false
+- uCharts.js 修复mix混合图只有柱状图时，tooltip的分割线显示位置不正确的bug
+- uCharts.js 修复开启滚动条，图表在拖动中动态打点，滚动条位置不正确的bug
+- uCharts.js 修复饼图类数据格式为echarts数据格式，series为空数组报错的bug
+- 示例项目 修改uCharts.js更新到v2.1.2版本后，@getIndex方法获取索引值变更为e.currentIndex.index
+- 示例项目 pages/updata/updata.vue增加滚动条拖动更新（数据动态打点）的demo
+- 示例项目 pages/other/other.vue增加errorReload禁用错误点击重新加载的demo
 ## 2.1.2-20210509（2021-05-09）
 秋云图表组件 修复APP端初始化时就传入chartData或lacaldata不显示图表的bug
 ## 2.1.1-20210509（2021-05-09）

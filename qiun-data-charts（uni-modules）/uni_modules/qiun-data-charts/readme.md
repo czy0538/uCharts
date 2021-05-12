@@ -79,7 +79,6 @@ chartData:{
 ```
 chartData:{
   series: [{
-    name: "groupA",
     data: [
       {
         name: "一班",
@@ -216,6 +215,7 @@ localdata:[
 |eopts|Object|{}|否|ECharts图表配置参数(option)，请参考[【ECharts配置手册】](https://echarts.apache.org/zh/option.html)传入eopts。<font color=#FF0000>注：1、传入的eopts会覆盖默认config-echarts.js中的配置，以实现同类型的图表显示不同的样式。2、eopts不能传递function，如果option配置参数需要function，请将option写在config-echarts.js中即可实现。</font>|
 |loadingType|Number|2|否|加载动画样式，0为不显示加载动画，1-5为不同的样式，见下面示例。|
 |errorShow|Boolean|true|否|是否在页面上显示错误提示，true为显示错误提示图片，false时会显示空白区域|
+|errorReload|Boolean|true|否|是否启用点击错误提示图表重新加载，true为允许点击重新加载，false为禁用点击重新加载事件|
 |errorMessage|String|null|否|自定义错误信息，强制显示错误图片及错误信息，当上面errorShow为true时可用。（组件会监听该属性的变化，只要有变化，就会强制显示错误信息！）。说明：1、一般用于页面网络不好或其他情况导致图表loading动画一直显示，可以传任意(不为null或者"null"或者空"")字符串强制显示错误图片及说明。2、如果组件使用了data-come属性读取uniCloud数据，组件会自动判断错误状态并展示错误图标，不必使用此功能。3、当状态从非null改变为null或者空时，会强制调用reload重新加载并渲染图表数据。|
 |echartsH5|Boolean|false|否|是否在H5端使用ECharts引擎渲染图表|
 |directory|String|'/'|否|二级目录名称，如果开启上面echartsH5即H5端用ECharts引擎渲染图表，并且项目未发布在website根目录，需要填写此项配置。例如二级目录是h5，则需要填写`/h5/`，左右两侧需要带`/`，发布到三级或更多层目录示例`/web/v2/h5/`|
@@ -239,7 +239,7 @@ localdata:[
 |ontap|Boolean|true|否|是否监听@tap@cilck事件，禁用后不会触发组件点击事件|
 |ontouch|Boolean|false|否|（仅uCharts）是否监听@touchstart@touchmove@touchend事件（赋值为true时，非PC端在图表区域内无法拖动页面滚动）|
 |onmouse|Boolean|true|否|是否监听@mousedown@mousemove@mouseup事件，禁用后鼠标经过图表上方不会显示tooltip|
-|onmovetip|Boolean|false|否|（仅uCharts）是否开启跟手显示tooltip功能（前提条件，1、需要开启touch功能，即:ontouch="true"；2、并且opts.enableScroll=false即关闭图表的滚动条功能）（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
+|`onmovetip`|Boolean|false|否|（仅uCharts）是否开启跟手显示tooltip功能（前提条件，1、需要开启touch功能，即:ontouch="true"；2、并且opts.enableScroll=false即关闭图表的滚动条功能）（建议微信小程序开启canvas2d功能，否则原生canvas组件会很卡）|
 
 ## 组件事件及方法
 
@@ -418,7 +418,7 @@ tooltipCustom属性如下：
 - `开启滚动条后图表两侧有白边问题`：此问题是因为组件上的background为none或者没有指定，请在组件上加入background="#000000"(您的背景色)。如果父元素为图片，尽量不要开启滚动条，此时图表是透明色，可以显示父元素背景图片。
 - `地图变形问题`：此问题是因为您引用的geojson地图数据的坐标系可能是地球坐标(WGS84)导致，需要开启【是否进行WGS84转墨卡托投影】功能。开启后因大量的数据运算tooltip可能会不跟手，建议自行转换为墨卡托坐标系，可参照源码内function lonlat2mercator()。其他地图数据下载地址：[http://datav.aliyun.com/tools/atlas/](http://datav.aliyun.com/tools/atlas/)
 - `支付宝（钉钉）小程序无法点击问题`：请检查支付宝小程序开发者工具中，点击【详情】，在弹出的【项目详情】中【取消】启用小程序基础库 2.0 构建，一定不要勾选此项。
-
+- `uni-simple-router中使用问题`：如果使用uni-simple-router路由插件，H5开启完全路由模式（即h5:{vueRouterDev:true}）时，会导致组件内uni.xxx部分方法失效，引发节点获取不正常报错，请使用普通模式即可。
 
 ## [更多常见问题以官方网站【常见问题】为准](http://demo.ucharts.cn)
 
