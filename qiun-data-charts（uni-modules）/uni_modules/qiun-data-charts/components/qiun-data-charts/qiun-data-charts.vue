@@ -452,7 +452,7 @@ export default {
     // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || APP-PLUS
     let time = 200;
     // #ifdef H5
-    time = 400;
+     time = 400;
     // #endif
     uni.onWindowResize(
         debounce(function (res) {
