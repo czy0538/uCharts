@@ -76,7 +76,7 @@ Page({
   },
   touchColumn(e) {
     canvaColumn.showToolTip(e, {
-      format: function (item, category) {
+      formatter: function (item, category) {
         if (typeof item.data === 'object') {
           return category + ' ' + item.name + ':' + item.data.value
         } else {
@@ -116,7 +116,7 @@ Page({
         splitNumber: 8,
         min: 10,
         max: 180,
-        format: (val) => { return val.toFixed(0) + '元' }//如不写此方法，Y轴刻度默认保留两位小数
+        formatter: (val) => { return val.toFixed(0) + '元' }//如不写此方法，Y轴刻度默认保留两位小数
       },
       width: _self.cWidth,
       height: _self.cHeight,
@@ -138,7 +138,7 @@ Page({
     canvaLineA.scrollEnd(e);
     //下面是toolTip事件，如果滚动后不需要显示，可不填写
     canvaLineA.showToolTip(e, {
-      format: function (item, category) {
+      formatter: function (item, category) {
         return category + ' ' + item.name + ':' + item.data
       }
     });
@@ -167,7 +167,7 @@ Page({
         //disabled:true
         gridType: 'dash',
         splitNumber: 5,
-        format: (val) => {
+        formatter: (val) => {
           return val.toFixed(0)
         }
       },
@@ -219,7 +219,7 @@ Page({
     canvaCandle.scrollEnd(e);
     //下面是toolTip事件，如果滚动后不需要显示，可不填写
     canvaCandle.showToolTip(e, {
-      format: function (item, category) {
+      formatter: function (item, category) {
         return category + ' ' + item.name + ':' + item.data
       }
     });
