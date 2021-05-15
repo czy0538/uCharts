@@ -26,7 +26,8 @@
     </view>
 		<qiun-title-bar title="滚动条拖动更新"/>
 		<view class="charts-box">
-		  <qiun-data-charts type="column" canvasId="scrollcolumnid" :opts="{enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true,scrollAlign:'current'}}" :ontouch="true" :canvas2d="true" :chartData="chartsDataColumn" @scrollRight="scrollRight"/>
+      <!-- 注意，开启动态打点opts中update需要赋值为true，来启用uCharts的updateData方法来更新视图 -->
+		  <qiun-data-charts type="column" canvasId="scrollcolumnid" :opts="{update:true,enableScroll:true,xAxis:{scrollShow:true,itemCount:4,disableGrid:true,scrollAlign:'current'}}" :ontouch="true" :canvas2d="true" :chartData="chartsDataColumn" @scrollRight="scrollRight"/>
 		</view>
   </view>
 </template>
