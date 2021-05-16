@@ -7,7 +7,7 @@
       <qiun-data-charts
         type="column"
         :echartsH5="true"
-        :echartsAPP="true"
+        :echartsApp="true"
         :chartData="chartsDataLine1"
         tooltipFormat="tooltipDemo1"
       />
@@ -18,7 +18,7 @@
       <qiun-data-charts 
         type="line" 
         :echartsH5="true" 
-        :echartsAPP="true" 
+        :echartsApp="true" 
         :eopts="{legend:{format:'legendFormat'}}"
         :chartData="chartsDataColumn2"
       />
@@ -29,7 +29,7 @@
       <qiun-data-charts 
         type="line" 
         :echartsH5="true" 
-        :echartsAPP="true" 
+        :echartsApp="true" 
         :eopts="{yAxis:{axisLabel:{format:'yAxisFormatDemo'}}}" 
         :chartData="chartsDataLine1" 
       />
@@ -40,7 +40,7 @@
       <qiun-data-charts 
         type="line" 
         :echartsH5="true" 
-        :echartsAPP="true" 
+        :echartsApp="true" 
         :eopts="{yAxis:{axisLabel:{formatter:'{value} 元'}}}" 
         :chartData="chartsDataLine1" 
       />
@@ -52,7 +52,7 @@
       <qiun-data-charts 
         type="line" 
         :echartsH5="true" 
-        :echartsAPP="true" 
+        :echartsApp="true" 
         :eopts="{seriesTemplate:{label:{format:'seriesFormatDemo'}}}" 
         :chartData="chartsDataLine1" 
       />
@@ -63,7 +63,7 @@
       <qiun-data-charts 
         type="line" 
         :echartsH5="true" 
-        :echartsAPP="true" 
+        :echartsApp="true" 
         :eopts="{seriesTemplate:{label:{formatter:'{b}年{c}元'}}}" 
         :chartData="chartsDataLine1" 
       />
