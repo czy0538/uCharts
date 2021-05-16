@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.3-20210513
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.4-20210516
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -204,24 +204,26 @@ var lastMoveTime = null;
 /**
  * 防抖
  *
- * @param {Object} fn 要执行的方法
- * @param {Object} wait  防抖多少秒
+ * @param { Function } fn 要执行的方法
+ * @param { Number } wait  防抖多少毫秒
  *
  * 在 vue 中使用（注意：不能使用箭头函数，否则this指向不对，并且不能再次封装如：
  * move(){  // 错误调用方式
  *   debounce(function () {
- *    console.log(this.title);
+ *   console.log(this.title);
  * }, 1000)}）;
- * 应该直接使用：（）
- * move: debounce(function () {// 正确调用方式
- *    console.log(this.title);
+ * 应该直接使用：// 正确调用方式
+ * move: debounce(function () {
+ *   console.log(this.title);
  * }, 1000)
  */
-export function debounce(fn, wait) {
-  let timer;
+function debounce(fn, wait) {
+  let timer = false;
   return function() {
     clearTimeout(timer);
+    timer && clearTimeout(timer);
     timer = setTimeout(() => {
+      timer = false;
       fn.apply(this, arguments); // 把参数传进去
     }, wait);
   };
@@ -373,12 +375,14 @@ export default {
       cid: 'uchartsid',
       inWx: false,
       inAli: false,
-      inTt:false,
-      inBd:false,
+      inTt: false,
+      inBd: false,
       inH5: false,
       inApp: false,
+      inWin: false,
       type2d: true,
       disScroll: false,
+      openmouse: false,
       pixel: 1,
       cWidth: 375,
       cHeight: 250,
@@ -403,6 +407,9 @@ export default {
       this.cid = id
     }
     const systemInfo = uni.getSystemInfoSync()
+    if(systemInfo.platform === 'windows'){
+      this.inWin = true;
+    }
     // #ifdef MP-WEIXIN
     this.inWx = true;
     if (this.canvas2d === false || systemInfo.platform === 'windows') {
@@ -435,6 +442,7 @@ export default {
     this.inApp = true;
     if (this.echartsApp === true) {
       this.echarts = true;
+      this.openmouse = false;
     }
     // #endif
     // #ifdef APP-NVUE
@@ -444,6 +452,9 @@ export default {
     // #endif
     // #ifdef H5
     this.inH5 = true;
+    if(this.inWin === true){
+      this.openmouse = this.onmouse;
+    }
     if (this.echartsH5 === true) {
       this.echarts = true;
     }
@@ -451,7 +462,7 @@ export default {
     this.$nextTick(()=>{
       this.beforeInit();
     })
-    // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || APP-PLUS
+    // #ifndef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || APP-VUE
     const time = this.inH5 ? 500 : 200;
     const _this = this;
     uni.onWindowResize(
@@ -862,7 +873,7 @@ export default {
               cfu.option[cid].height = data.height * this.pixel;
               cfu.option[cid].ontap = this.ontap;
               cfu.option[cid].ontouch = this.ontouch;
-              cfu.option[cid].onmouse = this.onmouse;
+              cfu.option[cid].onmouse = this.openmouse;
               cfu.option[cid].onmovetip = this.onmovetip;
               cfu.option[cid].tooltipShow = this.tooltipShow;
               cfu.option[cid].tooltipFormat = this.tooltipFormat;
@@ -874,7 +885,7 @@ export default {
             if (this.inH5 || this.inApp) {
               if (this.echarts == true) {
                 cfe.option[cid].ontap = this.ontap;
-                cfe.option[cid].onmouse = this.onmouse;
+                cfe.option[cid].onmouse = this.openmouse;
                 cfe.option[cid].tooltipShow = this.tooltipShow;
                 cfe.option[cid].tooltipFormat = this.tooltipFormat;
                 cfe.option[cid].tooltipCustom = this.tooltipCustom;
@@ -1318,6 +1329,9 @@ export default {
     },
     //==============以下是uCharts的方法====================
     ucinit(newVal, oldVal, owner, instance){
+      if(JSON.stringify(newVal) == JSON.stringify(oldVal)){
+        return;
+      }
       let cid = JSON.parse(JSON.stringify(newVal.canvasId))
       this.rid = cid
       that[cid] = this.$ownerInstance
@@ -1326,12 +1340,12 @@ export default {
       let canvasdom = document.getElementById(cid)
       if(canvasdom && canvasdom.children[0]){
         cfu.option[cid].context = canvasdom.children[0].getContext("2d")
-        if(cfu.instance[cid]){
-          cfu.option[cid].context.restore();
-          cfu.option[cid].context.save();
+        if(cfu.instance[cid] && cfu.option[cid] && cfu.option[cid].update === true){
           this.updataUChart()
         }else{
           setTimeout(()=>{
+            cfu.option[cid].context.restore();
+            cfu.option[cid].context.save();
             this.newUChart()
           },100)
         }
