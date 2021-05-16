@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.3-20210513',
+  version: 'v2.1.4-20210516',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -982,7 +982,7 @@ function calLegendData(series, opts, config, chartData, context) {
   }
   let padding = opts.legend.padding * opts.pix;
   let margin = opts.legend.margin * opts.pix;
-  let fontSize = opts.legend.fontSize * opts.pix;
+  let fontSize = opts.legend.fontSize ? opts.legend.fontSize * opts.pix : config.fontSize;
   let shapeWidth = 15 * opts.pix;
   let shapeRight = 5 * opts.pix;
   let lineHeight = Math.max(opts.legend.lineHeight * opts.pix, fontSize);
@@ -1103,7 +1103,7 @@ function calCategoriesData(categories, opts, config, eachSpacing, context) {
     xAxisHeight: config.xAxisHeight
   };
   var categoriesTextLenth = categories.map(function(item) {
-    return measureText(item, opts.xAxis.fontSize || config.fontSize, context);
+    return measureText(item, opts.xAxis.fontSize * opts.pix || config.fontSize, context);
   });
   var maxTextLength = Math.max.apply(this, categoriesTextLenth);
 
@@ -1208,7 +1208,7 @@ function calXAxisData(series, opts, config, context) {
   // 计算X轴刻度的属性譬如每个刻度的间隔,刻度的起始点\结束点以及总长
   var eachSpacing = result.eachSpacing;
   var textLength = xAxisScaleValues.map(function(item) {
-    return measureText(item, config.fontSize, context);
+    return measureText(item, opts.xAxis.fontSize * opts.pix || config.fontSize, context);
   });
   // get max length of categories text
   var maxTextLength = Math.max.apply(this, textLength);
@@ -1406,13 +1406,13 @@ function getGaugeDataPoints(series, categories, gaugeOption) {
   return series;
 }
 
-function getPieTextMaxLength(series, config, context) {
+function getPieTextMaxLength(series, config, context, opts) {
   series = getPieDataPoints(series);
   let maxLength = 0;
   for (let i = 0; i < series.length; i++) {
     let item = series[i];
     let text = item.formatter ? item.formatter(+item._proportion_.toFixed(2)) : util.toFixed(item._proportion_ * 100) + '%';
-    maxLength = Math.max(maxLength, measureText(text, config.fontSize, context));
+    maxLength = Math.max(maxLength, measureText(text, item.textSize * opts.pix || config.fontSize, context));
   }
   return maxLength;
 }
@@ -1579,8 +1579,7 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
   return points;
 }
 
-function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex,
-stackSeries) {
+function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex, stackSeries) {
   var process = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 1;
   var points = [];
   var validHeight = opts.height - opts.area[0] - opts.area[2];
@@ -1923,7 +1922,8 @@ function drawPointText(points, series, config, context, opts) {
   points.forEach(function(item, index) {
     if (item !== null) {
       context.beginPath();
-      context.setFontSize(series.textSize || config.fontSize);
+      var fontSize = series.textSize ? series.textSize * opts.pix : config.fontSize;
+      context.setFontSize(fontSize);
       context.setFillStyle(series.textColor || opts.fontColor);
       var value = data[index]
       if (typeof data[index] === 'object' && data[index] !== null) {
@@ -1933,7 +1933,7 @@ function drawPointText(points, series, config, context, opts) {
           value = data[index].value
         }
       }
-      var formatVal = series.formatter ? series.formatter(value) : value;
+      var formatVal = series.formatter ? series.formatter(value,index) : value;
       context.setTextAlign('center');
       context.fillText(String(formatVal), item.x, item.y - 4 + textOffset * opts.pix);
       context.closePath();
@@ -2035,7 +2035,7 @@ function drawPieText(series, opts, config, context, radius, center) {
     // text start
     let orginX3 = orginX1 >= 0 ? orginX1 + config.pieChartTextPadding : orginX1 - config.pieChartTextPadding;
     let orginY3 = orginY1;
-    let textWidth = measureText(item.text, item.textSize || config.fontSize, context);
+    let textWidth = measureText(item.text, item.textSize * opts.pix || config.fontSize, context);
     let startY = orginY3;
     if (lastTextObject && util.isSameXCoordinateArea(lastTextObject.start, {
         x: orginX3
@@ -2084,7 +2084,7 @@ function drawPieText(series, opts, config, context, radius, center) {
     let lineEndPoistion = convertCoordinateOrigin(item.lineEnd.x, item.lineEnd.y, center);
     let textPosition = convertCoordinateOrigin(item.start.x, item.start.y, center);
     context.setLineWidth(1 * opts.pix);
-    context.setFontSize(config.fontSize);
+    context.setFontSize(item.textSize * opts.pix || config.fontSize);
     context.beginPath();
     context.setStrokeStyle(item.color);
     context.setFillStyle(item.color);
@@ -2101,7 +2101,7 @@ function drawPieText(series, opts, config, context, radius, center) {
     context.closePath();
     context.fill();
     context.beginPath();
-    context.setFontSize(item.textSize || config.fontSize);
+    context.setFontSize(item.textSize * opts.pix || config.fontSize);
     context.setFillStyle(item.textColor || opts.fontColor);
     context.fillText(item.text, textStartX, textPosition.y + 3);
     context.closePath();
@@ -3063,7 +3063,7 @@ function drawBubbleDataPoints(series, opts, config, context) {
     if (opts.dataLabel !== false && process === 1) {
       points.forEach(function(item, index) {
         context.beginPath();
-        var fontSize = series.textSize || config.fontSize;
+        var fontSize = series.textSize * opts.pix || config.fontSize;
         context.setFontSize(fontSize);
         context.setFillStyle(series.textColor || "#FFFFFF");
         context.setTextAlign('center');
@@ -3700,7 +3700,7 @@ function drawYAxis(series, opts, config, context) {
       let yData = opts.yAxis.data[i];
       if (yData.disabled !== true) {
         let rangesFormat = opts.chartData.yAxisData.rangesFormat[i];
-        let yAxisFontSize = yData.fontSize * opts.pix || config.fontSize;
+        let yAxisFontSize = yData.fontSize ? yData.fontSize * opts.pix : config.fontSize;
         let yAxisWidth = opts.chartData.yAxisData.yAxisWidth[i];
         let textAlign = yData.textAlign || "right";
         //画Y轴刻度及文案
@@ -3778,7 +3778,7 @@ function drawYAxis(series, opts, config, context) {
         }
         //画Y轴标题
         if (opts.yAxis.showTitle) {
-          let titleFontSize = yData.titleFontSize || config.fontSize;
+          let titleFontSize = yData.titleFontSize * opts.pix || config.fontSize;
           let title = yData.title;
           context.beginPath();
           context.setFontSize(titleFontSize);
@@ -4681,7 +4681,7 @@ function drawMapDataPoints(series, opts, config, context) {
           centerPoint = lonlat2mercator(data[i].properties.centroid[0], data[i].properties.centroid[1])
         }
         point = coordinateToPoint(centerPoint[1], centerPoint[0], bounds, scale, xoffset, yoffset);
-        let fontSize = data[i].textSize || config.fontSize;
+        let fontSize = data[i].textSize * opts.pix || config.fontSize;
         let text = data[i].properties.name;
         context.beginPath();
         context.setFontSize(fontSize)
@@ -5260,9 +5260,9 @@ function drawCharts(type, opts, config, context) {
     if (opts.yAxis.showTitle) {
       let maxTitleHeight = 0;
       for (let i = 0; i < opts.yAxis.data.length; i++) {
-        maxTitleHeight = Math.max(maxTitleHeight, opts.yAxis.data[i].titleFontSize ? opts.yAxis.data[i].titleFontSize : config.fontSize)
+        maxTitleHeight = Math.max(maxTitleHeight, opts.yAxis.data[i].titleFontSize ? opts.yAxis.data[i].titleFontSize * opts.pix : config.fontSize)
       }
-      opts.area[0] += (maxTitleHeight + 6) * opts.pix;
+      opts.area[0] += maxTitleHeight;
     }
     let rightIndex = 0,
       leftIndex = 0;
@@ -5335,7 +5335,7 @@ function drawCharts(type, opts, config, context) {
   }
 
   if (type === 'pie' || type === 'ring' || type === 'rose') {
-    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(seriesMA, config, context);
+    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(seriesMA, config, context, opts);
   }
   switch (type) {
     case 'word':
