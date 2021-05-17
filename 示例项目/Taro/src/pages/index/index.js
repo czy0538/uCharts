@@ -17,9 +17,14 @@ export default class Index extends Component {
   }
 
   componentDidMount(){
-    const cWidth = Taro.getSystemInfoSync().windowWidth;    
-    const cHeight = 500 / 750 * cWidth;
-    this.setState({cWidth, cHeight},()=>this.getServerData());
+    const sysInfo = Taro.getSystemInfoSync();
+    let pixelRatio = 1;   
+    if (Taro.getEnv() === Taro.ENV_TYPE.ALIPAY){
+      pixelRatio = sysInfo.pixelRatio;
+    }
+    const cWidth = pixelRatio * sysInfo.windowWidth;    
+    const cHeight = 500 / 750 * cWidth;    
+    this.setState({cWidth, cHeight, pixelRatio},()=>this.getServerData());
   }
 
   getServerData = ()=>{
@@ -240,23 +245,28 @@ export default class Index extends Component {
 
   render () {
     const { cWidth, cHeight } = this.state;
-    const style = {width: cWidth, height: cHeight};
+    let canvasProps = {};
+    if (Taro.getEnv() === Taro.ENV_TYPE.ALIPAY){
+      canvasProps = { width: cWidth, height: cHeight, style:{ width: '100%', height: '100%'} };
+    } else {
+      canvasProps = { style: { width: cWidth, height: cHeight } };
+    }
     return (
       <View>
-        <Canvas 
-          style={style}
+        <Canvas          
+          {...canvasProps}
           canvas-id="canvasColumn" 
           id="canvasColumn"           
           onTouchStart={this.touchColumn}/>   
         <Canvas 
-          style={style}
+          {...canvasProps}
           canvas-id="canvasLineA" 
           id="canvasLineA"             
           onTouchStart={this.touchLineA} 
           onTouchMove={this.moveLineA} 
           onTouchEnd={this.touchEndLineA}/>              
         <Canvas 
-          style={style}
+          {...canvasProps}
           canvas-id="canvasCandle" 
           id="canvasCandle"           
           onTouchStart={this.touchCandle} 
