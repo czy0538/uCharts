@@ -1682,8 +1682,8 @@ function getYAxisTextList(series, opts, config, stack, yData) {
     maxData += rangeSpan;
   }
   var dataRange = getDataRange(minData, maxData);
-  var minRange = yData.min || dataRange.minRange;
-  var maxRange = yData.max || dataRange.maxRange;
+  var minRange = yData.min === undefined ? dataRange.minRange : yData.min;
+  var maxRange = yData.max === undefined ? dataRange.maxRange : yData.max;
   var range = [];
   var eachRange = (maxRange - minRange) / opts.yAxis.splitNumber;
   for (var i = 0; i <= opts.yAxis.splitNumber; i++) {
