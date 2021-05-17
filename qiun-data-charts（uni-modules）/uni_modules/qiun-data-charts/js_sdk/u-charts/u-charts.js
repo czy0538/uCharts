@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.4-20210516',
+  version: 'v2.1.5-20210517',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -1616,8 +1616,8 @@ function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, 
   return points;
 }
 
-function getYAxisTextList(series, opts, config, stack) {
-  var index = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : -1;
+function getYAxisTextList(series, opts, config, stack, yData) {
+  var index = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : -1;
   var data;
   if (stack == 'stack') {
     data = dataCombineStack(series, opts.categories.length);
@@ -1655,35 +1655,35 @@ function getYAxisTextList(series, opts, config, stack) {
       sorted.push(item);
     }
   })
-  var minData = 0;
-  var maxData = 0;
+  var minData = yData.min || 0;
+  var maxData = yData.max || 0;
   if (sorted.length > 0) {
     minData = Math.min.apply(this, sorted);
     maxData = Math.max.apply(this, sorted);
   }
   //为了兼容v1.9.0之前的项目
-  if (index > -1) {
-    if (typeof opts.yAxis.data[index].min === 'number') {
-      minData = Math.min(opts.yAxis.data[index].min, minData);
-    }
-    if (typeof opts.yAxis.data[index].max === 'number') {
-      maxData = Math.max(opts.yAxis.data[index].max, maxData);
-    }
-  } else {
-    if (typeof opts.yAxis.min === 'number') {
-      minData = Math.min(opts.yAxis.min, minData);
-    }
-    if (typeof opts.yAxis.max === 'number') {
-      maxData = Math.max(opts.yAxis.max, maxData);
-    }
-  }
+  // if (index > -1) {
+  //   if (typeof opts.yAxis.data[index].min === 'number') {
+  //     minData = Math.min(opts.yAxis.data[index].min, minData);
+  //   }
+  //   if (typeof opts.yAxis.data[index].max === 'number') {
+  //     maxData = Math.max(opts.yAxis.data[index].max, maxData);
+  //   }
+  // } else {
+  //   if (typeof opts.yAxis.min === 'number') {
+  //     minData = Math.min(opts.yAxis.min, minData);
+  //   }
+  //   if (typeof opts.yAxis.max === 'number') {
+  //     maxData = Math.max(opts.yAxis.max, maxData);
+  //   }
+  // }
   if (minData === maxData) {
     var rangeSpan = maxData || 10;
     maxData += rangeSpan;
   }
   var dataRange = getDataRange(minData, maxData);
-  var minRange = dataRange.minRange;
-  var maxRange = dataRange.maxRange;
+  var minRange = yData.min || dataRange.minRange;
+  var maxRange = yData.max || dataRange.maxRange;
   var range = [];
   var eachRange = (maxRange - minRange) / opts.yAxis.splitNumber;
   for (var i = 0; i <= opts.yAxis.splitNumber; i++) {
@@ -1722,7 +1722,7 @@ function calYAxisData(series, opts, config, context) {
       if(!yData.formatter){
         yData.formatter = (val) => {return val.toFixed(yData.tofix) + (yData.unit || '')}
       }
-      rangesArr[i] = getYAxisTextList(newSeries[i], opts, config, columnstyle.type, i);
+      rangesArr[i] = getYAxisTextList(newSeries[i], opts, config, columnstyle.type, yData, i);
       let yAxisFontSizes = yData.fontSize * opts.pix || config.fontSize;
       yAxisWidthArr[i] = {
         position: yData.position ? yData.position : 'left',
@@ -1746,7 +1746,7 @@ function calYAxisData(series, opts, config, context) {
     if(!opts.yAxis.formatter){
       opts.yAxis.formatter = (val) => {return val.toFixed(opts.yAxis.tofix ) + (opts.yAxis.unit || '')}
     }
-    rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type);
+    rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type, {});
     yAxisWidthArr[0] = {
       position: 'left',
       width: 0
