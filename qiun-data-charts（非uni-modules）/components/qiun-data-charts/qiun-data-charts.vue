@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.4-20210516
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.1.6-20210523
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -136,7 +136,7 @@
           @touchend="_touchEnd"
           :disable-scroll="disScroll"
           @error="_error"
-          v-show="showchart"
+          v-if="showchart"
         />
       </view>
       <view v-if="!ontouch" >
@@ -147,7 +147,7 @@
           :disable-scroll="disScroll"
           @tap="_tap"
           @error="_error"
-          v-show="showchart"
+          v-if="showchart"
         />
       </view>
     </block>
@@ -917,12 +917,12 @@ export default {
                         canvas._width = data.width * this.pixel;
                         canvas._height = data.height * this.pixel;
                         cfu.option[cid].rotateLock = cfu.option[cid].rotate;
-                        if(cfu.instance[cid]){
-                          cfu.option[cid].context.restore();
-                          cfu.option[cid].context.save();
+                        if(cfu.instance[cid] && cfu.option[cid] && cfu.option[cid].update === true){
                           this._updataUChart(cid)
                         }else{
                           setTimeout(()=>{
+                            cfu.option[cid].context.restore();
+                            cfu.option[cid].context.save();
                             this._newChart(cid)
                           },100)
                         }
@@ -936,10 +936,12 @@ export default {
                     cfu.option[cid].rotateLock = cfu.option[cid].rotate;
                   }
                   cfu.option[cid].context = uni.createCanvasContext(cid, this);
-                  if(cfu.instance[cid]){
+                  if(cfu.instance[cid] && cfu.option[cid] && cfu.option[cid].update === true){
                     this._updataUChart(cid)
                   }else{
                     setTimeout(()=>{
+                      cfu.option[cid].context.restore();
+                      cfu.option[cid].context.save();
                       this._newChart(cid)
                     },100)
                   }
