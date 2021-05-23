@@ -1,3 +1,14 @@
+## 2.1.6-20210523（2021-05-23）
+- 秋云图表组件 修复小程序端开启滚动条更新数据后滚动条位置不符合预期的bug
+## 2.1.5-2021051702（2021-05-17）
+- uCharts.js 修复自定义Y轴min和max值为0时不能正确显示的bug
+## 2.1.5-20210517（2021-05-17）
+- uCharts.js 修复Y轴自定义min和max时，未按指定的最大值最小值显示坐标轴刻度的bug
+## 2.1.4-20210516（2021-05-16）
+- 秋云图表组件 优化onWindowResize防抖方法
+- 秋云图表组件 修复APP端uCharts更新数据时，清空series显示loading图标后再显示图表，图表抖动的bug
+- uCharts.js 修复开启canvas2d后，x轴、y轴、series自定义字体大小未按比例缩放的bug
+- 示例项目 修复format-e.vue拼写错误导致app端使用uCharts渲染图表
 ## 2.1.3-20210513（2021-05-13）
 - 秋云图表组件 修改uCharts变更chartData数据为updateData方法，支持带滚动条的数据动态打点
 - 秋云图表组件 增加onWindowResize防抖方法 fix by ど誓言，如尘般染指流年づ 

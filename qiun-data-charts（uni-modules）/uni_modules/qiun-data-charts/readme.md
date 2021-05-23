@@ -412,13 +412,17 @@ tooltipCustom属性如下：
 - `微信小程序报错Maximum call stack size exceeded问题`:由于组件内开启了chartData和opts的监听，当数据变化时会重新渲染图表，<font color=#FF0000>建议整体改变chartData及opts的属性值</font>，而不要通过循环或遍历来改变this实例下的chartData及opts，例如先定义一个临时变量，拼接好数据后再整体赋值。（参考示例项目pages/updata/updata.vue）
 - `Loading状态问题`：如不使用uniClinetDB获取数据源，并且需要展示Loading状态，请先清空series，使组件变更为Loading状态，即this.chartData.series=[]即可展示，然后再从服务端获取数据，拼接完成后再传入this.chartData。如果不需要展示Loading状态，则不需要以上步骤，获取到数据，拼接好标准格式后，直接赋值即可。
 - `微信小程序图表层级过高问题`：因canvas在微信小程序是原生组件，如果使用自定义tabbar或者自定义导航栏，图表则会超出预期，此时需要给组件的canvas2d传值true来使用type='2d'的功能，开启此模式后，<font color=#FF0000>一定要在组件上自定义canvasId，不能为数字，不能动态绑定，要为随机字符串！不能“真机调试”，不能“真机调试”，不能“真机调试”</font>开发者工具显示不正常，图表层级会变高，而正常预览或者发布上线则是正常状态，开发者不必担心，一切以真机预览为准（因微信开发者工具显示不正确，canvas2d这种模式下给调试带来了困难，开发时，可以先用:canvas2d="false"来调试，预览无误后再改成true）。
+- `开启canvas2d后图表不显示问题`：开启canvas2d后，需要手动指定canvasId，并且父元素不能含有v-if，否则会导致获取不到dom节点问题，请将v-if改成v-show，更多开启canvas2d不显示问题，请参考示例项目pages/layout/layout.vue文件，对照示例项目修改您的项目。
 - `MiniPorgramError U.createEvent is ot a function`：此问题一般是微信小程序开启了canvas2d，并点击了“真机调试导致”，参考上面【微信小程序图表层级过高问题】解决办法，开启2d后，不可以真机调试，只能开发者工具调试或者扫二维码“预览”。
 - `在图表上滑动无法使页面滚动问题`：此问题是因为监听了touchstart、touchmove和touchend三个事件，或者开启了disableScroll属性，如果您的图表不需要开启图表内的滚动条功能，请禁用这三个方法的监听，即:ontouch="false"或者:disableScroll="false"即可（此时图表组件默认通过@tap事件来监听点击，可正常显示Tooltip提示窗）。
 - `开启滚动条无法拖动图表问题`：此问题正与以上问题相反，是因为禁用了监听touchstart、touchmove和touchend三个事件，请启用这三个方法的监听，即在组件上加入 :ontouch="true" 即可。注意，不要忘记在opts里需要配置enableScroll:true，另外如果需要显示滚动条，需要在xAxis中配置scrollShow:ture。
 - `开启滚动条后图表两侧有白边问题`：此问题是因为组件上的background为none或者没有指定，请在组件上加入background="#000000"(您的背景色)。如果父元素为图片，尽量不要开启滚动条，此时图表是透明色，可以显示父元素背景图片。
+- `开启滚动条后动态打点更新数据滚动条位置问题`：开启滚动条后动态打点，需要把opts中update需要赋值为true，来启用uCharts的updateData方法来更新视图，详见示例项目pages/updata/updata.vue。
 - `地图变形问题`：此问题是因为您引用的geojson地图数据的坐标系可能是地球坐标(WGS84)导致，需要开启【是否进行WGS84转墨卡托投影】功能。开启后因大量的数据运算tooltip可能会不跟手，建议自行转换为墨卡托坐标系，可参照源码内function lonlat2mercator()。其他地图数据下载地址：[http://datav.aliyun.com/tools/atlas/](http://datav.aliyun.com/tools/atlas/)
 - `支付宝（钉钉）小程序无法点击问题`：请检查支付宝小程序开发者工具中，点击【详情】，在弹出的【项目详情】中【取消】启用小程序基础库 2.0 构建，一定不要勾选此项。
 - `uni-simple-router中使用问题`：如果使用uni-simple-router路由插件，H5开启完全路由模式（即h5:{vueRouterDev:true}）时，会导致组件内uni.xxx部分方法失效，引发节点获取不正常报错，请使用普通模式即可。
+- `Y轴刻度标签数字重复问题`：此问题一般是series数据内数值较小，而Y轴网格数量较多，并且Y轴刻度点显示整数导致。解决方法1，Y轴刻度值保留两位小数，组件上传值 :opts="{yAxis:{data:[{tofix:2}]}}"；解决方法2，修改Y轴网格数量为series中的最大值的数量，例如series中最大值为3，那么修改yAxis.splitNumber=3即可；解决方法3，根据Y轴网格数量修改Y轴最大值 :opts="{yAxis:{data:[{max:5}]}}"。
+- `柱状图柱子高度不符合预期问题`：此问题是Y轴最小值未默认为0的问题导致，组件上传值 :opts="{yAxis:{data:[{min:0}]}}"即可解决。
 
 ## [更多常见问题以官方网站【常见问题】为准](http://demo.ucharts.cn)
 
