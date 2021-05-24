@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.5-20210517',
+  version: 'v2.1.7-20210524',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -1568,11 +1568,11 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
         }
       }
       if (boundaryGap == 'center') {
-        point.x += Math.round(eachSpacing / 2);
+        point.x += eachSpacing / 2;
       }
       var height = validHeight * (value - minRange) / (maxRange - minRange);
       height *= process;
-      point.y = opts.height - Math.round(height) - opts.area[2];
+      point.y = opts.height - height - opts.area[2];
       points.push(point);
     }
   });
