@@ -38,6 +38,18 @@
     <view style="width: 100%;height: 500px;">
       <qiun-data-charts type="column" :opts="{rotate:true}" :chartData="chartsDataColumn1" />
     </view>
+    <qiun-title-bar title="基本条状图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="bar" :opts="{xAxis:{max:40}}" :chartData="chartsDataColumn1"/>
+    </view>
+    <qiun-title-bar title="圆角条状图+渐变色"/>
+    <view class="charts-box">
+      <qiun-data-charts type="bar" :opts="{xAxis:{max:40},extra:{bar:{linearType:'custom',barBorderCircle:true}}}" :chartData="chartsDataColumn1"/>
+    </view>
+    <qiun-title-bar title="堆叠条状图"/>
+    <view class="charts-box">
+      <qiun-data-charts type="bar" :opts="{xAxis:{max:70},extra:{bar:{type:'stack'}}}" :chartData="chartsDataColumn1"/>
+    </view>
     <qiun-title-bar title="基本折线图"/>
     <view class="charts-box">
       <qiun-data-charts type="line" :chartData="chartsDataLine1"/>

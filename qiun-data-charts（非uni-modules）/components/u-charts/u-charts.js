@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.1.7-20210524',
+  version: 'v2.2.0-20210529',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -411,6 +411,9 @@ function fillSeries(series, opts, config) {
         case 'area':
           item.legendShape = "triangle";
           break;
+        case 'bar':
+          item.legendShape = "rect";
+          break;
         default:
           item.legendShape = "circle";
       }
@@ -788,6 +791,23 @@ function findCurrentIndex(currentPoints, calPoints, opts, config) {
   return current;
 }
 
+function findBarChartCurrentIndex(currentPoints, calPoints, opts, config) {
+  var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+  var current={ index:-1, group:[] };
+  var spacing = opts.chartData.eachSpacing / 2;
+  let yAxisPoints = opts.chartData.yAxisPoints;
+  if (calPoints && calPoints.length > 0) {
+    if (isInExactChartArea(currentPoints, opts, config)) {
+      yAxisPoints.forEach(function(item, index) {
+        if (currentPoints.y + offset + spacing > item) {
+          current.index = index;
+        }
+      });
+    }
+  }
+  return current;
+}
+
 function findLegendIndex(currentPoints, legendData, opts) {
   let currentIndex = -1;
   let gap = 0;
@@ -1114,9 +1134,14 @@ function calCategoriesData(categories, opts, config, eachSpacing, context) {
   return result;
 }
 
-function getXAxisTextList(series, opts, config) {
+function getXAxisTextList(series, opts, config, stack) {
   var index = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : -1;
-  var data = dataCombine(series);
+  var data;
+  if (stack == 'stack') {
+    data = dataCombineStack(series, opts.categories.length);
+  } else {
+    data = dataCombine(series);
+  }
   var sorted = [];
   // remove null from data
   data = data.filter(function(item) {
@@ -1187,11 +1212,15 @@ function getXAxisTextList(series, opts, config) {
 }
 
 function calXAxisData(series, opts, config, context) {
+  //堆叠图重算Y轴
+  var columnstyle = assign({}, {
+    type: ""
+  }, opts.extra.bar);
   var result = {
     angle: 0,
     xAxisHeight: config.xAxisHeight
   };
-  result.ranges = getXAxisTextList(series, opts, config);
+  result.ranges = getXAxisTextList(series, opts, config, columnstyle.type);
   result.rangesFormat = result.ranges.map(function(item) {
     //item = opts.xAxis.formatter ? opts.xAxis.formatter(item) : util.toFixed(item, 2);
     item = util.toFixed(item, 2);
@@ -1422,14 +1451,14 @@ function fixColumeData(points, eachSpacing, columnLen, index, config, opts) {
     if (item === null) {
       return null;
     }
-    var seriesGap = 0
-    var categoryGap = 0
+    var seriesGap = 0;
+    var categoryGap = 0;
     if (opts.type == 'mix') {
-      seriesGap = opts.extra.mix.column.seriesGap * opts.pix || 0
-      categoryGap = opts.extra.mix.column.categoryGap * opts.pix || 0
+      seriesGap = opts.extra.mix.column.seriesGap * opts.pix || 0;
+      categoryGap = opts.extra.mix.column.categoryGap * opts.pix || 0;
     } else {
-      seriesGap = opts.extra.column.seriesGap * opts.pix || 0
-      categoryGap = opts.extra.column.categoryGap * opts.pix || 0
+      seriesGap = opts.extra.column.seriesGap * opts.pix || 0;
+      categoryGap = opts.extra.column.categoryGap * opts.pix || 0;
     }
     seriesGap =  Math.min(seriesGap, eachSpacing / columnLen)
     categoryGap =  Math.min(categoryGap, eachSpacing / columnLen)
@@ -1444,6 +1473,29 @@ function fixColumeData(points, eachSpacing, columnLen, index, config, opts) {
       item.width = 1;
     }
     item.x += (index + 0.5 - columnLen / 2) * (item.width + seriesGap);
+    return item;
+  });
+}
+
+function fixBarData(points, eachSpacing, columnLen, index, config, opts) {
+  return points.map(function(item) {
+    if (item === null) {
+      return null;
+    }
+    var seriesGap = 0;
+    var categoryGap = 0;
+    seriesGap = opts.extra.bar.seriesGap * opts.pix || 0;
+    categoryGap = opts.extra.bar.categoryGap * opts.pix || 0;
+    seriesGap =  Math.min(seriesGap, eachSpacing / columnLen)
+    categoryGap =  Math.min(categoryGap, eachSpacing / columnLen)
+    item.width = Math.ceil((eachSpacing - 2 * categoryGap - seriesGap * (columnLen - 1)) / columnLen);
+    if (opts.extra.bar && opts.extra.bar.width && +opts.extra.bar.width > 0) {
+      item.width = Math.min(item.width, +opts.extra.bar.width * opts.pix);
+    }
+    if (item.width <= 0) {
+      item.width = 1;
+    }
+    item.y += (index + 0.5 - columnLen / 2) * (item.width + seriesGap);
     return item;
   });
 }
@@ -1482,10 +1534,27 @@ function fixColumeStackData(points, eachSpacing, columnLen, index, config, opts,
   });
 }
 
+function fixBarStackData(points, eachSpacing, columnLen, index, config, opts, series) {
+  var categoryGap = opts.extra.bar.categoryGap * opts.pix || 0;
+  return points.map(function(item, indexn) {
+    if (item === null) {
+      return null;
+    }
+    item.width = Math.ceil(eachSpacing - 2 * categoryGap);
+    if (opts.extra.bar && opts.extra.bar.width && +opts.extra.bar.width > 0) {
+      item.width = Math.min(item.width, +opts.extra.bar.width * opts.pix);
+    }
+    if (item.width <= 0) {
+      item.width = 1;
+    }
+    return item;
+  });
+}
+
 function getXAxisPoints(categories, opts, config) {
   var spacingValid = opts.width - opts.area[1] - opts.area[3];
   var dataCount = opts.enableScroll ? Math.min(opts.xAxis.itemCount, categories.length) : categories.length;
-  if ((opts.type == 'line' || opts.type == 'area' || opts.type == 'scatter' || opts.type == 'bubble') && dataCount > 1 && opts.xAxis.boundaryGap == 'justify') {
+  if ((opts.type == 'line' || opts.type == 'area' || opts.type == 'scatter' || opts.type == 'bubble' || opts.type == 'bar') && dataCount > 1 && opts.xAxis.boundaryGap == 'justify') {
     dataCount -= 1;
   }
   var eachSpacing = spacingValid / dataCount;
@@ -1537,7 +1606,7 @@ function getCandleDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing,
 function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config) {
   var process = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 1;
   var boundaryGap = 'center';
-  if (opts.type == 'line' || opts.type == 'area' || opts.type == 'scatter' || opts.type == 'bubble') {
+  if (opts.type == 'line' || opts.type == 'area' || opts.type == 'scatter' || opts.type == 'bubble' ) {
     boundaryGap = opts.xAxis.boundaryGap;
   }
   var points = [];
@@ -1579,6 +1648,33 @@ function getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts,
   return points;
 }
 
+function getBarDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config) {
+  var process = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 1;
+  var points = [];
+  var validHeight = opts.height - opts.area[0] - opts.area[2];
+  var validWidth = opts.width - opts.area[1] - opts.area[3];
+  data.forEach(function(item, index) {
+    if (item === null) {
+      points.push(null);
+    } else {
+      var point = {};
+      point.color = item.color;
+      point.y = yAxisPoints[index];
+      var value = item;
+      if (typeof item === 'object' && item !== null) {
+        value = item.value;
+      }
+      var height = validWidth * (value - minRange) / (maxRange - minRange);
+      height *= process;
+      point.height = height;
+      point.value = value;
+      point.x = height + opts.area[3];
+      points.push(point);
+    }
+  });
+  return points;
+}
+
 function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, seriesIndex, stackSeries) {
   var process = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 1;
   var points = [];
@@ -1612,7 +1708,42 @@ function getStackDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, 
       points.push(point);
     }
   });
+  return points;
+}
 
+function getBarStackDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config, seriesIndex, stackSeries) {
+  var process = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 1;
+  var points = [];
+  var validHeight = opts.width - opts.area[1] - opts.area[3];
+  data.forEach(function(item, index) {
+    if (item === null) {
+      points.push(null);
+    } else {
+      var point = {};
+      point.color = item.color;
+      point.y = yAxisPoints[index];
+      if (seriesIndex > 0) {
+        var value = 0;
+        for (let i = 0; i <= seriesIndex; i++) {
+          value += stackSeries[i].data[index];
+        }
+        var value0 = value - item;
+        var height = validHeight * (value - minRange) / (maxRange - minRange);
+        var height0 = validHeight * (value0 - minRange) / (maxRange - minRange);
+      } else {
+        var value = item;
+        var height = validHeight * (value - minRange) / (maxRange - minRange);
+        var height0 = 0;
+      }
+      var heightc = height0;
+      height *= process;
+      heightc *= process;
+      point.height = height - heightc;
+      point.x = opts.area[3] + height;
+      point.x0 = opts.area[3] + heightc;
+      points.push(point);
+    }
+  });
   return points;
 }
 
@@ -1719,17 +1850,25 @@ function calYAxisData(series, opts, config, context) {
       if (opts.yAxis.disabled == true) {
         yData.disabled = true;
       }
-      if(!yData.formatter){
-        yData.formatter = (val) => {return val.toFixed(yData.tofix) + (yData.unit || '')}
+      if(yData.type === 'categories'){
+        if(!yData.formatter){
+          yData.formatter = (val) => {return val + (yData.unit || '')};
+        }
+        yData.categories = yData.categories || opts.categories;
+        rangesArr[i] = yData.categories;
+      }else{
+        if(!yData.formatter){
+          yData.formatter = (val) => {return val.toFixed(yData.tofix) + (yData.unit || '')};
+        }
+        rangesArr[i] = getYAxisTextList(newSeries[i], opts, config, columnstyle.type, yData, i);
       }
-      rangesArr[i] = getYAxisTextList(newSeries[i], opts, config, columnstyle.type, yData, i);
       let yAxisFontSizes = yData.fontSize * opts.pix || config.fontSize;
       yAxisWidthArr[i] = {
         position: yData.position ? yData.position : 'left',
         width: 0
       };
       rangesFormatArr[i] = rangesArr[i].map(function(items) {
-        items = yData.formatter(Number(items));
+        items = yData.formatter(items);
         yAxisWidthArr[i].width = Math.max(yAxisWidthArr[i].width, measureText(items, yAxisFontSizes, context) + 5);
         return items;
       });
@@ -1743,17 +1882,24 @@ function calYAxisData(series, opts, config, context) {
     var rangesArr = new Array(1);
     var rangesFormatArr = new Array(1);
     var yAxisWidthArr = new Array(1);
-    if(!opts.yAxis.formatter){
-      opts.yAxis.formatter = (val) => {return val.toFixed(opts.yAxis.tofix ) + (opts.yAxis.unit || '')}
+    if(opts.type === 'bar'){
+      rangesArr[0] = opts.categories;
+      if(!opts.yAxis.formatter){
+        opts.yAxis.formatter = (val) => {return val + (opts.yAxis.unit || '')}
+      }
+    }else{
+      if(!opts.yAxis.formatter){
+        opts.yAxis.formatter = (val) => {return val.toFixed(opts.yAxis.tofix ) + (opts.yAxis.unit || '')}
+      }
+      rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type, {});
     }
-    rangesArr[0] = getYAxisTextList(series, opts, config, columnstyle.type, {});
     yAxisWidthArr[0] = {
       position: 'left',
       width: 0
     };
     var yAxisFontSize = opts.yAxis.fontSize * opts.pix || config.fontSize;
     rangesFormatArr[0] = rangesArr[0].map(function(item) {
-      item = opts.yAxis.formatter(Number(item));
+      item = opts.yAxis.formatter(item);
       yAxisWidthArr[0].width = Math.max(yAxisWidthArr[0].width, measureText(item, yAxisFontSize, context) + 5);
       return item;
     });
@@ -1774,6 +1920,10 @@ function calYAxisData(series, opts, config, context) {
         min: opts.yAxis.min,
         formatter: opts.yAxis.formatter
       };
+      if(opts.type === 'bar'){
+        opts.yAxis.data[0].categories = opts.categories;
+        opts.yAxis.data[0].type = 'categories';
+      }
     }
   }
   return {
@@ -1941,7 +2091,29 @@ function drawPointText(points, series, config, context, opts) {
       context.setTextAlign('left');
     }
   });
+}
 
+function drawBarPointText(points, series, config, context, opts) {
+  // 绘制数据文案
+  var data = series.data;
+  var textOffset = series.textOffset ? series.textOffset : 0;
+  points.forEach(function(item, index) {
+    if (item !== null) {
+      context.beginPath();
+      var fontSize = series.textSize ? series.textSize * opts.pix : config.fontSize;
+      context.setFontSize(fontSize);
+      context.setFillStyle(series.textColor || opts.fontColor);
+      var value = data[index]
+      if (typeof data[index] === 'object' && data[index] !== null) {
+        value = data[index].value ;
+      }
+      var formatVal = series.formatter ? series.formatter(value,index) : value;
+      context.setTextAlign('left');
+      context.fillText(String(formatVal), item.x + 4 * opts.pix , item.y + fontSize / 2 - 3 );
+      context.closePath();
+      context.stroke();
+    }
+  });
 }
 
 function drawGaugeLabel(gaugeOption, radius, centerPosition, opts, config, context) {
@@ -2280,6 +2452,21 @@ function drawToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
   context.setFillStyle("#FFFFFF");
 }
 
+function drawBarToolTipSplitArea(offsetX, opts, config, context, eachSpacing) {
+  var toolTipOption = assign({}, {
+    activeBgColor: '#000000',
+    activeBgOpacity: 0.08
+  }, opts.extra.bar);
+  var startX = opts.area[3];
+  var endX = opts.width - opts.area[1];
+  context.beginPath();
+  context.setFillStyle(hexToRgb(toolTipOption.activeBgColor, toolTipOption.activeBgOpacity));
+  context.rect( startX ,offsetX - eachSpacing / 2 ,  endX - startX,eachSpacing);
+  context.closePath();
+  context.fill();
+  context.setFillStyle("#FFFFFF");
+}
+
 function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxisPoints) {
   var toolTipOption = assign({}, {
     showBox: true,
@@ -2609,6 +2796,165 @@ function drawColumnDataPoints(series, opts, config, context) {
   context.restore();
   return {
     xAxisPoints: xAxisPoints,
+    calPoints: calPoints,
+    eachSpacing: eachSpacing
+  };
+}
+
+function drawBarDataPoints(series, opts, config, context) {
+  let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let yAxisPoints = [];
+  let eachSpacing = (opts.height - opts.area[0] - opts.area[2])/opts.categories.length;
+  for (let i = 0; i < opts.categories.length; i++) {
+    yAxisPoints.push(opts.area[0] + eachSpacing / 2 + eachSpacing * i);
+  }
+  let columnOption = assign({}, {
+    type: 'group',
+    width: eachSpacing / 2,
+    meterBorder: 4,
+    meterFillColor: '#FFFFFF',
+    barBorderCircle: false,
+    barBorderRadius: [],
+    seriesGap: 2,
+    linearType: 'none',
+    linearOpacity: 1,
+    customColor: [],
+    colorStop: 0,
+  }, opts.extra.bar);
+  let calPoints = [];
+  context.save();
+  let leftNum = -2;
+  let rightNum = yAxisPoints.length + 2;
+  if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
+    drawBarToolTipSplitArea(opts.tooltip.offset.y, opts, config, context, eachSpacing);
+  }
+  columnOption.customColor = fillCustomColor(columnOption.linearType, columnOption.customColor, series, config);
+  series.forEach(function(eachSeries, seriesIndex) {
+    let ranges, minRange, maxRange;
+    ranges = [].concat(opts.chartData.xAxisData.ranges);
+    maxRange = ranges.pop();
+    minRange = ranges.shift();
+    var data = eachSeries.data;
+    switch (columnOption.type) {
+      case 'group':
+        var points = getBarDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config, process);
+        var tooltipPoints = getBarStackDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config, seriesIndex, series, process);
+        calPoints.push(tooltipPoints);
+        points = fixBarData(points, eachSpacing, series.length, seriesIndex, config, opts);
+        for (let i = 0; i < points.length; i++) {
+          let item = points[i];
+          //fix issues/I27B1N yyoinge & Joeshu
+          if (item !== null && i > leftNum && i < rightNum) {
+            //var startX = item.x - item.width / 2;
+            var startX = opts.area[3];
+            var startY = item.y - item.width / 2;
+            var height = item.height;
+            context.beginPath();
+            var fillColor = item.color || eachSeries.color
+            var strokeColor = item.color || eachSeries.color
+            if (columnOption.linearType !== 'none') {
+              var grd = context.createLinearGradient(startX, item.y, item.x, item.y);
+              //透明渐变
+              if (columnOption.linearType == 'opacity') {
+                grd.addColorStop(0, hexToRgb(fillColor, columnOption.linearOpacity));
+                grd.addColorStop(1, hexToRgb(fillColor, 1));
+              } else {
+                grd.addColorStop(0, hexToRgb(columnOption.customColor[eachSeries.linearIndex], columnOption.linearOpacity));
+                grd.addColorStop(columnOption.colorStop, hexToRgb(columnOption.customColor[eachSeries.linearIndex],columnOption.linearOpacity));
+                grd.addColorStop(1, hexToRgb(fillColor, 1));
+              }
+              fillColor = grd
+            }
+            // 圆角边框
+            if ((columnOption.barBorderRadius && columnOption.barBorderRadius.length === 4) || columnOption.barBorderCircle === true) {
+              const left = startX;
+              const width = item.width;
+              const top = item.y - item.width / 2;
+              const height = item.heigh;
+              if (columnOption.barBorderCircle) {
+                columnOption.barBorderRadius = [width / 2, width / 2, 0, 0];
+              }
+              let [r0, r1, r2, r3] = columnOption.barBorderRadius;
+              if (r0 + r2 > height) {
+                r0 = height;
+                r2 = 0;
+                r1 = height;
+                r3 = 0;
+              }
+              if (r0 + r2 > width / 2) {
+                r0 = width / 2;
+                r1 = width / 2;
+                r2 = 0;
+                r3 = 0;
+              }
+              r0 = r0 < 0 ? 0 : r0;
+              r1 = r1 < 0 ? 0 : r1;
+              r2 = r2 < 0 ? 0 : r2;
+              r3 = r3 < 0 ? 0 : r3;
+              context.arc(left + r3, top + r3, r3, -Math.PI, -Math.PI / 2);
+              context.arc(item.x - r0, top + r0, r0, -Math.PI / 2, 0);
+              context.arc(item.x - r1, top + width - r1, r1, 0, Math.PI / 2);
+              context.arc(left + r2, top + width - r2, r2, Math.PI / 2, Math.PI);
+            } else {
+              context.moveTo(startX, startY);
+              context.lineTo(item.x, startY);
+              context.lineTo(item.x, startY + item.width - 2);
+              context.lineTo(startX, startY + item.width - 2);
+              context.lineTo(startX, startY);
+              context.setLineWidth(1)
+              context.setStrokeStyle(strokeColor);
+            }
+            context.setFillStyle(fillColor);
+            context.closePath();
+            //context.stroke();
+            context.fill();
+          }
+        };
+        break;
+      case 'stack':
+        // 绘制堆叠数据图
+        var points = getBarStackDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config, seriesIndex, series, process);
+        calPoints.push(points);
+        points = fixBarStackData(points, eachSpacing, series.length, seriesIndex, config, opts, series);
+        for (let i = 0; i < points.length; i++) {
+          let item = points[i];
+          if (item !== null && i > leftNum && i < rightNum) {
+            context.beginPath();
+            var fillColor = item.color || eachSeries.color;
+            var startX = item.x0;
+            context.setFillStyle(fillColor);
+            context.moveTo(startX, item.y - item.width/2);
+            context.fillRect(startX, item.y - item.width/2, item.height , item.width - 2);
+            context.closePath();
+            context.fill();
+          }
+        };
+        break;
+    }
+  });
+
+  if (opts.dataLabel !== false && process === 1) {
+    series.forEach(function(eachSeries, seriesIndex) {
+      let ranges, minRange, maxRange;
+      ranges = [].concat(opts.chartData.xAxisData.ranges);
+      maxRange = ranges.pop();
+      minRange = ranges.shift();
+      var data = eachSeries.data;
+      switch (columnOption.type) {
+        case 'group':
+          var points = getBarDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config, process);
+          points = fixBarData(points, eachSpacing, series.length, seriesIndex, config, opts);
+          drawBarPointText(points, eachSeries, config, context, opts);
+          break;
+        case 'stack':
+          var points = getBarStackDataPoints(data, minRange, maxRange, yAxisPoints, eachSpacing, opts, config, seriesIndex, series, process);
+          drawBarPointText(points, eachSeries, config, context, opts);
+          break;
+      }
+    });
+  }
+  return {
+    yAxisPoints: yAxisPoints,
     calPoints: calPoints,
     eachSpacing: eachSpacing
   };
@@ -3468,7 +3814,7 @@ function drawXAxis(categories, opts, config, context) {
     endX = xAxisData.endX,
     eachSpacing = xAxisData.eachSpacing;
   var boundaryGap = 'center';
-  if (opts.type == 'line' || opts.type == 'area'|| opts.type == 'scatter' || opts.type == 'bubble') {
+  if (opts.type == 'bar' || opts.type == 'line' || opts.type == 'area'|| opts.type == 'scatter' || opts.type == 'bubble') {
     boundaryGap = opts.xAxis.boundaryGap;
   }
   var startY = opts.height - opts.area[2];
@@ -3689,15 +4035,23 @@ function drawYAxis(series, opts, config, context) {
   }
   context.closePath();
   context.stroke();
-  var points = [];
-  for (let i = 0; i <= opts.yAxis.splitNumber; i++) {
-    points.push(opts.area[0] + eachSpacing * i);
-  }
+  
   let tStartLeft = opts.area[3];
   let tStartRight = opts.width - opts.area[1];
+  let tStartCenter = opts.area[3] + (opts.width - opts.area[1] - opts.area[3]) / 2;
   if (opts.yAxis.data) {
     for (let i = 0; i < opts.yAxis.data.length; i++) {
       let yData = opts.yAxis.data[i];
+      var points = [];
+      if(yData.type === 'categories'){
+        for (let i = 0; i <= yData.categories.length; i++) {
+          points.push(opts.area[0] + spacingValid / yData.categories.length / 2 + spacingValid / yData.categories.length * i);
+        }
+      }else{
+        for (let i = 0; i <= opts.yAxis.splitNumber; i++) {
+          points.push(opts.area[0] + eachSpacing * i);
+        }
+      }
       if (yData.disabled !== true) {
         let rangesFormat = opts.chartData.yAxisData.rangesFormat[i];
         let yAxisFontSize = yData.fontSize ? yData.fontSize * opts.pix : config.fontSize;
@@ -3736,7 +4090,7 @@ function drawYAxis(series, opts, config, context) {
             }
             context.fillText(String(item), tmpstrat, pos + yAxisFontSize / 2 - 3 * opts.pix);
 
-          } else {
+          } else if (yAxisWidth.position == 'right') {
             //画刻度线
             if (yData.calibration == true) {
               context.moveTo(tStartRight, pos);
@@ -3757,6 +4111,28 @@ function drawYAxis(series, opts, config, context) {
                 tmpstrat = tStartRight + yAxisWidth.width / 2
             }
             context.fillText(String(item), tmpstrat, pos + yAxisFontSize / 2 - 3 * opts.pix);
+          } else if (yAxisWidth.position == 'center') {
+            //画刻度线
+            if (yData.calibration == true) {
+              context.moveTo(tStartCenter, pos);
+              context.lineTo(tStartCenter - 3 * opts.pix, pos);
+              gapwidth += 3 * opts.pix;
+            }
+            //画文字
+            switch (textAlign) {
+              case "left":
+                context.setTextAlign('left');
+                tmpstrat = tStartCenter - yAxisWidth.width
+                break;
+              case "right":
+                context.setTextAlign('right');
+                tmpstrat = tStartCenter - gapwidth
+                break;
+              default:
+                context.setTextAlign('center');
+                tmpstrat = tStartCenter - yAxisWidth.width / 2
+            }
+            context.fillText(String(item), tmpstrat, pos + yAxisFontSize / 2 - 3 * opts.pix);
           }
           context.closePath();
           context.stroke();
@@ -3770,9 +4146,12 @@ function drawYAxis(series, opts, config, context) {
           if (yAxisWidth.position == 'left') {
             context.moveTo(tStartLeft, opts.height - opts.area[2]);
             context.lineTo(tStartLeft, opts.area[0]);
-          } else {
+          } else if (yAxisWidth.position == 'right') {
             context.moveTo(tStartRight, opts.height - opts.area[2]);
             context.lineTo(tStartRight, opts.area[0]);
+          } else if (yAxisWidth.position == 'center') {
+            context.moveTo(tStartCenter, opts.height - opts.area[2]);
+            context.lineTo(tStartCenter, opts.area[0]);
           }
           context.stroke();
         }
@@ -3785,8 +4164,10 @@ function drawYAxis(series, opts, config, context) {
           context.setFillStyle(yData.titleFontColor || opts.fontColor);
           if (yAxisWidth.position == 'left') {
             context.fillText(title, tStartLeft - measureText(title, titleFontSize, context) / 2 + (yData.titleOffsetX || 0), opts.area[0] - (10 - (yData.titleOffsetY || 0)) * opts.pix);
-          } else {
+          } else if (yAxisWidth.position == 'right') {
             context.fillText(title, tStartRight - measureText(title, titleFontSize, context) / 2 + (yData.titleOffsetX || 0), opts.area[0] - (10 - (yData.titleOffsetY || 0)) * opts.pix);
+          } else if (yAxisWidth.position == 'center') {
+            context.fillText(title, tStartCenter - measureText(title, titleFontSize, context) / 2 + (yData.titleOffsetX || 0), opts.area[0] - (10 - (yData.titleOffsetY || 0)) * opts.pix);
           }
           context.closePath();
           context.stroke();
@@ -5253,9 +5634,9 @@ function drawCharts(type, opts, config, context) {
 
   let _calYAxisData = {},
     yAxisWidth = 0;
-  if (opts.type === 'line' || opts.type === 'column' || opts.type === 'area' || opts.type === 'mix' || opts.type === 'candle' || opts.type === 'scatter'  || opts.type === 'bubble' ) {
-    _calYAxisData = calYAxisData(series, opts, config, context);
-    yAxisWidth = _calYAxisData.yAxisWidth;
+  if (opts.type === 'line' || opts.type === 'column' || opts.type === 'area' || opts.type === 'mix' || opts.type === 'candle' || opts.type === 'scatter'  || opts.type === 'bubble' || opts.type === 'bar') {
+      _calYAxisData = calYAxisData(series, opts, config, context);
+      yAxisWidth = _calYAxisData.yAxisWidth;
     //如果显示Y轴标题
     if (opts.yAxis.showTitle) {
       let maxTitleHeight = 0;
@@ -5275,7 +5656,7 @@ function drawCharts(type, opts, config, context) {
           opts.area[3] += yAxisWidth[i].width;
         }
         leftIndex += 1;
-      } else {
+      } else if (yAxisWidth[i].position == 'right') {
         if (rightIndex > 0) {
           opts.area[1] += yAxisWidth[i].width + opts.yAxis.padding * opts.pix;
         } else {
@@ -5289,7 +5670,7 @@ function drawCharts(type, opts, config, context) {
   }
   opts.chartData.yAxisData = _calYAxisData;
 
-  if (opts.categories && opts.categories.length && opts.type !== 'radar' && opts.type !== 'gauge') {
+  if (opts.categories && opts.categories.length && opts.type !== 'radar' && opts.type !== 'gauge' && opts.type !== 'bar') {
     opts.chartData.xAxisData = getXAxisPoints(opts.categories, opts, config);
     let _calCategoriesData = calCategoriesData(opts.categories, opts, config, opts.chartData.xAxisData.eachSpacing, context),
       xAxisHeight = _calCategoriesData.xAxisHeight,
@@ -5299,7 +5680,7 @@ function drawCharts(type, opts, config, context) {
     opts.area[2] += xAxisHeight;
     opts.chartData.categoriesData = _calCategoriesData;
   } else {
-    if (opts.type === 'line' || opts.type === 'area' || opts.type === 'scatter' || opts.type === 'bubble') {
+    if (opts.type === 'line' || opts.type === 'area' || opts.type === 'scatter' || opts.type === 'bubble' || opts.type === 'bar') {
       opts.chartData.xAxisData = calXAxisData(series, opts, config, context);
       categories = opts.chartData.xAxisData.rangesFormat;
       let _calCategoriesData = calCategoriesData(categories, opts, config, opts.chartData.xAxisData.eachSpacing, context),
@@ -5526,6 +5907,37 @@ function drawCharts(type, opts, config, context) {
           }
           drawLegend(opts.series, opts, config, context, opts.chartData);
           drawToolTipBridge(opts, config, context, process, eachSpacing, xAxisPoints);
+          drawCanvas(opts, context);
+        },
+        onAnimationFinish: function onAnimationFinish() {
+          _this.uevent.trigger('renderComplete');
+        }
+      });
+      break;
+    case 'bar':
+      this.animationInstance = new Animation({
+        timing: opts.timing,
+        duration: duration,
+        onProcess: function onProcess(process) {
+          context.clearRect(0, 0, opts.width, opts.height);
+          if (opts.rotate) {
+            contextRotate(context, opts);
+          }
+          drawXAxis(categories, opts, config, context);
+          var _drawBarDataPoints = drawBarDataPoints(series, opts, config, context, process),
+            yAxisPoints = _drawBarDataPoints.yAxisPoints,
+            calPoints = _drawBarDataPoints.calPoints,
+            eachSpacing = _drawBarDataPoints.eachSpacing;
+          opts.chartData.yAxisPoints = yAxisPoints;
+          opts.chartData.xAxisPoints = opts.chartData.xAxisData.xAxisPoints;
+          opts.chartData.calPoints = calPoints;
+          opts.chartData.eachSpacing = eachSpacing;
+          drawYAxis(series, opts, config, context);
+          if (opts.enableMarkLine !== false && process === 1) {
+            drawMarkLine(opts, config, context);
+          }
+          drawLegend(opts.series, opts, config, context, opts.chartData);
+          drawToolTipBridge(opts, config, context, process, eachSpacing, yAxisPoints);
           drawCanvas(opts, context);
         },
         onAnimationFinish: function onAnimationFinish() {
@@ -5992,6 +6404,11 @@ uCharts.prototype.getCurrentDataIndex = function(e) {
         x: _touches$.x,
         y: _touches$.y
       }, this.opts.chartData.wordCloudData);
+    } else if (this.opts.type === 'bar') {
+      return findBarChartCurrentIndex({
+        x: _touches$.x,
+        y: _touches$.y
+      }, this.opts.chartData.calPoints, this.opts, this.config, Math.abs(this.scrollOption.currentOffset));
     } else {
       return findCurrentIndex({
         x: _touches$.x,
@@ -6071,6 +6488,26 @@ uCharts.prototype.showToolTip = function(e) {
           textList = _getToolTipData.textList,
           offset = _getToolTipData.offset;
         offset.y = _touches$.y;
+        opts.tooltip = {
+          textList: option.textList !== undefined ? option.textList : textList,
+          offset: option.offset !== undefined ? option.offset : offset,
+          option: option,
+          index: index
+        };
+      }
+    }
+    drawCharts.call(this, opts.type, opts, this.config, this.context);
+  }
+  if (this.opts.type === 'bar') {
+    var current = this.getCurrentDataIndex(e);
+    var index = option.index == undefined ? current.index : option.index;
+    if (index > -1 || index.length>0) {
+      var seriesData = getSeriesDataItem(this.opts.series, index, current.group);
+      if (seriesData.length !== 0) {
+        var _getToolTipData = getToolTipData(seriesData, this.opts, index, current.group, this.opts.categories, option),
+          textList = _getToolTipData.textList,
+          offset = _getToolTipData.offset;
+        offset.x = _touches$.x;
         opts.tooltip = {
           textList: option.textList !== undefined ? option.textList : textList,
           offset: option.offset !== undefined ? option.offset : offset,
