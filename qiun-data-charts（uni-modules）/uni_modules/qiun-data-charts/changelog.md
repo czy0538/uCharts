@@ -1,3 +1,6 @@
+## 2.2.1-20210603（2021-06-03）
+- uCharts.js 修复饼图、圆环图、玫瑰图，当起始角度不为0时，tooltip位置不准确的bug
+- uCharts.js 增加温度计式柱状图开启顶部半圆形的配置
 ## 2.2.0-20210529（2021-05-29）
 - uCharts.js 增加条状图type="bar"
 - 示例项目 pages/ucharts/ucharts.vue增加条状图的demo

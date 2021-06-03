@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.2.0-20210529',
+  version: 'v2.2.1-20210603',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -920,6 +920,9 @@ function findRoseChartCurrentIndex(currentPoints, pieData, opts) {
   if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
     var angle = Math.atan2(pieData.center.y - currentPoints.y, currentPoints.x - pieData.center.x);
     angle = -angle;
+    if(opts.extra.rose && opts.extra.rose.offsetAngle){
+      angle = angle - opts.extra.rose.offsetAngle * Math.PI / 180;
+    }
     for (var i = 0, len = series.length; i < len; i++) {
       if (isInAngleRange(angle, series[i]._start_, series[i]._start_ + series[i]._rose_proportion_ * 2 * Math.PI)) {
         currentIndex = i;
@@ -930,12 +933,18 @@ function findRoseChartCurrentIndex(currentPoints, pieData, opts) {
   return currentIndex;
 }
 
-function findPieChartCurrentIndex(currentPoints, pieData) {
+function findPieChartCurrentIndex(currentPoints, pieData, opts) {
   var currentIndex = -1;
   var series = getPieDataPoints(pieData.series);
   if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
     var angle = Math.atan2(pieData.center.y - currentPoints.y, currentPoints.x - pieData.center.x);
     angle = -angle;
+    if(opts.extra.pie && opts.extra.pie.offsetAngle){
+      angle = angle - opts.extra.pie.offsetAngle * Math.PI / 180;
+    }
+    if(opts.extra.ring && opts.extra.ring.offsetAngle){
+      angle = angle - opts.extra.ring.offsetAngle * Math.PI / 180;
+    }
     for (var i = 0, len = series.length; i < len; i++) {
       if (isInAngleRange(angle, series[i]._start_, series[i]._start_ + series[i]._proportion_ * 2 * Math.PI)) {
         currentIndex = i;
@@ -2733,19 +2742,43 @@ function drawColumnDataPoints(series, opts, config, context) {
               context.setFillStyle(columnOption.meterFillColor);
               var startX = item.x - item.width / 2;
               var height = opts.height - item.y - opts.area[2];
-              context.moveTo(startX, item.y);
-              context.fillRect(startX, item.y, item.width, height);
-              context.closePath();
-              context.fill();
+              if (columnOption.barBorderCircle) {
+                var barBorderRadius = (item.width - columnOption.meterBorder*2) / 2;
+                if(barBorderRadius>height){
+                  barBorderRadius = height;
+                }
+                context.moveTo(startX + columnOption.meterBorder, opts.height - opts.area[2]);
+                context.lineTo(startX + columnOption.meterBorder, item.y + barBorderRadius);
+                context.arc(startX + item.width/2, item.y + barBorderRadius, barBorderRadius, -Math.PI, 0);
+                context.lineTo(startX + item.width - columnOption.meterBorder , opts.height - opts.area[2]);
+                context.lineTo(startX, opts.height - opts.area[2]);
+                context.fill();
+              }else{
+                context.moveTo(startX, item.y);
+                context.fillRect(startX, item.y, item.width, height);
+                context.closePath();
+                context.fill();
+              }
               //画边框线
               if (columnOption.meterBorder > 0) {
                 context.beginPath();
                 context.setStrokeStyle(eachSeries.color);
                 context.setLineWidth(columnOption.meterBorder * opts.pix);
-                context.moveTo(startX + columnOption.meterBorder * 0.5, item.y + height);
-                context.lineTo(startX + columnOption.meterBorder * 0.5, item.y + columnOption.meterBorder * 0.5);
-                context.lineTo(startX + item.width - columnOption.meterBorder * 0.5, item.y + columnOption.meterBorder * 0.5);
-                context.lineTo(startX + item.width - columnOption.meterBorder * 0.5, item.y + height);
+                if (columnOption.barBorderCircle) {
+                  var barBorderRadius = (item.width - columnOption.meterBorder)/ 2;
+                  if(barBorderRadius>height){
+                    barBorderRadius = height;
+                  }
+                  context.moveTo(startX  + columnOption.meterBorder * 0.5, opts.height - opts.area[2]);
+                  context.lineTo(startX + columnOption.meterBorder * 0.5, item.y + barBorderRadius);
+                  context.arc(startX + item.width/2, item.y + barBorderRadius - columnOption.meterBorder * 0.5, barBorderRadius, -Math.PI, 0);
+                  context.lineTo(startX + item.width - columnOption.meterBorder * 0.5, opts.height - opts.area[2]);
+                }else{
+                  context.moveTo(startX + columnOption.meterBorder * 0.5, item.y + height);
+                  context.lineTo(startX + columnOption.meterBorder * 0.5, item.y + columnOption.meterBorder * 0.5);
+                  context.lineTo(startX + item.width - columnOption.meterBorder * 0.5, item.y + columnOption.meterBorder * 0.5);
+                  context.lineTo(startX + item.width - columnOption.meterBorder * 0.5, item.y + height);
+                }
                 context.stroke();
               }
             }
@@ -2758,10 +2791,23 @@ function drawColumnDataPoints(series, opts, config, context) {
               context.setFillStyle(item.color || eachSeries.color);
               var startX = item.x - item.width / 2;
               var height = opts.height - item.y - opts.area[2];
-              context.moveTo(startX, item.y);
-              context.fillRect(startX, item.y, item.width, height);
-              context.closePath();
-              context.fill();
+              if (columnOption.barBorderCircle) {
+                var barBorderRadius = item.width / 2;
+                if(barBorderRadius>height){
+                  barBorderRadius = height;
+                }
+                context.moveTo(startX, opts.height - opts.area[2]);
+                context.arc(startX + barBorderRadius, item.y + barBorderRadius, barBorderRadius, -Math.PI, -Math.PI / 2);
+                context.arc(startX + item.width - barBorderRadius, item.y + barBorderRadius, barBorderRadius, -Math.PI / 2, 0);
+                context.lineTo(startX + item.width, opts.height - opts.area[2]);
+                context.lineTo(startX, opts.height - opts.area[2]);
+                context.fill();
+              }else{
+                context.moveTo(startX, item.y);
+                context.fillRect(startX, item.y, item.width, height);
+                context.closePath();
+                context.fill();
+              }
             }
           };
         }
@@ -6378,7 +6424,7 @@ uCharts.prototype.getCurrentDataIndex = function(e) {
       return findPieChartCurrentIndex({
         x: _touches$.x,
         y: _touches$.y
-      }, this.opts.chartData.pieData);
+      }, this.opts.chartData.pieData, this.opts);
     } else if (this.opts.type === 'rose') {
       return findRoseChartCurrentIndex({
         x: _touches$.x,
