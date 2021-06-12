@@ -1,4 +1,4 @@
-# UnPackage
+﻿# UnPackage
 /unpackage
 
 # Logs
@@ -83,3 +83,5 @@ typings/
 .dynamodb/
 /qiun-data-charts/unpackage
 /qiun-data-charts（uni-modules）/unpackage/
+/uCharts-demo-nvue/unpackage
+/uCharts-demo-nvue/unpackage/
