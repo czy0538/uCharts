@@ -32,17 +32,18 @@
         @getTouchMove="getTouchMove"
       />
     </view>
-    <qiun-title-bar title="固定位置显示tooltip" />
+    <qiun-title-bar title="固定位置显示tooltip+禁用图例点击" />
     <view class="charts-box">
       <!-- 这个demo演示自定义tooltip的样式及增加额外的数据，例如换行等 -->
       <qiun-data-charts
         type="line"
         :opts="{extra:{tooltip:{showArrow: false,borderWidth: 1,borderRadius:8,borderColor: '#FF0000',bgColor: '#FFFFFF',bgOpacity: 0.9,fontColor: '#000000',splitLine: false}}}"
         :chartData="chartsDataColumn1"
+        :tapLegend="false"
         :tooltipCustom="{x:2,y:2}"
       />
     </view>
-    <qiun-title-bar title="禁用组件tooltip自行触发(换行)" />
+    <qiun-title-bar title="自定义tooltip(textList换行),内置方法" />
     <view class="charts-box">
       <!-- 需要关闭组件的tooltip，即:tooltipShow="false"，然后在@getIndex中调用uCharts的showTooltip方法，注意，APP端不能实现，其他端需要引用config-ucharts.js作为实例承载的中间件。 -->
       <!-- 如果需要做跟手tooltip，需要在@getTouchMove事件中调用，注意需要添加防抖，可参考组件内防抖方法，否则会导致逻辑层与视图层频繁通信造成卡顿 -->
@@ -51,6 +52,18 @@
         :tooltipShow="false"
         :chartData="chartsDataColumn1"
         @getIndex="showMyTooltip"
+      />
+    </view>
+    <qiun-title-bar title="自定义tooltip(textList换行),opts参数" />
+    <view class="charts-box">
+      <!-- 需要关闭组件的tooltip，即:tooltipShow="false"，然后在@getIndex中改变opts来实现tooltip，注意，APP端不能实现，其他端需要引用config-ucharts.js作为实例承载的中间件。 -->
+      <qiun-data-charts
+        type="line"
+        :opts="optsTooltip"
+        :animation="false"
+        :tooltipShow="false"
+        :chartData="chartsDataColumn1"
+        @getIndex="showOptsTooltip"
       />
     </view>
     <qiun-title-bar title="强制展示错误信息"/>
@@ -72,7 +85,7 @@ import demodata from '@/mockdata/demodata.json';
 
 //下面是uCharts的配置文件及qiun-data-charts组件的公用中转参数，可以从本配置文件中获取uCharts实例、opts配置、format配置（APP端因采用renderjs无法从此配置文件获取uCharts实例）
 //***并不是所有的页面都需要引用这个文件***引入这个configjs是为了获取组件的uCharts实例，从而操作uCharts的一些方法，例如手动显示tooltip及一些其他uCharts包含的方法及事件。
-//再说一遍，只能在H5内使用，APP不行，APP不行，APP不行
+//再说一遍，只能在H5内使用，APP不行，APP不行，APP不行（如果需要自定义tooltip，也可以通过opts中传递tooltip参数来实现模拟显示tooltip，详见showOptsTooltip方法）
 import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
 
 export default {
@@ -85,6 +98,8 @@ export default {
       chartsDataColumn1:{},
       chartsDataLine1:{},
       errorMessage:"自定义的错误信息，关闭点击重新加载",
+      //在opts中拼接tooltip
+      optsTooltip:{}
     };
   },
   onLoad() {
@@ -130,6 +145,31 @@ export default {
     getIndex(e){
       console.log("获取点击索引事件",e);
     },
+    //APP端因为拿不到uCharts的实例，只能通过opts传参的方法来实现tooltip
+    showOptsTooltip(e){
+      console.log("获取点击索引事件",e);
+      //先拿到点击索引，您可以根据索引拼接一下textList
+      let currentIndex = e.currentIndex.index;
+      if(currentIndex > -1){
+        let textList = [
+          {text:"我是一个自定义标题"+this.chartsDataColumn1.categories[currentIndex],color:null},
+          { text: '类别1：'+this.chartsDataColumn1.series[0].data[currentIndex], color: '#2fc25b' },
+          { text: '类别2：'+this.chartsDataColumn1.series[1].data[currentIndex], color: '#facc14' },
+        ];
+        this.optsTooltip={
+          tooltip:{
+            index:currentIndex,
+            offset:{
+              x:e.opts.chartData.xAxisPoints[currentIndex]+e.opts.chartData.xAxisData.eachSpacing/2,//这里的x坐标为了与x轴categories中的点位对齐，我调用的opts中的参数
+              y:e.event.y,//y坐标，用的是点击的点位的y值
+            },
+            textList:textList
+          },
+          update:true
+        }
+      }
+    },
+    //非APP端可以通过uCharts实例来调用uCharts方法来实现自定义tooltip
     showMyTooltip(e){
       console.log("获取点击索引事件",e);
       //拿到canvasId后即e.id，可以通过uCharts.instance[e.id]代表当前的图表实例（除APP端，APP不可在组件外调用uCharts的实例）
