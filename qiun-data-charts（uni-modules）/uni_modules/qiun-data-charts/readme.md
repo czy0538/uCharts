@@ -1,5 +1,6 @@
 ## [uCharts官方网站](https://www.ucharts.cn)
 ## [DEMO演示及在线生成工具（v2.0文档）https://demo.ucharts.cn](https://demo.ucharts.cn)
+## [优秀的nvue全端组件与模版库nPro](https://ext.dcloud.net.cn/plugin?id=5169)
 ## [图表组件在项目中的应用 UReport数据报表](https://ext.dcloud.net.cn/plugin?id=4651) 
 ### [v1.0文档（将在9月30日作废，请尽快转v2.0）](http://doc.ucharts.cn)
 ## [如何安装、更新 uni_modules 插件点这里，必看，必看，必看](https://uniapp.dcloud.io/uni_modules?id=%e4%bd%bf%e7%94%a8-uni_modules-%e6%8f%92%e4%bb%b6)
