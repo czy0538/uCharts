@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.3.0-20210612',
+  version: 'v2.3.1-20210616',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -2668,18 +2668,11 @@ function drawColumnDataPoints(series, opts, config, context) {
                 columnOption.barBorderRadius = [width / 2, width / 2, 0, 0];
               }
               let [r0, r1, r2, r3] = columnOption.barBorderRadius;
-              if (r0 + r2 > height) {
-                r0 = height;
-                r2 = 0;
-                r1 = height;
-                r3 = 0;
-              }
-              if (r0 + r2 > width / 2) {
-                r0 = width / 2;
-                r2 = 0;
-                r1 = width / 2;
-                r3 = 0;
-              }
+              let minRadius = Math.min(width/2,height/2);
+              r0 = r0 > minRadius ? minRadius : r0;
+              r1 = r1 > minRadius ? minRadius : r1;
+              r2 = r2 > minRadius ? minRadius : r2;
+              r3 = r3 > minRadius ? minRadius : r3;
               r0 = r0 < 0 ? 0 : r0;
               r1 = r1 < 0 ? 0 : r1;
               r2 = r2 < 0 ? 0 : r2;
@@ -3663,18 +3656,11 @@ function drawMixDataPoints(series, opts, config, context) {
               columnOption.barBorderRadius = [width / 2, width / 2, 0, 0];
             }
             let [r0, r1, r2, r3] = columnOption.barBorderRadius;
-            if (r0 + r2 > height) {
-              r0 = height;
-              r2 = 0;
-              r1 = height;
-              r3 = 0;
-            }
-            if (r0 + r2 > width / 2) {
-              r0 = width / 2;
-              r2 = 0;
-              r1 = width / 2;
-              r3 = 0;
-            }
+            let minRadius = Math.min(width/2,height/2);
+            r0 = r0 > minRadius ? minRadius : r0;
+            r1 = r1 > minRadius ? minRadius : r1;
+            r2 = r2 > minRadius ? minRadius : r2;
+            r3 = r3 > minRadius ? minRadius : r3;
             r0 = r0 < 0 ? 0 : r0;
             r1 = r1 < 0 ? 0 : r1;
             r2 = r2 < 0 ? 0 : r2;
