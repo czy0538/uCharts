@@ -1,3 +1,5 @@
+## 2.3.1-20210616（2021-06-16）
+- uCharts.js 修复圆角柱状图使用4角圆角时，当数值过大时不正确的bug
 ## 2.3.0-20210612（2021-06-12）
 - uCharts.js 【重要】uCharts增加nvue兼容，可在nvue项目中使用gcanvas组件渲染uCharts，[详见码云uCharts-demo-nvue](https://gitee.com/uCharts/uCharts)
 - 秋云图表组件 增加tapLegend属性，是否开启图例点击交互事件
