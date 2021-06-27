@@ -339,6 +339,7 @@ export default {
       default: undefined
     },
     tooltipCustom: {
+      type: Object,
       default: undefined
     },
     startDate: {
