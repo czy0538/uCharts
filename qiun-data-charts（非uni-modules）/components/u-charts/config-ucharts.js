@@ -387,6 +387,7 @@ module.exports = {
 		"type": "radar",
 		"color": color,
 		"padding": [5,5,5,5],
+    "dataLabel": false,
 		"legend": {
 			"show": true,
 			"position": "right",
