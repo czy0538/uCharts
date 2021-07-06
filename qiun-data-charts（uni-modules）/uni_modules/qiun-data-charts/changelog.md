@@ -1,3 +1,5 @@
+## 2.3.3-20210706（2021-07-06）
+- uCharts.js 增加雷达图开启数据点值（opts.dataLabel）的显示
 ## 2.3.2-20210627（2021-06-27）
 - 秋云图表组件 修复tooltipCustom个别情况下传值不正确报错TypeError: Cannot read property 'name' of undefined的bug
 ## 2.3.1-20210616（2021-06-16）
