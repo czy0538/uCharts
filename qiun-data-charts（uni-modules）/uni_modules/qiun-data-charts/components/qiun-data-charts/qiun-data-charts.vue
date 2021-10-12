@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.3.3-20210706
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.3.4-20211012
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -42,13 +42,13 @@
     </block>
     <block v-else>
       <view
-        @tap="rdcharts.tap"
-        @mousemove="rdcharts.mouseMove"
-        @mousedown="rdcharts.mouseDown"
-        @mouseup="rdcharts.mouseUp"
-        @touchstart="rdcharts.touchStart"
-        @touchmove="rdcharts.touchMove"
-        @touchend="rdcharts.touchEnd"
+        v-on:tap="rdcharts.tap"
+        v-on:mousemove="rdcharts.mouseMove"
+        v-on:mousedown="rdcharts.mouseDown"
+        v-on:mouseup="rdcharts.mouseUp"
+        v-on:touchstart="rdcharts.touchStart"
+        v-on:touchmove="rdcharts.touchMove"
+        v-on:touchend="rdcharts.touchEnd"
         :id="'UC'+cid"
         :prop="uchartsOpts"
         :change:prop="rdcharts.ucinit"
@@ -403,7 +403,7 @@ export default {
   created(){
     this.cid = this.canvasId
     if (this.canvasId == 'uchartsid' || this.canvasId == '') {
-      let t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      let t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
       let len = t.length
       let id = ''
       for (let i = 0; i < 32; i++) {
@@ -412,12 +412,12 @@ export default {
       this.cid = id
     }
     const systemInfo = uni.getSystemInfoSync()
-    if(systemInfo.platform === 'windows'){
+    if(systemInfo.platform === 'windows' || systemInfo.platform === 'mac'){
       this.inWin = true;
     }
     // #ifdef MP-WEIXIN
     this.inWx = true;
-    if (this.canvas2d === false || systemInfo.platform === 'windows') {
+    if (this.canvas2d === false || systemInfo.platform === 'windows' || systemInfo.platform === 'mac') {
       this.type2d = false;
     }else{
       this.pixel = systemInfo.pixelRatio;
