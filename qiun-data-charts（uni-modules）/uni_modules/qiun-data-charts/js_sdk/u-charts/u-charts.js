@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.3.3-20210706',
+  version: 'v2.3.5-20211014',
   yAxisWidth: 15,
   yAxisSplit: 5,
   xAxisHeight: 22,
@@ -6809,5 +6809,7 @@ uCharts.prototype.scrollEnd = function(e) {
 
 if (typeof module === "object" && typeof module.exports === "object") {
   module.exports = uCharts;
-  //export default uCharts;//建议使用nodejs的module导出方式，如报错请使用export方式导出
 }
+
+export default uCharts;
+

@@ -41,7 +41,7 @@ const formatDateTime = (timeStamp, returnType)=>{
   return [y, m, d, h, minute, second];
 }
 
-module.exports = {
+const cfu = {
   //demotype为自定义图表类型，一般不需要自定义图表类型，只需要改根节点上对应的类型即可
 	"type":["pie","ring","rose","word","funnel","map","arcbar","line","column","bar","area","radar","gauge","candle","mix","tline","tarea","scatter","bubble","demotype"],
 	"range":["饼状图","圆环图","玫瑰图","词云图","漏斗图","地图","圆弧进度条","折线图","柱状图","条状图","区域图","雷达图","仪表盘","K线图","混合图","时间轴折线","时间轴区域","散点图","气泡图","自定义类型"],
@@ -580,3 +580,5 @@ module.exports = {
     }
 	}
 }
+
+export default cfu;
