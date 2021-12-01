@@ -1,7 +1,7 @@
 {
   "id": "qiun-data-charts",
   "displayName": "秋云 ucharts echarts 高性能跨全端图表组件",
-  "version": "2.3.4-20211012",
+  "version": "2.3.6-20211201",
   "description": "uCharts v2.3上线，支持nvue！全新官方图表组件，支持H5及APP用ECharts渲染图表，uniapp可视化首选组件",
   "keywords": [
     "ucharts",
@@ -76,7 +76,7 @@
         },
         "Vue": {
             "vue2": "y",
-            "vue3": "u"
+            "vue3": "y"
         }
       }
     }

@@ -6,6 +6,10 @@
     <view style="padding: 10px;">
       <button class="uni-button" type="default" @click="updataWithOutLoading">不显示loading的更新</button>
     </view>
+    <qiun-title-bar title="同时改变opts和chartData"/>
+    <view style="width: 100%;height: 500px;">
+      <qiun-data-charts type="column" :canvas2d="true" canvasId="sdfsdf2323df" :opts="chartsOpts" :chartData="chartsDataColumn1" />
+    </view>
     <qiun-title-bar title="localdata数据更新"/>
     <view class="charts-box">
       <qiun-data-charts type="column" :localdata="chartsDatalocaldata"/>
@@ -45,6 +49,8 @@ export default {
       chartsDataLine:{},
       chartsDataRing:{},
 			chartsDataColumn:{},
+      chartsOpts:{rotate:true},
+      chartsDataColumn1:{},
       ringopts:{},
 			scrollLoadingStatus:false
     };
@@ -61,6 +67,7 @@ export default {
         this.chartsDataLine=JSON.parse(JSON.stringify(demodata.Line))
         this.chartsDataRing=JSON.parse(JSON.stringify(demodata.PieA))
 				this.chartsDataColumn=JSON.parse(JSON.stringify(demodata.Column))
+        this.chartsDataColumn1=JSON.parse(JSON.stringify(demodata.Column))
         //这里演示圆环图标题和副标题动态变化
         let tmpopts = {
           title:{
@@ -106,6 +113,7 @@ export default {
       },1000)
     },
     updataWithOutLoading(){
+      
       //模拟从服务器获取数据的过程，请替换为您封装好的request的API
       setTimeout(()=>{
         //变更图表绑定的数据，一定要【整体改变】【整体改变】【整体改变】chartData或者localdata，否则会导致多次重新渲染或者监听不到变化的问题
@@ -113,6 +121,7 @@ export default {
         let resLocaldata = this.randomLocalData(JSON.parse(JSON.stringify(demodata.localdata)))
         let resLinedata = this.randomChartData(JSON.parse(JSON.stringify(demodata.Line)))
         let resRingdata = this.randomChartData(JSON.parse(JSON.stringify(demodata.PieA)))
+        let resColiumndata = this.randomChartData(JSON.parse(JSON.stringify(demodata.Column)))
         //这里演示圆环图标题和副标题动态变化
         let tmpopts = {
           title:{
@@ -128,6 +137,10 @@ export default {
         this.chartsDataLine = resLinedata;
         this.chartsDataRing = resRingdata;
         this.ringopts = tmpopts;
+        
+        //同时改变opts和chartData
+        this.chartsOpts = {rotate:true,yAxis:{data:[{disabled:true}]}}
+        this.chartsDataColumn1 = resColiumndata
       },200)
     },
 		//滚动条加载更新
