@@ -1,227 +1,90 @@
-import uCharts from '../ucharts/u-charts.js';
-var _self;
-var canvaColumn = null;
-var canvaLineA = null;
-var canvaCandle = null;
+//index.js
+//注意！基础库【2.9.0】起支持 2d 模式，如不显示请检查基础库版本！
+import uCharts from '../../js_sdk/u-charts/u-charts.js';
+var uChartsInstance = {};
 Page({
   data: {
-    cWidth: '',
-    cHeight: '',
+    cWidth: 750,
+    cHeight: 500,
+    pixelRatio: 2,
   },
-  onLoad: function () {
-    _self=this;
-    this.cWidth = wx.getSystemInfoSync().windowWidth;
-    this.cHeight = 500 / 750 * wx.getSystemInfoSync().windowWidth;
+  onReady() {
+    //这里的第一个 750 对应 css .charts 的 width
+    const cWidth = 750 / 750 * wx.getSystemInfoSync().windowWidth;
+    //这里的 500 对应 css .charts 的 height
+    const cHeight = 500 / 750 * wx.getSystemInfoSync().windowWidth;
+    const pixelRatio = wx.getSystemInfoSync().pixelRatio;
+    this.setData({ cWidth, cHeight, pixelRatio });
     this.getServerData();
   },
-  getServerData: function() {
-    wx.request({
-      url: 'https://www.ucharts.cn/data.json',
-      data: {
-      },
-      success: function (res) {
-        console.log(res.data.data)
-        let Column = { categories: [], series: [] };
-        Column.categories = res.data.data.ColumnB.categories;
-        Column.series = res.data.data.ColumnB.series;
-        //自定义标签颜色和字体大小
-        Column.series[1].textColor = 'red';
-        Column.series[1].textSize = 18;
-        let LineA = { categories: [], series: [] };
-        //这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
-        LineA.categories = res.data.data.LineA.categories;
-        LineA.series = res.data.data.LineA.series;
-        let Candle = {categories: [],series: []};
-        //这里我后台返回的是数组，所以用等于，如果您后台返回的是单条数据，需要push进去
-        Candle.categories = res.data.data.Candle.categories;
-        Candle.series = res.data.data.Candle.series;
-        _self.showColumn("canvasColumn", Column);
-        _self.showLineA("canvasLineA", LineA);
-        _self.showCandle("canvasCandle", Candle);
-      },
-      fail: () => {
-        console.log("请点击右上角【详情】，启用不校验合法域名");
-      },
-    });
+  getServerData() {
+    //模拟从服务器获取数据时的延时
+    setTimeout(() => {
+      //模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
+      let res = {
+            categories: ["2016","2017","2018","2019","2020","2021"],
+            series: [
+              {
+                name: "目标值",
+                data: [35,36,31,33,13,34]
+              },
+              {
+                name: "完成量",
+                data: [18,27,21,24,6,28]
+              }
+            ]
+          };
+      this.drawCharts('afMCYQMEmXXVAjNQFJvvfxbLSHuxNEOL', res);
+    }, 500);
   },
-  showColumn(canvasId, chartData) {
-    let ctx = wx.createCanvasContext(canvasId, this);
-    canvaColumn = new uCharts({
-      type: 'column',
-      context: ctx,
-      legend: true,
-      fontSize: 11,
-      background: '#FFFFFF',
-      pixelRatio: 1,
-      animation: true,
-      categories: chartData.categories,
-      series: chartData.series,
-      xAxis: {
-        disableGrid: true,
-      },
-      yAxis: {
-        //disabled:true
-      },
-      dataLabel: true,
-      width: _self.cWidth ,
-      height: _self.cHeight ,
-      extra: {
-        column: {
-          type: 'group',
-          width: _self.cWidth * 0.45 / chartData.categories.length
-        }
-      }
-    });
-
-  },
-  touchColumn(e) {
-    canvaColumn.showToolTip(e, {
-      formatter: function (item, category) {
-        if (typeof item.data === 'object') {
-          return category + ' ' + item.name + ':' + item.data.value
-        } else {
-          return category + ' ' + item.name + ':' + item.data
-        }
+  drawCharts(id,data){
+    const query = wx.createSelectorQuery().in(this);
+    query.select('#' + id).fields({ node: true, size: true }).exec(res => {
+      if (res[0]) {
+        const canvas = res[0].node;
+        const ctx = canvas.getContext('2d');
+        canvas.width = res[0].width * this.data.pixelRatio;
+        canvas.height = res[0].height * this.data.pixelRatio;
+        uChartsInstance[id]=new uCharts({
+            animation: true,
+            background: "#FFFFFF",
+            canvas2d: true,
+            categories: data.categories,
+            color: ["#1890FF","#91CB74","#FAC858","#EE6666","#73C0DE","#3CA272","#FC8452","#9A60B4","#ea7ccc"],
+            context: ctx,
+            extra: {
+              column: {
+                type: "group",
+                width: 30,
+                activeBgColor: "#000000",
+                activeBgOpacity: 0.08
+              }
+            },
+            height: this.data.cHeight * this.data.pixelRatio,
+            legend: {},
+            padding: [15,15,0,5],
+            pixelRatio: this.data.pixelRatio,
+            series: data.series,
+            type: "column",
+            width: this.data.cWidth * this.data.pixelRatio,
+            xAxis: {
+              disableGrid: true
+            },
+            yAxis: {
+              data: [
+                {
+                  min: 0
+                }
+              ]
+            }
+          });
+      }else{
+        console.error("[uCharts]: 未获取到 context");
       }
     });
   },
-  showLineA(canvasId, chartData) {
-    let ctx = wx.createCanvasContext(canvasId, this);
-    canvaLineA = new uCharts({
-      type: 'line',
-      context: ctx,
-      fontSize: 11,
-      legend: true,
-      dataLabel: true,
-      dataPointShape: true,
-      background: '#FFFFFF',
-      pixelRatio: 1,
-      categories: chartData.categories,
-      series: chartData.series,
-      animation: true,
-      enableScroll: true,//开启图表拖拽功能
-      xAxis: {
-        disableGrid: false,
-        type: 'grid',
-        gridType: 'dash',
-        itemCount: 4,
-        scrollShow: true,
-        scrollAlign: 'left',
-        //scrollBackgroundColor:'#F7F7FF',//可不填写，配合enableScroll图表拖拽功能使用，X轴滚动条背景颜色,默认为 #EFEBEF
-        //scrollColor:'#DEE7F7',//可不填写，配合enableScroll图表拖拽功能使用，X轴滚动条颜色,默认为 #A6A6A6
-      },
-      yAxis: {
-        //disabled:true
-        gridType: 'dash',
-        splitNumber: 8,
-        min: 10,
-        max: 180,
-        formatter: (val) => { return val.toFixed(0) + '元' }//如不写此方法，Y轴刻度默认保留两位小数
-      },
-      width: _self.cWidth,
-      height: _self.cHeight,
-      extra: {
-        line: {
-          type: 'straight'
-        }
-      },
-    });
-
-  },
-  touchLineA(e) {
-    canvaLineA.scrollStart(e);
-  },
-  moveLineA(e) {
-    canvaLineA.scroll(e);
-  },
-  touchEndLineA(e) {
-    canvaLineA.scrollEnd(e);
-    //下面是toolTip事件，如果滚动后不需要显示，可不填写
-    canvaLineA.showToolTip(e, {
-      formatter: function (item, category) {
-        return category + ' ' + item.name + ':' + item.data
-      }
-    });
-  },
-  showCandle(canvasId, chartData) {
-    let ctx = wx.createCanvasContext(canvasId, this);
-    canvaCandle = new uCharts({
-      type: 'candle',
-      context: ctx,
-      fontSize: 11,
-      legend: true,
-      background: '#FFFFFF',
-      pixelRatio: 1,
-      categories: chartData.categories,
-      series: chartData.series,
-      animation: true,
-      enableScroll: true,
-      xAxis: {
-        disableGrid: true,
-        itemCount: 20,
-        scrollShow: true,
-        scrollAlign: 'right',
-        labelCount:4,
-      },
-      yAxis: {
-        //disabled:true
-        gridType: 'dash',
-        splitNumber: 5,
-        formatter: (val) => {
-          return val.toFixed(0)
-        }
-      },
-      width: _self.cWidth,
-      height: _self.cHeight,
-      dataLabel: false,
-      dataPointShape: true,
-      extra: {
-        candle: {
-          color: {
-            upLine: '#f04864',
-            upFill: '#f04864',
-            downLine: '#2fc25b',
-            downFill: '#2fc25b'
-          },
-          average: {
-            show: true,
-            name: ['MA5', 'MA10', 'MA30'],
-            day: [5, 10, 30],
-            color: ['#1890ff', '#2fc25b', '#facc14']
-          }
-        },
-        tooltip: {
-          bgColor: '#000000',
-          bgOpacity: 0.7,
-          gridType: 'dash',
-          dashLength: 5,
-          gridColor: '#1890ff',
-          fontColor: '#FFFFFF',
-          horizentalLine: true,
-          xAxisLabel: true,
-          yAxisLabel: true,
-          labelBgColor: '#DFE8FF',
-          labelBgOpacity: 0.95,
-          labelAlign: 'left',
-          labelFontColor: '#666666'
-        }
-      },
-    });
-
-  },
-  touchCandle(e) {
-    canvaCandle.scrollStart(e);
-  },
-  moveCandle(e) {
-    canvaCandle.scroll(e);
-  },
-  touchEndCandle(e) {
-    canvaCandle.scrollEnd(e);
-    //下面是toolTip事件，如果滚动后不需要显示，可不填写
-    canvaCandle.showToolTip(e, {
-      formatter: function (item, category) {
-        return category + ' ' + item.name + ':' + item.data
-      }
-    });
-  },
+  tap(e){
+    uChartsInstance[e.target.id].touchLegend(e);
+    uChartsInstance[e.target.id].showToolTip(e);
+  }
 })
