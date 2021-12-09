@@ -1,10 +1,5 @@
-.qiun-charts {
-	width: 750rpx;
-	height: 500rpx;
-	background-color: #FFFFFF;
-}
+/*index.qss*/
 .charts {
-	width: 750rpx;
-	height: 500rpx;
-	background-color: #FFFFFF;
+  width: 750rpx;
+  height: 500rpx;
 }
