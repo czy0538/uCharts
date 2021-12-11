@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Canvas } from '@tarojs/components';
-import uCharts from '../ucharts/u-charts.js';
+import uCharts from '../../js_sdk/u-charts/u-charts.js';
 import './index.scss';
 var canvaColumn = null;
 var canvaLineA = null;
