@@ -19,7 +19,7 @@
     </view>
     <qiun-title-bar title="温度计图表"/>
     <view class="charts-box">
-      <qiun-data-charts type="column" :opts="{extra:{column:{type:'meter'}}}" :chartData="chartsDataColumn3"/>
+      <qiun-data-charts type="column" :opts="{extra:{column:{type:'meter',meterBorde:1,meterFillColor:'#FFFFFF'}}}" :chartData="chartsDataColumn3"/>
     </view>
     <qiun-title-bar title="柱状图滚动条"/>
     <!-- 开启滚动条，需要开启拖动功能，即:ontouch="true" ，微信小程序需要开启canvas2d，否则会很卡，开启2d需要指定canvasId -->
