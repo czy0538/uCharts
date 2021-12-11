@@ -1,5 +1,5 @@
 <!-- 
- * qiun-data-charts 秋云高性能跨全端图表组件 v2.3.6-20211201
+ * qiun-data-charts 秋云高性能跨全端图表组件 v2.3.6-20211211
  * Copyright (c) 2021 QIUN® 秋云 https://www.ucharts.cn All rights reserved.
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * 复制使用请保留本段注释，感谢支持开源！
@@ -1285,6 +1285,10 @@ export default {
               x:resdata.event.offsetX,y:resdata.event.offsetY
             }))
             that[cid].callMethod('emitMsg',{name:"getIndex", params:{type:"getIndex", event:event, currentIndex:resdata.dataIndex, value:resdata.data, seriesName: resdata.seriesName,id:cid}})
+          })
+          // 增加ECharts的highlight消息，实现按下移动返回索引功能。add by onefish 创建于 2021-12-11 09:50
+          cfe.instance[cid].on('highlight', resdata => {
+            that[cid].callMethod('emitMsg',{name:"getHighlight", params:{type:"highlight", dataIndex:resdata.batch[0].dataIndex, id:cid}})
           })
         }
         this.updataEChart(cid,cfe.option[cid])
