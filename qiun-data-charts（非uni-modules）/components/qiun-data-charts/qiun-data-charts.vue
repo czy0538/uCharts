@@ -1286,6 +1286,10 @@ export default {
             }))
             that[cid].callMethod('emitMsg',{name:"getIndex", params:{type:"getIndex", event:event, currentIndex:resdata.dataIndex, value:resdata.data, seriesName: resdata.seriesName,id:cid}})
           })
+          // 增加ECharts的highlight消息，实现按下移动返回索引功能。
+          cfe.instance[cid].on('highlight', resdata => {
+		  	that[cid].callMethod('emitMsg',{name:"getHighlight", params:{type:"highlight", dataIndex:resdata.batch[0].dataIndex, id:cid}})
+		  })
         }
         this.updataEChart(cid,cfe.option[cid])
       }else{
