@@ -1,4 +1,4 @@
-﻿# UnPackage
+# UnPackage
 /unpackage
 
 # Logs
@@ -81,9 +81,4 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
-/qiun-data-charts/unpackage
-/qiun-data-charts（uni-modules）/unpackage/
-/uCharts-demo-nvue/unpackage
-/uCharts-demo-nvue/unpackage/
-/示例项目/支付宝小程序（原生）/.tea/
-/示例项目/支付宝小程序（原生）/.mini-ide/
+/uni-app/示例项目/组件/qiun-data-charts（uni-modules）/unpackage/
