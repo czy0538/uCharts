@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "uniCloud数据渲染图表",
+  "usingComponents": {
+    "qiun-title-bar": "/components/qiun-title-bar/qiun-title-bar",
+    "uni-datetime-picker": "/uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker",
+    "qiun-data-charts": "/uni_modules/qiun-data-charts/components/qiun-data-charts/qiun-data-charts"
+  }
+}

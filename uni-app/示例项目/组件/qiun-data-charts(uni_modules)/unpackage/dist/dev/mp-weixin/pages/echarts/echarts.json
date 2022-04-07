@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "H5、App用ECharts，其他端用uCharts",
+  "usingComponents": {
+    "qiun-title-bar": "/components/qiun-title-bar/qiun-title-bar",
+    "qiun-data-charts": "/uni_modules/qiun-data-charts/components/qiun-data-charts/qiun-data-charts"
+  }
+}
