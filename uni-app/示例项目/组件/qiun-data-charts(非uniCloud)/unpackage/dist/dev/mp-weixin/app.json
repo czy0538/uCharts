@@ -1,0 +1,23 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/ucharts/ucharts",
+    "pages/echarts/echarts",
+    "pages/other/other",
+    "pages/tab/tab",
+    "pages/layout/layout",
+    "pages/format-e/format-e",
+    "pages/format-u/format-u",
+    "pages/canvas/canvas",
+    "pages/updata/updata"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "秋云高性能跨全端图表组件",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json"
+}

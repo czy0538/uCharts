@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "ECharts的formatter用法",
+  "usingComponents": {
+    "qiun-title-bar": "/components/qiun-title-bar/qiun-title-bar",
+    "qiun-data-charts": "/components/qiun-data-charts/qiun-data-charts"
+  }
+}
