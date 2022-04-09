@@ -1,6 +1,6 @@
 <div align="center">
-![logo](./logo.png)
 
+![logo](./logo.png)
 
 [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 [![fork](https://gitee.com/uCharts/uCharts/badge/fork.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/members)
