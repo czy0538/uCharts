@@ -1,4 +1,15 @@
-# 百度小程序 uCharts组件
+<h1 align="center">百度小程序 uCharts组件</h1>
+
+<div align="center">
+
+![logo](https://img-blog.csdnimg.cn/4a276226973841468c1be356f8d9438b.png)
+
+[![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
+[![fork](https://gitee.com/uCharts/uCharts/badge/fork.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/members)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![npm package](https://img.shields.io/npm/v/@qiun/ucharts.svg?style=flat-square)](https://www.npmjs.com/~qiun)
+
+</div>
 
 ## uCharts简介
 
@@ -6,7 +17,7 @@
 
 ## 官方网站
 
-[https://www.ucharts.cn](https://www.ucharts.cn)
+## [https://www.ucharts.cn](https://www.ucharts.cn)
 
 ## 快速体验
 

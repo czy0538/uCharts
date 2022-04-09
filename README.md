@@ -51,6 +51,11 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 
 ## 合作伙伴
 
+[![uni-app](https://www.ucharts.cn/images/web/guide/links/uni-app.png)](https://uniapp.dcloud.io/)
+[![FinClip](https://www.ucharts.cn/images/web/guide/links/FinClip.png)](https://www.finclip.com/?from=ucharts)
+[![DIY官网](https://www.ucharts.cn/images/web/guide/links/diy-gw.png)](https://www.diygw.com/)
+[![uView](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
+[![图鸟UI](https://www.ucharts.cn/images/web/guide/links/tuniao.png)](https://ext.dcloud.net.cn/plugin?id=7088)
 
 ## 特别鸣谢
 
