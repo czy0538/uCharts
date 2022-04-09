@@ -1,3 +1,15 @@
+<div align="center">
+![logo](./logo.png)
+
+
+[![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
+[![fork](https://gitee.com/uCharts/uCharts/badge/fork.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/members)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![npm package](https://img.shields.io/npm/v/@qiun/ucharts.svg?style=flat-square)](https://www.npmjs.com/~qiun)
+
+</div>
+
+
 ## uCharts简介
 
 `uCharts`是一款基于`canvas API`开发的适用于所有前端应用的图表库，开发者编写一套代码，可运行到 Web、iOS、Android（基于 uni-app / taro ）、以及各种小程序（微信/支付宝/百度/头条/飞书/QQ/快手/钉钉/淘宝）、快应用等更多支持 canvas API 的平台。
@@ -22,10 +34,10 @@ uCharts官方拥有4个2000人的QQ群及专属VIP会员群支持，庞大的用
 
 #### 官方交流群
 - 交流群1：371774600（已满）
-- 交流群2：619841586
+- 交流群2：619841586（已满）
 - 交流群3：955340127（已满）
 - 交流群4：641669795
-- 口令`uniapp`
+- 口令`码云`
 
 #### 专属VIP会员群
 - 开通会员后详见【账号详情】页面中顶部的滚动通知
@@ -44,9 +56,10 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 
 
 ## 相关链接
-- [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)
 - [uCharts官网](https://www.ucharts.cn)
+- [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
+- [uCharts npm开源地址](https://www.ucharts.cn)
 - [图表组件在项目中的应用 ReportPlus数据报表](https://gitee.com/ureport/ReportPlus) 
 - [HasChat:一款极简聊天应用，比较完整，略好看](https://gitee.com/howcode/has-chat) 
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
