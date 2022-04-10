@@ -16,7 +16,7 @@
 
 ## 官方网站
 
-[https://www.ucharts.cn](https://www.ucharts.cn)
+## [https://www.ucharts.cn](https://www.ucharts.cn)
 
 ## 快速体验
 
@@ -56,6 +56,9 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 [![DIY官网](https://www.ucharts.cn/images/web/guide/links/diy-gw.png)](https://www.diygw.com/)
 [![uView](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
 [![图鸟UI](https://www.ucharts.cn/images/web/guide/links/tuniao.png)](https://ext.dcloud.net.cn/plugin?id=7088)
+[![FirstUI](https://www.ucharts.cn/images/web/guide/links/first.png)](https://www.firstui.cn/)
+[![nProUI](https://www.ucharts.cn/images/web/guide/links/nPro.png)](https://ext.dcloud.net.cn/plugin?id=5169)
+
 
 ## 特别鸣谢
 
@@ -64,7 +67,7 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 - [uCharts官网](https://www.ucharts.cn)
 - [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
-- [uCharts npm开源地址](https://www.ucharts.cn)
+- [uCharts npm开源地址](https://www.npmjs.com/~qiun)
 - [图表组件在项目中的应用 ReportPlus数据报表](https://gitee.com/ureport/ReportPlus) 
 - [HasChat:一款极简聊天应用，比较完整，略好看](https://gitee.com/howcode/has-chat) 
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
