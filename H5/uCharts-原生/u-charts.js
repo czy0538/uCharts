@@ -7257,5 +7257,3 @@ uCharts.prototype.scrollEnd = function(e) {
     this.scrollOption.moveCurrent = 0;
   }
 };
-
-export default uCharts;

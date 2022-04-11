@@ -12,7 +12,7 @@
 
 ## uCharts简介
 
-`uCharts`是一款基于`canvas API`开发的适用于所有前端应用的图表库，开发者编写一套代码，可运行到 Web、iOS、Android（基于 uni-app / taro ）、以及各种小程序（微信/支付宝/百度/头条/飞书/QQ/快手/钉钉/淘宝）、快应用等更多支持 canvas API 的平台。
+`uCharts`是一款基于`canvas API`开发的适用于所有前端应用的图表库，开发者编写一套代码，可运行到 Web、iOS、Android（基于 uni-app / taro ）、以及各种小程序（微信/支付宝/FinClip/百度/头条/飞书/QQ/快手/钉钉/淘宝）、快应用等更多支持 canvas API 的平台。
 
 ## 官方网站
 
@@ -54,10 +54,12 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 [![uni-app](https://www.ucharts.cn/images/web/guide/links/uni-app.png)](https://uniapp.dcloud.io/)
 [![FinClip](https://www.ucharts.cn/images/web/guide/links/FinClip.png)](https://www.finclip.com/?from=ucharts)
 [![DIY官网](https://www.ucharts.cn/images/web/guide/links/diy-gw.png)](https://www.diygw.com/)
-[![uView](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
+[![HasChat](https://www.ucharts.cn/images/web/guide/links/haschat.png)](https://gitee.com/howcode/has-chat)
+[![uViewUI](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
 [![图鸟UI](https://www.ucharts.cn/images/web/guide/links/tuniao.png)](https://ext.dcloud.net.cn/plugin?id=7088)
 [![FirstUI](https://www.ucharts.cn/images/web/guide/links/first.png)](https://www.firstui.cn/)
 [![nProUI](https://www.ucharts.cn/images/web/guide/links/nPro.png)](https://ext.dcloud.net.cn/plugin?id=5169)
+[![GraceUI](https://www.ucharts.cn/images/web/guide/links/grace.png)](https://www.graceui.com/)
 
 
 ## 特别鸣谢
