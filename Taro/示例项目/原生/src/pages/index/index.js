@@ -56,7 +56,7 @@ export default class Index extends Component {
 
   showColumn = (canvasId, chartData)=>{
     const { cWidth, cHeight, pixelRatio } = this.state;
-    let ctx = Taro.createCanvasContext(canvasId, this);
+    let ctx = Taro.createCanvasContext(canvasId);
     canvaColumn = new uCharts({
       type: 'column',
       context: ctx,
@@ -98,7 +98,7 @@ export default class Index extends Component {
   }
   showLineA = (canvasId, chartData)=>{
     const { cWidth, cHeight, pixelRatio } = this.state;
-    let ctx = Taro.createCanvasContext(canvasId, this);
+    let ctx = Taro.createCanvasContext(canvasId);
     canvaLineA = new uCharts({
       type: 'line',
       context: ctx,
@@ -160,7 +160,7 @@ export default class Index extends Component {
 
   showCandle = (canvasId, chartData)=>{
     const { cWidth, cHeight, pixelRatio } = this.state;
-    let ctx = Taro.createCanvasContext(canvasId, this);
+    let ctx = Taro.createCanvasContext(canvasId);
     canvaCandle = new uCharts({
       type: 'candle',
       context: ctx,
