@@ -857,8 +857,8 @@ export default {
     },
     _clearChart() {
       let cid = this.cid
-      if (this.echrts !== true) {
-        const ctx = uni.createCanvasContext(cid, this);
+      if (this.echrts !== true && cfu.option[cid] && cfu.option[cid].context) {
+        const ctx = cfu.option[cid].context;
         ctx.clearRect(0, 0, this.cWidth, this.cHeight);
         ctx.draw();
       }
