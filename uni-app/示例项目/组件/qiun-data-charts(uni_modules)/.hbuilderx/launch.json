@@ -10,6 +10,10 @@
      	{
      		"launchtype" : "remote"
      	},
+     	"mp-alipay" : 
+     	{
+     		"launchtype" : "remote"
+     	},
      	"mp-weixin" : 
      	{
      		"launchtype" : "remote"

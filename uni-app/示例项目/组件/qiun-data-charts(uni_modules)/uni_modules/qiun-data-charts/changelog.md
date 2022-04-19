@@ -1,3 +1,32 @@
+## 2.4.2-20220420（2022-04-20）
+## 重要！此版本uCharts新增了很多功能，修复了诸多已知问题
+- 秋云图表组件 新增onzoom开启双指缩放功能（仅uCharts），前提需要直角坐标系类图表类型，并且ontouch为true、opts.enableScroll为true，详见实例项目K线图
+- 秋云图表组件 新增optsWatch是否监听opts变化，关闭optsWatch后，动态修改opts不会触发图表重绘
+- 秋云图表组件 修复开启canvas2d功能后，动态更新数据后画布闪动的bug
+- 秋云图表组件 去除directory属性，改为自动获取echarts.min.js路径（升级不受影响）
+- 秋云图表组件 增加getImage()方法及@getImage事件，通过ref调用getImage()方法获，触发@getImage事件获取当前画布的base64图片文件流。
+- 秋云图表组件 支付宝、字节跳动、飞书、快手小程序支持开启canvas2d同层渲染设置。
+- 秋云图表组件 新增加【非uniCloud】版本组件，避免有些不需要uniCloud的使用组件发布至小程序需要提交隐私声明问题，请到码云[【非uniCloud版本】](https://gitee.com/uCharts/uCharts/tree/master/uni-app/uCharts-%E7%BB%84%E4%BB%B6)，或npm[【非uniCloud版本】](https://www.npmjs.com/package/@qiun/uni-ucharts)下载使用。
+- uCharts.js 新增dobuleZoom双指缩放功能
+- uCharts.js 新增山峰图type="mount"，数据格式为饼图类格式，不需要传入categories，具体详见新版官网在线演示
+- uCharts.js 修复折线图当数据中存在null时tooltip报错的bug
+- uCharts.js 修复饼图类当画布比较小时自动计算的半径是负数报错的bug
+- uCharts.js 统一各图表类型的series.formatter格式化方法的形参为(val, index, series, opts)，方便格式化时有更多参数可用
+- uCharts.js 标记线功能增加labelText自定义显示文字，增加labelAlign标签显示位置（左侧或右侧），增加标签显示位置微调labelOffsetX、labelOffsetY
+- uCharts.js 修复条状图当数值很小时开启圆角后样式错误的bug
+- uCharts.js 修复X轴开启disabled后，X轴仍占用空间的bug
+- uCharts.js 修复X轴开启滚动条并且开启rotateLabel后，X轴文字与滚动条重叠的bug
+- uCharts.js 增加X轴rotateAngle文字旋转自定义角度，取值范围(-90至90)
+- uCharts.js 修复地图文字标签层级显示不正确的bug
+- uCharts.js 修复饼图、圆环图、玫瑰图当数据全部为0的时候不显示数据标签的bug
+- uCharts.js 修复当opts.padding上边距为0时，Y轴顶部刻度标签位置不正确的bug
+
+## 另外我们还开发了各大原生小程序组件，已发布至码云和npm
+[https://gitee.com/uCharts/uCharts](https://gitee.com/uCharts/uCharts)
+[https://www.npmjs.com/~qiun](https://www.npmjs.com/~qiun)
+
+## 对于原生uCharts文档我们已上线新版官方网站，详情点击下面链接进入官网
+[https://www.uCharts.cn/v2/](https://www.ucharts.cn/v2/)
 ## 2.3.7-20220122（2022-01-22）
 ## 重要！使用vue3编译，请使用cli模式并升级至最新依赖，HbuilderX编译需要使用3.3.8以上版本
 - uCharts.js 修复uni-app平台组件模式使用vue3编译到小程序报错的bug。

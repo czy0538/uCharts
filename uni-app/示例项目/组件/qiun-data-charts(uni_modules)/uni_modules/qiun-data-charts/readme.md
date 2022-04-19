@@ -1,13 +1,12 @@
-<div align="center">
 
 ![logo](https://img-blog.csdnimg.cn/4a276226973841468c1be356f8d9438b.png)
+
 
 [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 [![fork](https://gitee.com/uCharts/uCharts/badge/fork.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/members)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![npm package](https://img.shields.io/npm/v/@qiun/ucharts.svg?style=flat-square)](https://www.npmjs.com/~qiun)
 
-</div>
 
 ## uCharts简介
 
@@ -50,7 +49,14 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 
 ## 合作伙伴
 
-[![DIY官网](https://www.ucharts.cn/images/web/guide/links/diy-gw.png)](https://www.diygw.com/)[![uView](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
+[![DIY官网](https://www.ucharts.cn/images/web/guide/links/diy-gw.png)](https://www.diygw.com/)
+[![HasChat](https://www.ucharts.cn/images/web/guide/links/haschat.png)](https://gitee.com/howcode/has-chat)
+[![uViewUI](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
+[![图鸟UI](https://www.ucharts.cn/images/web/guide/links/tuniao.png)](https://ext.dcloud.net.cn/plugin?id=7088)
+[![FirstUI](https://www.ucharts.cn/images/web/guide/links/first.png)](https://www.firstui.cn/)
+[![nProUI](https://www.ucharts.cn/images/web/guide/links/nPro.png)](https://ext.dcloud.net.cn/plugin?id=5169)
+[![GraceUI](https://www.ucharts.cn/images/web/guide/links/grace.png)](https://www.graceui.com/)
+
 
 ## 特别鸣谢
 
@@ -60,7 +66,6 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 - [DCloud插件市场地址](https://ext.dcloud.net.cn/plugin?id=271)
 - [uCharts码云开源托管地址](https://gitee.com/uCharts/uCharts) [![star](https://gitee.com/uCharts/uCharts/badge/star.svg?theme=gvp)](https://gitee.com/uCharts/uCharts/stargazers)
 - [uCharts npm开源地址](https://www.ucharts.cn)
-- [图表组件在项目中的应用 ReportPlus数据报表](https://gitee.com/ureport/ReportPlus) 
-- [HasChat:一款极简聊天应用，比较完整，略好看](https://gitee.com/howcode/has-chat) 
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
 - [ECharts配置手册](https://echarts.apache.org/zh/option.html)
+- [图表组件在项目中的应用 ReportPlus数据报表](https://gitee.com/ureport/ReportPlus) 
