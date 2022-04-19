@@ -19,7 +19,7 @@
 'use strict';
 
 var config = {
-  version: 'v2.4.0-20220401',
+  version: 'v2.4.2-20220420',
   yAxisWidth: 15,
   xAxisHeight: 22,
   xAxisTextPadding: 3,
@@ -3857,6 +3857,9 @@ function drawLineDataPoints(series, opts, config, context) {
 
 function drawMixDataPoints(series, opts, config, context) {
   let process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+  let xAxisData = opts.chartData.xAxisData,
+    xAxisPoints = xAxisData.xAxisPoints,
+    eachSpacing = xAxisData.eachSpacing;
   let columnOption = assign({}, {
     width: eachSpacing / 2,
     barBorderCircle: false,
@@ -3867,9 +3870,6 @@ function drawMixDataPoints(series, opts, config, context) {
     customColor: [],
     colorStop: 0,
   }, opts.extra.mix.column);
-  let xAxisData = opts.chartData.xAxisData,
-    xAxisPoints = xAxisData.xAxisPoints,
-    eachSpacing = xAxisData.eachSpacing;
   let endY = opts.height - opts.area[2];
   let calPoints = [];
   var columnIndex = 0;
@@ -6087,12 +6087,10 @@ function drawCharts(type, opts, config, context) {
     let totalWidth = eachSpacing * (xAxisPoints.length - 1);
     let screenWidth = endX - startX;
     offsetLeft = screenWidth - totalWidth;
-    _this.scrollOption = {
-      currentOffset: offsetLeft,
-      startTouchX: offsetLeft,
-      distance: 0,
-      lastMoveTime: 0
-    };
+    _this.scrollOption.currentOffset = offsetLeft;
+    _this.scrollOption.startTouchX = offsetLeft;
+    _this.scrollOption.distance = 0;
+    _this.scrollOption.lastMoveTime = 0;
     opts._scrollDistance_ = offsetLeft;
   }
 
@@ -6792,37 +6790,33 @@ uCharts.prototype.dobuleZoom = function(e) {
   if (e.changedTouches.length < 2) {
     return;
   }
-  // 获取双指的中间点
-  const tcs = e.changedTouches;
-  const centerX = Math.min(tcs[0].x, tcs[1].x) + Math.abs(tcs[0].x - tcs[1].x)/2;
-  // 中间点的索引值
-  if(!this.scrollOption.moveCurrent){
-    this.scrollOption.moveCurrent = this.getCurrentDataIndex({changedTouches:[{x:centerX,y:tcs[0].y}]}).index;
+  for (var i = 0; i < e.changedTouches.length; i++) {
+    e.changedTouches[i].x = e.changedTouches[i].x ? e.changedTouches[i].x : e.changedTouches[i].clientX;
+    e.changedTouches[i].y = e.changedTouches[i].y ? e.changedTouches[i].y : e.changedTouches[i].clientY;
   }
-  // 获取双指的距离
-  function _sacle(x1,y1,x2,y2){
-    if(x1 == x2){
-      return Math.abs(y1 - y2);
-    }
-    if(y1 == y2){
-      return Math.abs(x1 - x2);
-    }
-    let x = Math.abs(x1 - x2);
-    let y = Math.abs(y1 - y2);
-    let len = Math.sqrt(x*x + y*y);
-    return len;
-  };
-  let len = _sacle(tcs[0].x,tcs[0].y,tcs[1].x,tcs[1].y);
-  if(!this.scrollOption.moveLength){
-    this.scrollOption.moveLength = len;
+  
+  const tcs = e.changedTouches;
+  
+  const xlength = Math.abs(tcs[0].x - tcs[1].x);
+  
+  // 记录初始的两指之间的数据
+  if(!this.scrollOption.moveCount){
+    const moveCurrent1 = this.getCurrentDataIndex({changedTouches:[{x:tcs[0].x,y:this.opts.area[0]}]}).index;
+    const moveCurrent2 = this.getCurrentDataIndex({changedTouches:[{x:tcs[1].x,y:this.opts.area[0]}]}).index;
+    const moveCount = Math.abs(moveCurrent1 - moveCurrent2);
+    this.scrollOption.moveCount = moveCount;
+    this.scrollOption.moveCurrent1 = Math.min(moveCurrent1, moveCurrent2);
+    this.scrollOption.moveCurrent2 = Math.max(moveCurrent1, moveCurrent2);
     return;
   }
-  // 根据移动距离改变itemCount
-  let gap = this.scrollOption.moveLength > len ? 1:-1;
-  let itemCount = this.opts.xAxis.itemCount || 4;
-  itemCount = itemCount + gap;
-  itemCount = itemCount <= 2 ? 2 : itemCount;
-  itemCount = itemCount >=  this.opts.categories.length ? this.opts.categories.length : itemCount;
+  
+  let currentEachSpacing = xlength * this.opts.pix / this.scrollOption.moveCount;
+  
+  let itemCount = (this.opts.width - this.opts.area[1] - this.opts.area[3]) / currentEachSpacing;
+  
+  itemCount = itemCount <= 4 ? 4 : itemCount;
+  itemCount = itemCount >= this.opts.categories.length ? this.opts.categories.length : itemCount;
+  
   this.opts.animation = false;
   this.opts.xAxis.itemCount = itemCount;
   // 重新计算滚动条偏移距离
@@ -6832,10 +6826,11 @@ uCharts.prototype.dobuleZoom = function(e) {
     startX = _getXAxisPoints0.startX,
     endX = _getXAxisPoints0.endX,
     eachSpacing = _getXAxisPoints0.eachSpacing;
-  let currentLeft = eachSpacing * this.scrollOption.moveCurrent;
+  let currentLeft = eachSpacing * this.scrollOption.moveCurrent1;
   let screenWidth = endX - startX;
   let MaxLeft = screenWidth - eachSpacing * (xAxisPoints.length - 1);
-  offsetLeft = -currentLeft+centerX+this.opts.area[3]+eachSpacing;
+  offsetLeft = -currentLeft+Math.min(tcs[0].x,tcs[1].x)*this.opts.pix-this.opts.area[3]-eachSpacing;
+  
   if (offsetLeft > 0) {
     offsetLeft = 0;
   }
@@ -6843,7 +6838,6 @@ uCharts.prototype.dobuleZoom = function(e) {
     offsetLeft = MaxLeft;
   }
   this.scrollOption.currentOffset= offsetLeft;
-  this.scrollOption.moveLength= len;
   this.scrollOption.startTouchX= 0;
   this.scrollOption.distance=0;
   calValidDistance(this, offsetLeft, this.opts.chartData, this.config, this.opts);
@@ -7253,7 +7247,6 @@ uCharts.prototype.scrollEnd = function(e) {
       distance = _scrollOption.distance;
     this.scrollOption.currentOffset = currentOffset + distance;
     this.scrollOption.distance = 0;
-    this.scrollOption.moveLength = 0;
-    this.scrollOption.moveCurrent = 0;
+    this.scrollOption.moveCount = 0;
   }
 };
