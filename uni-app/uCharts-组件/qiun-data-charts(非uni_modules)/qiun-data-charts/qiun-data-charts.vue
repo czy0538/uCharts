@@ -1275,19 +1275,22 @@ export default {
         cfe.option[cid] = rddeepCloneAssign({}, eopts);
       }
       let newData = eopts.chartData;
-      //挂载categories和series
-      if(cfe.option[cid].xAxis && cfe.option[cid].xAxis.type && cfe.option[cid].xAxis.type === 'category'){
-        cfe.option[cid].xAxis.data = newData.categories
+      if(newData){
+        //挂载categories和series
+        if(cfe.option[cid].xAxis && cfe.option[cid].xAxis.type && cfe.option[cid].xAxis.type === 'category'){
+          cfe.option[cid].xAxis.data = newData.categories
+        }
+        if(cfe.option[cid].yAxis && cfe.option[cid].yAxis.type && cfe.option[cid].yAxis.type === 'category'){
+          cfe.option[cid].yAxis.data = newData.categories
+        }
+        cfe.option[cid].series = []
+        for (var i = 0; i < newData.series.length; i++) {
+          cfe.option[cid].seriesTemplate = cfe.option[cid].seriesTemplate ? cfe.option[cid].seriesTemplate : {}
+          let Template = rddeepCloneAssign({},cfe.option[cid].seriesTemplate,newData.series[i])
+          cfe.option[cid].series.push(Template)
+        }
       }
-      if(cfe.option[cid].yAxis && cfe.option[cid].yAxis.type && cfe.option[cid].yAxis.type === 'category'){
-        cfe.option[cid].yAxis.data = newData.categories
-      }
-      cfe.option[cid].series = []
-      for (var i = 0; i < newData.series.length; i++) {
-        cfe.option[cid].seriesTemplate = cfe.option[cid].seriesTemplate ? cfe.option[cid].seriesTemplate : {}
-        let Template = rddeepCloneAssign({},cfe.option[cid].seriesTemplate,newData.series[i])
-        cfe.option[cid].series.push(Template)
-      }
+      
       if (typeof window.echarts === 'object') {
           this.newEChart()
       }else{
