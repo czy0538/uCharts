@@ -68,4 +68,4 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 - [uCharts npm开源地址](https://www.ucharts.cn)
 - [ECharts官网](https://echarts.apache.org/zh/index.html)
 - [ECharts配置手册](https://echarts.apache.org/zh/option.html)
-- [图表组件在项目中的应用 ReportPlus数据报表](https://gitee.com/ureport/ReportPlus) 
+- [图表组件在项目中的应用 ReportPlus数据报表](https://www.ucharts.cn/v2/#/layout/info?id=1) 
