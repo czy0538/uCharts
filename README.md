@@ -52,11 +52,11 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 ## 合作伙伴
 
 [![uni-app](https://www.ucharts.cn/images/web/guide/links/uni-app.png)](https://uniapp.dcloud.io/)
-[![FinClip](https://www.ucharts.cn/images/web/guide/links/FinClip.png)](https://www.finclip.com/?from=ucharts)
 [![DIY官网](https://www.ucharts.cn/images/web/guide/links/diy-gw.png)](https://www.diygw.com/)
 [![HasChat](https://www.ucharts.cn/images/web/guide/links/haschat.png)](https://gitee.com/howcode/has-chat)
 [![uViewUI](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
 [![图鸟UI](https://www.ucharts.cn/images/web/guide/links/tuniao.png)](https://ext.dcloud.net.cn/plugin?id=7088)
+[![thorui](https://www.ucharts.cn/images/web/guide/links/thorui.png)](https://ext.dcloud.net.cn/publisher?id=202)
 [![FirstUI](https://www.ucharts.cn/images/web/guide/links/first.png)](https://www.firstui.cn/)
 [![nProUI](https://www.ucharts.cn/images/web/guide/links/nPro.png)](https://ext.dcloud.net.cn/plugin?id=5169)
 [![GraceUI](https://www.ucharts.cn/images/web/guide/links/grace.png)](https://www.graceui.com/)

@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "动态更新数据示例",
-  "usingComponents": {
-    "qiun-title-bar": "/components/qiun-title-bar/qiun-title-bar",
-    "qiun-data-charts": "/uni_modules/qiun-data-charts/components/qiun-data-charts/qiun-data-charts"
-  }
-}

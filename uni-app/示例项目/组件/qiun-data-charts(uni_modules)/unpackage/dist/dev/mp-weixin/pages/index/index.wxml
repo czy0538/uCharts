@@ -1,1 +1,0 @@
-<view class="content"><block wx:for="{{list}}" wx:for-item="item" wx:for-index="index" wx:key="index"><block><view data-event-opts="{{[['tap',[['gotourl',['$0'],[[['list','',index,'url']]]]]]]}}" class="list-box" bindtap="__e">{{item.name}}</view></block></block></view>

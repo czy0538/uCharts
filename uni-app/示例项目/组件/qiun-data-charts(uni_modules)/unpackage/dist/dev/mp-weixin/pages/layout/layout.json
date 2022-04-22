@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "特殊布局示例",
-  "usingComponents": {
-    "qiun-title-bar": "/components/qiun-title-bar/qiun-title-bar",
-    "qiun-data-charts": "/uni_modules/qiun-data-charts/components/qiun-data-charts/qiun-data-charts",
-    "test-charts": "/components/test-charts/test-charts"
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "原生用法示例（非组件）",
-  "usingComponents": {
-    "qiun-title-bar": "/components/qiun-title-bar/qiun-title-bar"
-  }
-}
