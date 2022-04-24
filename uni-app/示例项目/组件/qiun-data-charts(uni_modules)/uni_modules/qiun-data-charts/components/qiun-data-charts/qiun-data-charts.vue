@@ -97,7 +97,7 @@
     </block>
     <!-- #endif -->
     <!-- 其他小程序通过vue渲染图表 -->
-    <!-- #ifdef MP-360 || MP-BAIDU || MP-QQ || MP-TOUTIAO || MP-WEIXIN || MP-KUAISHOU || MP-LARK-->
+    <!-- #ifdef MP-360 || MP-BAIDU || MP-QQ || MP-TOUTIAO || MP-WEIXIN || MP-KUAISHOU || MP-LARK || MP-JD -->
     <block v-if="type2d">
       <view v-if="ontouch" @tap="_tap">
         <canvas
