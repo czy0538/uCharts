@@ -514,11 +514,11 @@ export default {
       handler(val, oldval) {
         if (typeof val === 'object') {
           if (JSON.stringify(val) !== JSON.stringify(oldval)) {
+            this._clearChart();
             if (val.series && val.series.length > 0) {
               this.beforeInit();
             }else{
               this.mixinDatacomLoading = true;
-              this._clearChart();
               this.showchart = false;
               this.mixinDatacomErrorMessage = null;
             }
@@ -859,8 +859,10 @@ export default {
       let cid = this.cid
       if (this.echrts !== true && cfu.option[cid] && cfu.option[cid].context) {
         const ctx = cfu.option[cid].context;
-        ctx.clearRect(0, 0, this.cWidth, this.cHeight);
-        ctx.draw();
+        if(typeof ctx === "object"){
+          ctx.clearRect(0, 0, this.cWidth, this.cHeight);
+          ctx.draw();
+        }
       }
     },
     init() {

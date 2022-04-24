@@ -1,4 +1,32 @@
 
+
+## <font color='red'>写给uCharts使用者的一封信</font>
+<font color='red'>
+亲爱的用户：
+
+- 由于最近上线的官网中实行了部分收费体验，收到了许多用户的使用反馈，大致反馈的问题都指向同一矛头：为何新官网的在线工具也要收费？对于这件事，我们深表歉意。由于新官网本身未提供技术文档，使得用户误以为我们对文档实行了收费。经我们连夜整改，新官网目前已经将技术文档开放出来供大家阅读使用，并免费对外开放了【演示】中的查看全端全平台的代码的功能，为此再次向所受影响的用户们致以诚恳的歉意。
+
+- 其次，我们须澄清几点，如下：
+1. uCharts的插件本身遵循开源原则，并不收费，用户可自行到DCloud市场与Gitee码云上获取源码
+2. uCharts的技术文档永久对用户开放
+3. 收费内容仅针对原生工具、组件工具、定制功能以及模板市场的部分收费模板
+
+- uCharts为什么实行收费原则？
+1. 服务器的费用支撑
+2. 团队的运营支出；正如你所见，我们的群里有大量的用户在请教图表配置与反馈问题，群里的每一位管理员都在花费不少精力在积极解决用户的问题，然而遇到巨大的咨询量时，我们无法及时、精准解答回复，因此，我们推出了会员优先服务
+3. 与其说模板市场是收费，倒不如说给野生用户提供了创造价值的机会，用户既可以在上面发布模板赚取费用，遇到心动的模板也能免费/付费使用
+
+- 收费不是目的，正如你们所见，用户可以申请成为[【开发者】](https://www.ucharts.cn/v2/#/agreement/developer)，开发者不限制任何官网功能，并享有官方指导、开发、改造uCharts的权力，并且活动期间【返还超级会员费用】！我们想说的是，我们新版官网上线旨在希望更多的用户加入到开发者的队伍，我们共同去维护uCharts！
+       
+我们相信：星星之火可以燎原！
+
+uCharts技术团队
+
+2022.4.23
+
+</font>
+
+
 ![logo](https://img-blog.csdnimg.cn/4a276226973841468c1be356f8d9438b.png)
 
 
@@ -53,6 +81,7 @@ uCharts始终坚持开源，遵循 [Apache Licence 2.0](https://www.apache.org/l
 [![HasChat](https://www.ucharts.cn/images/web/guide/links/haschat.png)](https://gitee.com/howcode/has-chat)
 [![uViewUI](https://www.ucharts.cn/images/web/guide/links/uView.png)](https://www.uviewui.com/)
 [![图鸟UI](https://www.ucharts.cn/images/web/guide/links/tuniao.png)](https://ext.dcloud.net.cn/plugin?id=7088)
+[![thorui](https://www.ucharts.cn/images/web/guide/links/thorui.png)](https://ext.dcloud.net.cn/publisher?id=202)
 [![FirstUI](https://www.ucharts.cn/images/web/guide/links/first.png)](https://www.firstui.cn/)
 [![nProUI](https://www.ucharts.cn/images/web/guide/links/nPro.png)](https://ext.dcloud.net.cn/plugin?id=5169)
 [![GraceUI](https://www.ucharts.cn/images/web/guide/links/grace.png)](https://www.graceui.com/)
