@@ -97,7 +97,7 @@
     </block>
     <!-- #endif -->
     <!-- 其他小程序通过vue渲染图表 -->
-    <!-- #ifdef MP-360 || MP-BAIDU || MP-QQ || MP-TOUTIAO || MP-WEIXIN || MP-KUAISHOU || MP-LARK-->
+    <!-- #ifdef MP-360 || MP-BAIDU || MP-QQ || MP-TOUTIAO || MP-WEIXIN || MP-KUAISHOU || MP-LARK || MP-JD -->
     <block v-if="type2d">
       <view v-if="ontouch" @tap="_tap">
         <canvas
@@ -520,11 +520,11 @@ export default {
       handler(val, oldval) {
         if (typeof val === 'object') {
           if (JSON.stringify(val) !== JSON.stringify(oldval)) {
+            this._clearChart();
             if (val.series && val.series.length > 0) {
               this.beforeInit();
             }else{
               this.mixinDatacomLoading = true;
-              this._clearChart();
               this.showchart = false;
               this.mixinDatacomErrorMessage = null;
             }
@@ -865,8 +865,10 @@ export default {
       let cid = this.cid
       if (this.echrts !== true && cfu.option[cid] && cfu.option[cid].context) {
         const ctx = cfu.option[cid].context;
-        ctx.clearRect(0, 0, this.cWidth, this.cHeight);
-        ctx.draw();
+        if(typeof ctx === "object"){
+          ctx.clearRect(0, 0, this.cWidth, this.cHeight);
+          ctx.draw();
+        }
       }
     },
     init() {
@@ -1332,7 +1334,7 @@ export default {
           })
           // 增加ECharts的highlight消息，实现按下移动返回索引功能。add by onefish 创建于 2021-12-11 09:50
           cfe.instance[cid].on('highlight', resdata => {
-            that[cid].callMethod('emitMsg',{name:"getHighlight", params:{type:"highlight", dataIndex:resdata.batch[0].dataIndex, id:cid}})
+            that[cid].callMethod('emitMsg',{name:"getHighlight", params:{type:"highlight", res:resdata, id:cid}})
           })
         }
         this.updataEChart(cid,cfe.option[cid])
