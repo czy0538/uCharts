@@ -1291,7 +1291,7 @@ export default {
           })
           // 增加ECharts的highlight消息，实现按下移动返回索引功能。add by onefish 创建于 2021-12-11 09:50
           cfe.instance[cid].on('highlight', resdata => {
-            that[cid].callMethod('emitMsg',{name:"getHighlight", params:{type:"highlight", dataIndex:resdata.batch[0].dataIndex, id:cid}})
+            that[cid].callMethod('emitMsg',{name:"getHighlight", params:{type:"highlight", res:resdata, id:cid}})
           })
         }
         this.updataEChart(cid,cfe.option[cid])
