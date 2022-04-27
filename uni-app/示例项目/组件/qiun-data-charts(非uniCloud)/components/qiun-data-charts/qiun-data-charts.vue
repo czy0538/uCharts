@@ -1351,6 +1351,9 @@ export default {
       if(JSON.stringify(newVal) == JSON.stringify(oldVal)){
         return;
       }
+      if(!newVal.canvasId){
+        return;
+      }
       let cid = JSON.parse(JSON.stringify(newVal.canvasId))
       this.rid = cid
       that[cid] = this.$ownerInstance
