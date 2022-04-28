@@ -859,7 +859,7 @@ export default {
       let cid = this.cid
       if (this.echrts !== true && cfu.option[cid] && cfu.option[cid].context) {
         const ctx = cfu.option[cid].context;
-        if(typeof ctx === "object"){
+        if(typeof ctx === "object" && !cfu.option[cid].update){
           ctx.clearRect(0, 0, this.cWidth, this.cHeight);
           ctx.draw();
         }
